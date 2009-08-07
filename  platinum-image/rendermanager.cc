@@ -586,6 +586,7 @@ void rendermanager::center2d(const int rendererID, const int imageID)
 void rendermanager::center3d_and_fit(const int rendererID, const int imageID)
 {
 	image_base * image = datamanagement.get_image<image_base>(imageID); //TODO_R HÄR!!!!!
+	viewport *vp = viewmanagement.get_viewport(rendererID); //JK Warning rendererID and vp_ID might not be the same in the future....
 
 //	cout<<"center3d_and_fit..."<<endl;
     int r_ind = find_renderer_index(rendererID);
@@ -593,33 +594,30 @@ void rendermanager::center3d_and_fit(const int rendererID, const int imageID)
 //	cout<<"Y="<<renderers[r_ind]->the_rg->get_Y()<<endl;
 	float phys_span_x = image->get_phys_span_in_dir(((rendergeom_image*)renderers[r_ind]->the_rg)->get_X());
 	float phys_span_y = image->get_phys_span_in_dir(((rendergeom_image*)renderers[r_ind]->the_rg)->get_Y());
-	
-	viewport *vp = viewmanagement.get_viewport(rendererID); //JK Warning rendererID and vp_ID might not be the same in the future....
-
-	float zoom_factor=1;
 	float phys_ratio = phys_span_y/phys_span_x;
-	float vp_ratio = float(vp->h_pane()) / float(vp->w());
-	float elongation_factor = phys_ratio/vp_ratio;
+//	cout<<"phys_span_y="<<phys_span_y<<endl;
+//	cout<<"phys_span_x="<<phys_span_x<<endl;
 //	cout<<"phys_ratio="<<phys_ratio<<endl;
-//	cout<<"vp_ratio="<<vp_ratio<<endl;
 
-	if(vp->h_pane() > vp->w()){
-//		cout<<"vp_high..."<<endl;
-		zoom_factor = ZOOM_CONSTANT/phys_span_x;	//if the viewport is "higher" than it is "wide" --> the physical image span in "x" direction will be limiting...
-		if( phys_ratio > vp_ratio ){
-//			cout<<"***"<<endl;
-			zoom_factor /= elongation_factor;		//if the image is more elongated than the viewport... scale with the ration between the "elongated-ness-es"
-		}
+	float vp_x = float(vp->w());
+	float vp_y = float(vp->h_pane());
+	float vp_ratio = vp_y/vp_x;
+//	cout<<"vp_x="<<vp_x<<endl;
+//	cout<<"vp_y="<<vp_y<<endl;
+//	cout<<"vp_ratio="<<vp_ratio<<endl;
+	
+	float newzoom=1;
+	float a = phys_span_x/vp_x;
+	float b = phys_span_y/vp_y;
+	if( a > b ){
+//		cout<<"a..."<<endl;
+		newzoom = (ZOOM_CONSTANT/vp_x)/(a) ; //JK6
 	}else{
-//		cout<<"vp_wide..."<<endl;
-		zoom_factor = ZOOM_CONSTANT/phys_span_y;  //if the viewport is "wider" than it is "high" --> the physical image span in "y" direction will be limiting...
-		if( phys_ratio < vp_ratio ){
-//			cout<<"***"<<endl;
-			zoom_factor *= elongation_factor;	//if the image is more elongated than the viewport... scale with the ration between the "elongated-ness-es"	
-		}
+//		cout<<"b..."<<endl;
+		newzoom = (ZOOM_CONSTANT/vp_x)/(b) ; //JK6
 	}
 
-	set_image_geometry(rendererID, center_of_image(imageID), zoom_factor); //JK2
+	set_image_geometry(rendererID, center_of_image(imageID), newzoom); //JK2
 }
 
 void rendermanager::center3d_and_fit( const int imageID )
@@ -632,67 +630,6 @@ void rendermanager::center3d_and_fit( const int imageID )
 		center3d_and_fit( *itr, imageID );
 	}
 }
-/*
-void rendermanager::center3d_and_fill_vp(const int rendererID, const int imageID, const int vpID) //SO
-{
-	image_base * image = datamanagement.get_image(imageID);
-
-//	cout<<"center3d_and_fill_vp..."<<endl;
-    int r_ind = find_renderer_index(rendererID);
-//	cout<<"X="<<renderers[r_ind]->the_rg->get_X()<<endl;
-//	cout<<"Y="<<renderers[r_ind]->the_rg->get_Y()<<endl;
-	float phys_span_x = image->get_phys_span_in_dir(renderers[r_ind]->the_rg->get_X());
-	float phys_span_y = image->get_phys_span_in_dir(renderers[r_ind]->the_rg->get_Y());
-	cout<<"-------------------------------------"<<endl;
-	cout<<"phys_span_x="<<phys_span_x<<endl;
-	cout<<"phys_span_y="<<phys_span_y<<endl;
-	Vector3D world_center = center_of_image(imageID);
-//	cout << "world_center = " << world_center << endl;
-	
-	viewport *vp = viewmanagement.get_viewport(vpID);
-	cout << "vp width = " << vp->w() << endl;
-//	cout << "vp height = " << vp->h() << endl;
-	cout << "vp height = " << vp->h_pane() << endl;
-
-	float zoom_factor=1;
-	float f=1;
-	float vp_ratio = float(vp->h_pane()) / float(vp->w());
-	float phys_ratio = phys_span_y/phys_span_x;
-	cout<<"vp_ratio="<<vp_ratio<<endl;
-	cout<<"phys_ratio="<<phys_ratio<<endl;
-
-	if(vp->h_pane() > vp->w()){
-		if( phys_ratio > vp_ratio ){
-			cout<<"1"<<endl;
-//			zoom_factor = ZOOM_CONSTANT/phys_span_y * (vp->h_pane()/vp->w());
-//			f = (ZOOM_CONSTANT/phys_span_x);
-			
-			zoom_factor = ZOOM_CONSTANT/phys_span_x/phys_ratio*vp_ratio;
-		}
-		else{
-			cout<<"2"<<endl;
-			zoom_factor = ZOOM_CONSTANT/phys_span_x;
-		}
-	}else{
-		if( phys_ratio > vp_ratio ){
-			cout<<"3"<<endl;
-			zoom_factor = ZOOM_CONSTANT/phys_span_y;
-		}
-		else{
-			cout<<"4"<<endl;
-			zoom_factor = ZOOM_CONSTANT/phys_span_y*phys_ratio/vp_ratio;
-		}
-	}
-
-//	float zoom_factor = ZOOM_CONSTANT/max(phys_span_x,phys_span_y)*rectangular_score;
-	cout << "zoom_factor = " << zoom_factor << endl;
-
-	viewmanagement.zoom_specific_vp(vpID, world_center, zoom_factor);	
-//	set_geometry(rendererID, world_center, ZOOM_CONSTANT/std::min(phys_span_x,phys_span_y)); //JK2
-//	set_geometry(rendererID, world_center, zoom_factor); //JK2
-
-}
-*/
 
 std::vector<int> rendermanager::images_from_combination ( const int combinationID ) 
 {

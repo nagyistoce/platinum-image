@@ -301,7 +301,8 @@ void nav_tool::handle(viewport_event &event)
 				{
 //					std::cout<<"Pan..."<<std::endl;
                     event.grab();
-                    myRenderer->move_view(viewSize,(last_local_x-event.mouse_pos_local()[0]),(last_local_y-event.mouse_pos_local()[1]));
+//                    myRenderer->move_view(viewSize,(last_local_x-event.mouse_pos_local()[0]),(last_local_y-event.mouse_pos_local()[1])); 
+                    myRenderer->move_view(pms[0],(last_local_x-event.mouse_pos_local()[0]),(last_local_y-event.mouse_pos_local()[1]));	//JK6
 //                    ((FLTK_Pt_pane*)fp->parent())->needs_rerendering();
                     fp->needs_rerendering();
 					last_local_x = event.mouse_pos_local()[0];
@@ -319,15 +320,17 @@ void nav_tool::handle(viewport_event &event)
 					last_local_y = event.mouse_pos_local()[1];
 	
 					//zoom...
-					myRenderer->move_view(viewSize,0,0,0,z); 
+//					myRenderer->move_view(viewSize,0,0,0,z); 
+					myRenderer->move_view(pms[0],0,0,0,z); //JK6
 
 					//move....
-					cout << "adjust event...." << endl;
+//					cout << "adjust event...." << endl;
 					std::vector<int> new_pos = myRenderer->world_to_view(fp->w(),fp->h(),physical_zoom_start_pos);
 
 					int dx = new_pos[0]-local_zoom_start_pos[0];
 					int dy = new_pos[1]-local_zoom_start_pos[1];
-					myRenderer->move_view(viewSize,dx,dy);
+//					myRenderer->move_view(viewSize,dx,dy);
+					myRenderer->move_view(pms[0],dx,dy); //JK6
                     
 //                    ((FLTK_Pt_pane*)fp->parent())->needs_rerendering();
 					fp->needs_rerendering();
@@ -351,7 +354,8 @@ void nav_tool::handle(viewport_event &event)
                 if ( event.state() == pt_event::iterate)
 				{
                     event.grab();
-                    myRenderer->move_view(viewSize,0,0,event.scroll_delta()*wheel_factor);
+//                    myRenderer->move_view(viewSize,0,0,event.scroll_delta()*wheel_factor);
+                    myRenderer->move_view(pms[0],0,0,event.scroll_delta()*wheel_factor); //JK6
                     fp->needs_rerendering();
 					viewmanagement.update_overlays();
 				}
@@ -370,6 +374,10 @@ void nav_tool::handle(viewport_event &event)
 						//get values and update statusfield
 						
 						const std::map<std::string, string> values = myRenderer->resolve_values_view( event.mouse_pos_local()[0], event.mouse_pos_local()[1], fp->w(), fp->h());
+//						cout<<"event.mouse_pos_local()[0]="<<event.mouse_pos_local()[0]<<endl;
+//						cout<<"event.mouse_pos_local()[1]="<<event.mouse_pos_local()[1]<<endl;
+//						cout<<"fp->w()="<<fp->w()<<endl;
+//						cout<<"fp->h()="<<fp->h()<<endl;
 
 						if (values.empty())
 						{

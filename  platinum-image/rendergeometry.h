@@ -59,11 +59,10 @@ class rendergeom_image : public rendergeometry_base
 
         // *** NOTE: some render parameter constraints (like not zooming in/out at insane levels) are implemented in renderer_base::move
 
-		Vector3D look_at;     //center viewpoint, this will be the middle of the rendering and pivot point for the slice direction.
+		Vector3D look_at;	//center viewpoint, this will be the middle of the rendering and pivot point for the slice direction.
         Matrix3D dir;       //view to composite image matrix    //only direction (no scaling) = normal of slice plane
-        float zoom;  //user-determined magnification, multiplied with scale to obtain the actual rendering scale
-					//ZOOM_CONSTANT/max(phys_span_x,phys_span_y)*rectangular_score;
-					//rectangular_score = (vp_side_max/vp_side_min) and span = image span, from view direction
+        float zoom;			//user-determined magnification, zoom=1 renders 50mm in viewport_x direction (ZOOM_CONSTANT)
+					
 
 
 		Matrix3D view_to_world_matrix(int viewminsize) const;
@@ -81,7 +80,7 @@ class rendergeom_image : public rendergeometry_base
 		line3D get_physical_line_of_intersection(rendergeom_image *rg2);
 		line2D get_physical_line_of_intersection_projected(rendergeom_image *rg2);
 
-		Matrix3D get_scan_line_slop_matrix(image_base *the_image_pointer, float rgb_min_norm_div_by_zoom_constant);
+		Matrix3D get_scan_line_slop_matrix(image_base *the_image_pointer, float rgb_sx_div_by_zoom_constant);
 	};
 
 //-----------------------------------------------------

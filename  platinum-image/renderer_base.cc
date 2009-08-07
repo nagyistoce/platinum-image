@@ -119,7 +119,8 @@ std::vector<int> renderer_base::world_to_view(rendergeometry_base *g, int sx, in
 {
     std::vector<int> view;
     Vector3D toView = wpos;
-    int vmin = std::min(sx,sy);
+//    int vmin = std::min(sx,sy);
+    int vmin = sx; //JK6
     //float wtvCenterScale = renderer_base::display_scale/((float)vmin*g->zoom*2);
    
     Matrix3D world_to_view_matrix;
@@ -139,10 +140,11 @@ std::vector<int> renderer_base::world_to_view(rendergeometry_base *g, int sx, in
 std::vector<float> renderer_base::world_dir_to_view_dir(rendergeom_image *rg,int sx,int sy,const Vector3D w_dir)
 {
     std::vector<float> view;
-	int vmin = std::min (sx,sy);
    
     Matrix3D world_to_view_matrix;
-    world_to_view_matrix = rg->view_to_world_matrix(vmin).GetInverse();
+//	int vmin = std::min (sx,sy);
+//  world_to_view_matrix = rg->view_to_world_matrix(vmin).GetInverse();
+    world_to_view_matrix = rg->view_to_world_matrix(sx).GetInverse(); //JK6 zoom redefinition
     
     Vector3D toView = world_to_view_matrix * (w_dir);
     	

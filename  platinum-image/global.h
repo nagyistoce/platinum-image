@@ -60,7 +60,7 @@
 #define FILEPOSTYPE char
 #define VOLUMEMAXDIMENSION 3
 #define IMGLABELMAX 19
-#define ZOOM_CONSTANT 50.0  // physical display size (mm) at zoom 1 - previously denoted "display_scale"
+#define ZOOM_CONSTANT 50.0  // physical display size (mm) at zoom 1, in viewport x/horizontal direction... -previously denoted "display_scale"
 
 
 enum ROImode {ROI_RECT, ROI_CIRCLE};

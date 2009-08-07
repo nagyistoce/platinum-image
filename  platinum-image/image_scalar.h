@@ -249,7 +249,11 @@ public:
 	void region_grow_declining_in_slice_3D(image_binary<3>* result, image_binary<3>* seed_image, ELEMTYPE min_intensity, int slice, int dir=2);
 	void region_grow_declining_in_slice_3D(image_binary<3>* result, stack<Vector2Dint> seeds, ELEMTYPE min_intensity, int slice, int dir=2);
 
-	Vector3D get_center_of_gravity(ELEMTYPE lower_int_limit, ELEMTYPE upper_int_limit=std::numeric_limits<ELEMTYPE>::max(),  SPACE_TYPE type = VOXEL_SPACE);
+	float get_moment(int k, int l, int m, ELEMTYPE lower_int_limit, ELEMTYPE upper_int_limit=std::numeric_limits<ELEMTYPE>::max(),  SPACE_TYPE type = VOXEL_SPACE);
+	float get_moment_central(int k, int l, int m, ELEMTYPE lower_int_limit, ELEMTYPE upper_int_limit=std::numeric_limits<ELEMTYPE>::max(),  SPACE_TYPE type = VOXEL_SPACE);
+	Vector3D get_center_of_gravity(SPACE_TYPE type = VOXEL_SPACE);
+	Vector3D get_center_of_gravity_from_range(ELEMTYPE lower_int_limit, ELEMTYPE upper_int_limit=std::numeric_limits<ELEMTYPE>::max(),  SPACE_TYPE type = VOXEL_SPACE);
+	Vector3D get_center_of_gravity_binary_from_range(ELEMTYPE lower_int_limit, ELEMTYPE upper_int_limit=std::numeric_limits<ELEMTYPE>::max(),  SPACE_TYPE type = VOXEL_SPACE);
 	Vector3D get_in_slice_center_of_gravity_in_dir(int dir, int slice, ELEMTYPE lower_int_limit, ELEMTYPE upper_int_limit=std::numeric_limits<ELEMTYPE>::max(),  SPACE_TYPE type = VOXEL_SPACE);
 	vector<Vector3D> get_in_slice_center_of_gravities_in_dir(int dir, ELEMTYPE lower_int_limit, ELEMTYPE upper_int_limit=std::numeric_limits<ELEMTYPE>::max(), SPACE_TYPE type = VOXEL_SPACE);
 	vector<Vector3D> get_positions_of_voxels_with_value_between(ELEMTYPE from_val=1, ELEMTYPE to_val=1, SPACE_TYPE st = VOXEL_SPACE);

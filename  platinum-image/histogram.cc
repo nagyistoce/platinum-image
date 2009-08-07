@@ -26,6 +26,16 @@ extern datamanager datamanagement;
 
 // *** histogram_base ***
 
+void histogram_base::clear_pixmap (uchar * image, unsigned int w,unsigned int h)
+    {
+    //clear image
+    unsigned int isize=w*h*RGB_pixmap_bpp;
+    for (unsigned int i=0;i < isize; i+=RGB_pixmap_bpp)
+        {
+        image[i]=image[i+1]=image[i+2]=0;
+        }
+    }
+
 void histogram_base::reallocate_buckets_if_necessary(int new_num_buckets)
     {
 	if (new_num_buckets >0 || this->bucket_vector==NULL){
@@ -40,15 +50,6 @@ void histogram_base::reallocate_buckets_if_necessary(int new_num_buckets)
 	}
     }
 
-void histogram_base::clear_pixmap (uchar * image, unsigned int w,unsigned int h)
-    {
-    //clear image
-    unsigned int isize=w*h*RGB_pixmap_bpp;
-    for (unsigned int i=0;i < isize; i+=RGB_pixmap_bpp)
-        {
-        image[i]=image[i+1]=image[i+2]=0;
-        }
-    }
 
 histogram_base::histogram_base ()
     {

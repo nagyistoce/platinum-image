@@ -30,6 +30,7 @@
 	modified = false;
 }
 
+
 vector<RENDERER_TYPE> curve_base::get_supported_renderers(){
 	vector<RENDERER_TYPE> vec;
 	vec.push_back(RENDERER_CURVE);

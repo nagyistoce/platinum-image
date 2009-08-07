@@ -1934,24 +1934,25 @@ float image_general<ELEMTYPE, IMAGEDIM>::get_physical_distance_between_voxels(in
 template <class ELEMTYPE, int IMAGEDIM>
 float image_general<ELEMTYPE, IMAGEDIM>::get_phys_span_in_dir(Vector3D dir)
 {
+//	cout<<"get_phys_span_in_dir("<<dir<<")"<<endl;
 	float min_dist=std::numeric_limits<float>::max();
-	float max_dist=std::numeric_limits<float>::min();
+//	float max_dist=std::numeric_limits<float>::min(); //JK MEGA WARNING this gives approx 0 e-32
+	float max_dist = -std::numeric_limits<float>::max();
+//	cout<<"start-min_dist="<<min_dist<<endl;
+//	cout<<"start-max_dist="<<max_dist<<endl;
 
 	//normalize dir...
-	float a=0;
-	for(int i=0;i<3;i++){
-		a += dir[i]*dir[i];
-	}
-	a = sqrt(a);
-	dir /= a;
+//	dir.Normalize();	//not needed...
 
+	float a=0;
 	for(int i=0;i<8;i++){
 		a = dir*this->get_phys_pos_of_corner(i);
-//		cout<<"i="<<i<<" "<<a<<endl;
+//		cout<<"i="<<i<<" "<<a<<" "<<this->get_phys_pos_of_corner(i)<<" "<<min_dist<<" "<<max_dist<<endl;
 		min_dist = std::min(min_dist, a);
 		max_dist = std::max(max_dist, a);
 	}
-
+//	cout<<"min_dist="<<min_dist<<endl;
+//	cout<<"max_dist="<<max_dist<<endl;
 	return max_dist-min_dist;
 }
 

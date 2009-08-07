@@ -20,6 +20,9 @@
 
 // *** histogram_typed ***
 
+
+
+
 template <class ELEMTYPE>
 histogram_typed<ELEMTYPE>::histogram_typed()
 {

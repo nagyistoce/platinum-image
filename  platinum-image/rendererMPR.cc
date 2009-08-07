@@ -68,7 +68,8 @@ Vector3D rendererMPR::view_to_world(int vx, int vy, int sx, int sy) const
 {
     Vector3D viewCentered,world;
     vector<float> v;
-    float viewmin = std::min (sx,sy); //777
+//    float viewmin = std::min(sx,sy); //777
+    float viewmin = sx; //JK6
     
     viewCentered[0]=vx-sx/2;
     viewCentered[1]=vy-sy/2;
@@ -77,7 +78,7 @@ Vector3D rendererMPR::view_to_world(int vx, int vy, int sx, int sy) const
     //transform to world coordinates
     world = ((rendergeom_image*)the_rg)->view_to_world_matrix(viewmin) * viewCentered;
 	world = world + ((rendergeom_image*)this->the_rg)->look_at;
-    
+//	cout<<"view_to_world="<<vx<<","<<vy<<","<<sx<<","<<sy<<","<<"("<<world<<")("<<((rendergeom_image*)this->the_rg)->zoom<<")"<<endl;
     return world;
 }
 
@@ -166,7 +167,7 @@ void rendererMPR::render_position(unsigned char *rgb, int rgb_sx, int rgb_sy)
 //render orthogonal slices using memory-order scanline
 void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_image *rg, rendercombination *rc, thresholdparvalue * threshold)
 {
-	cout<<"render_("<<rgb_sx<<" "<<rgb_sy<<"...)"<<endl;
+//	cout<<"render_("<<rgb_sx<<" "<<rgb_sy<<"...)"<<endl;
 
     if(rc->empty()){       //*** no images: exit ***
         return;
@@ -227,7 +228,6 @@ void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_imag
         
         //render images in first pass, points in second
         if(OKrender){ 
-            const float scale = rgb_min_norm / ZOOM_CONSTANT; //constant = the number of mms that should fit inside a viewport at zoom 1
 
 			//color for tint mode, Note that the order is set to RED, BLUE, GREEN 
             int tint_r=(((the_image % 3) ==0) ^ (the_image > 2));
@@ -245,6 +245,8 @@ void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_imag
             bool threshold_value = false;
             
 
+//            const float scale = rgb_min_norm / ZOOM_CONSTANT; //constant = the number of mms that should fit inside a viewport at zoom 1
+            const float scale = rgb_sx / ZOOM_CONSTANT; //constant = the number of mms that should fit inside a viewport at zoom 1 //JK zoom_const redef
 			//"(rc->dir * screen_center)/(rc->zoom * scale)"  
 			//This rotates/scales/returns vector from top left viewport corner to viewport center in world coordinates...
 			voxel_offset[the_image] = the_image_pointer->world_to_voxel( rg->look_at - ( (rg->dir * screen_center) / (rg->zoom * scale) ) );

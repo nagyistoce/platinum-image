@@ -2784,6 +2784,6 @@ plane3D image_binary<IMAGEDIM>::get_plane3D_with_best_fit_to_binary_data(SPACE_T
 		cout<<"eigen = "<<vse.get_eigenvalue(i)<<" --> "<<vse.get_eigenvector(i)<<endl;
 	}
 
-	plane3D p(this->get_center_of_gravity(1,1,st), create_Vector3D(vse.get_eigenvector(2)) );
+	plane3D p(this->get_center_of_gravity_binary_from_range(1,1,st), create_Vector3D(vse.get_eigenvector(2)) );
 	return p;
 }

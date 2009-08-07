@@ -342,6 +342,12 @@ void image_base::set_origin(const Vector3D v)
     origin = v;
 }
 
+void image_base::translate_origin(const Vector3D t)
+{
+    origin += t;
+}
+
+
 
 void image_base::save_histogram_to_txt_file(const std::string filename, const std::string separator)
     {

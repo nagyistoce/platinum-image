@@ -200,9 +200,10 @@ void landmark_tool::handle(viewport_event &event)
 			{
 				event.grab();
 				const int * pms = myPort->pixmap_size();
-				int viewSize = std::min(pms[0],pms[1]);
+				int viewSize = std::min(pms[0],pms[1]); 
 				
-				myRenderer->move_view(viewSize,0,0,event.scroll_delta()*wheel_factor);
+//				myRenderer->move_view(viewSize,0,0,event.scroll_delta()*wheel_factor);
+				myRenderer->move_view(pms[0],0,0,event.scroll_delta()*wheel_factor); //JK6
 				
 				fp->needs_rerendering();
 				refresh_by_image_and_direction();

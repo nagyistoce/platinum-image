@@ -146,7 +146,6 @@ class rendermanager
 
 		void center3d_and_fit(const int rendererID, const int imageID);
 		void center3d_and_fit(const int imageID);
-//		void center3d_and_fill_vp(const int rendererID, const int imageID, const int vpID); //SO
 		
 		std::vector<int> images_from_combination ( const int combinationID );	// return all image ids in a combination
 		

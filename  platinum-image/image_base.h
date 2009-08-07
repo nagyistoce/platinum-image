@@ -161,6 +161,7 @@ class image_base : public data_base
 		void set_orientation(const Matrix3D m);
         Vector3D get_origin() const;
         void set_origin(const Vector3D v); 
+        void translate_origin(const Vector3D t); 
 
 		virtual float get_phys_span_in_dir(Vector3D dir) = 0; //needed for example when setting upp view_ports "center3d_and_fit"
 

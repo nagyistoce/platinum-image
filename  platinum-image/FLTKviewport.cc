@@ -308,9 +308,7 @@ int FLTK_VTK_pane::handle(int event)
 
 				//::::::::::::::::::::::::::::::::::::::::::::::::::
 
-
-
-				viewmanagement.zoom_specific_vp(2, max_pos, 0.2 ); //ZOOM_CONSTANT/40
+				viewmanagement.zoom_specific_vp(2, max_pos, 0.2 );
 				viewmanagement.zoom_specific_vp(3, max_pos, 0.2 );
 //				viewmanagement.zoom_specific_vp(4, max_pos, 1 );
 //				viewmanagement.zoom_specific_vp(5, max_pos, 0.8 );
@@ -952,7 +950,7 @@ FLTK_Pt_MPR_pane::FLTK_Pt_MPR_pane()
 //FLTK_Pt_pane::FLTK_Pt_pane(int X,int Y,int W,int H, viewport *vp_parent) : Fl_Overlay_Window(X,Y,W,H)
 FLTK_Pt_MPR_pane::FLTK_Pt_MPR_pane(int X,int Y,int W,int H) : FLTK_Pt_pane(X,Y,W,H)
 {
-	cout<<"FLTK_Pt_MPR_pane("<<X<<","<<Y<<","<<W<<","<<H<<")"<<endl;
+//	cout<<"FLTK_Pt_MPR_pane("<<X<<","<<Y<<","<<W<<","<<H<<")"<<endl;
     int buttonleft=0;
 	int buttonheight=20;
 	int buttonwidth=70;

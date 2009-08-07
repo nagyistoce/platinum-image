@@ -54,7 +54,8 @@ Matrix3D rendergeom_image::view_to_world_matrix(int viewminsize) const
 	//ret = dir*ZOOM_CONSTANT;
 	ret.SetIdentity();
 
-	val = viewminsize*zoom*(1.0/ZOOM_CONSTANT);
+//	val = viewminsize*zoom*(1.0/ZOOM_CONSTANT);
+	val = ZOOM_CONSTANT/(viewminsize*zoom);
 	for(int i = 0; i <3 ; i++)
 		for(int j = 0; j<3; j++)
 			ret[i][j] = dir[i][j]*val;
@@ -115,11 +116,11 @@ line2D rendergeom_image::get_physical_line_of_intersection_projected(rendergeom_
 	return p.get_projected_line(l);
 }
 
-Matrix3D rendergeom_image::get_scan_line_slop_matrix(image_base *the_image_pointer, float rgb_min_norm_div_by_zoom_constant)
+Matrix3D rendergeom_image::get_scan_line_slop_matrix(image_base *the_image_pointer, float rgb_sx_div_by_zoom_constant)
 {
 	Matrix3D orientation_inv = Matrix3D(the_image_pointer->get_orientation().GetInverse());
 	Matrix3D inv_size = Matrix3D(the_image_pointer->get_voxel_resize().GetInverse());
-	return (inv_size * orientation_inv)/(this->zoom * rgb_min_norm_div_by_zoom_constant);
+	return (inv_size * orientation_inv)/(this->zoom * rgb_sx_div_by_zoom_constant);
 }
 //-----------------------------------------------------
 //-----------------------------------------------------

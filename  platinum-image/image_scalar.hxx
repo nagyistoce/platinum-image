@@ -2674,7 +2674,91 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::region_grow_declining_in_slice_3D(image_b
 }
 
 template <class ELEMTYPE, int IMAGEDIM>
-Vector3D image_scalar<ELEMTYPE, IMAGEDIM>::get_center_of_gravity(ELEMTYPE lower_int_limit, ELEMTYPE upper_int_limit,  SPACE_TYPE type)
+float image_scalar<ELEMTYPE, IMAGEDIM>::get_moment(int k, int l, int m, ELEMTYPE lower_int_limit, ELEMTYPE upper_int_limit,  SPACE_TYPE type)
+{
+//	Vector3D res = create_Vector3D(0,0,0);
+	float res = 0;
+//	float num_voxels=0;
+
+	ELEMTYPE val;
+	Vector3D pos;
+	for(int z=0;z<this->nz();z++){
+		for(int y=0;y<this->ny();y++){
+			for(int x=0;x<this->nx();x++){
+				val = this->get_voxel(x,y,z);
+				if( val >= lower_int_limit && val <= upper_int_limit){
+					pos = this->get_physical_pos_or_voxel_pos(x,y,z,type);
+					res += pow(pos[0],k)*pow(pos[1],l)*pow(pos[2],m)*val;
+				}
+			}
+		}
+	}
+	return res;
+}
+
+template <class ELEMTYPE, int IMAGEDIM>
+float image_scalar<ELEMTYPE, IMAGEDIM>::get_moment_central(int k, int l, int m, ELEMTYPE lower_int_limit, ELEMTYPE upper_int_limit,  SPACE_TYPE type)
+{
+//	Vector3D res = create_Vector3D(0,0,0);
+	float res=0;
+	Vector3D cg = this->get_center_of_gravity_binary_from_range(lower_int_limit, upper_int_limit,  type);
+
+
+	ELEMTYPE val;
+	Vector3D pos;
+	for(int z=0;z<this->nz();z++){
+		for(int y=0;y<this->ny();y++){
+			for(int x=0;x<this->nx();x++){
+				val = this->get_voxel(x,y,z);
+				if( val >= float(lower_int_limit) && val <= float(upper_int_limit)){
+					pos = this->get_physical_pos_or_voxel_pos(x,y,z,type);
+					res += pow(pos[0]-cg[0],k)*pow(pos[1]-cg[1],l)*pow(pos[2]-cg[2],m)*val;
+				}
+			}
+		}
+	}
+	return res;
+}
+
+template <class ELEMTYPE, int IMAGEDIM>
+Vector3D image_scalar<ELEMTYPE, IMAGEDIM>::get_center_of_gravity(SPACE_TYPE type)
+{
+	return this->get_center_of_gravity_from_range(std::numeric_limits<ELEMTYPE>::min(),std::numeric_limits<ELEMTYPE>::max(),type);
+}
+
+template <class ELEMTYPE, int IMAGEDIM>
+Vector3D image_scalar<ELEMTYPE, IMAGEDIM>::get_center_of_gravity_from_range(ELEMTYPE lower_int_limit, ELEMTYPE upper_int_limit,  SPACE_TYPE type)
+{
+	Vector3D res = create_Vector3D(-1,-1,-1);
+	Vector3D cg = create_Vector3D(0,0,0);
+	double sum=0;
+
+	ELEMTYPE val;
+	for(int z=0;z<this->nz();z++){
+		for(int y=0;y<this->ny();y++){
+			for(int x=0;x<this->nx();x++){
+				val = this->get_voxel(x,y,z);
+				if(val >= lower_int_limit && val <= upper_int_limit){
+					cg[0] += val*x;
+					cg[1] += val*y;
+					cg[2] += val*z;
+					sum += val;
+				}
+			}
+		}
+	}
+	if(sum>0){
+		res = cg / sum;
+
+		if(type == PHYSICAL_SPACE){
+			res = this->get_physical_pos_for_voxel(res[0],res[1],res[2]);
+		}
+	}
+	return res;
+}
+
+template <class ELEMTYPE, int IMAGEDIM>
+Vector3D image_scalar<ELEMTYPE, IMAGEDIM>::get_center_of_gravity_binary_from_range(ELEMTYPE lower_int_limit, ELEMTYPE upper_int_limit,  SPACE_TYPE type)
 {
 	Vector3D res = create_Vector3D(-1,-1,-1);
 	Vector3D cg = create_Vector3D(0,0,0);
