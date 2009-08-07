@@ -36,6 +36,8 @@
 #include <FL/Fl_Pack.H>
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Value_Input.H>
+#include <FL/Fl_Button.H>
+#include <FL/Fl_Check_Button.H>
 #include <FL/Fl_Menu_Button.H>
 #include <FL/Fl_Box.H>
 
@@ -95,7 +97,7 @@ protected:
 
 	FLTKgeom_base *geom_widget;
 	static void edit_geometry_callback(Fl_Widget *callingwidget, void *);
-
+	static void edit_curve_geometry_callback(Fl_Widget *callingwidget, void *);
 
 public:
     static void change_name_callback(Fl_Widget *callingwidget, void *thisdatawidget);
@@ -115,7 +117,7 @@ public:
     void from_file(bool);
     bool from_file() const;
 
-	void show_hide_edit_geometry();
+	void show_hide_edit_geometry(char param = 'i');
 
 	void set_tooltip(string s);
     };
@@ -191,6 +193,37 @@ public:
 };
 
 //----------------------
+class FLTKVector2D : public Fl_Group {
+protected:
+	Fl_Value_Input *data_x;
+	Fl_Value_Input *data_y;
+	static void vector_cb(Fl_Widget *w, void*);
+public:
+	FLTKVector2D(Vector2D v, int x=0, int y=0, int w=30, int h=50, const char *sx=0, const char *sy=0);
+	void value(Vector2D v);
+	Vector2D value();
+};
+
+//----------------------
+class FLTKButton : public Fl_Group {
+protected:
+	Fl_Button *butt;
+	static void button_cb(Fl_Widget *w, void*);
+public:
+	FLTKButton(int x=0, int y=0, int w=30, int h=50, const char *sx=0);
+};
+
+class FLTKCheckButton : public Fl_Group {
+protected:
+	Fl_Check_Button *butt;
+	static void check_cb(Fl_Widget *w, void*);
+public:
+	FLTKCheckButton(int x=0, int y=0, int w=30, int h=50, const char *sx=0);
+	bool turned_on();
+};
+
+
+//--------------------------------
 class FLTKMatrix3D : public Fl_Group {
 protected:
 	Fl_Value_Input *data_00;	Fl_Value_Input *data_01;	Fl_Value_Input *data_02;
@@ -239,5 +272,23 @@ public:
 	
 	//const Matrix3D get_start() const;
 };
+
+
+class FLTKgeom_curve : public FLTKgeom_base{
+protected:
+	FLTKVector2D *x_resolution;
+	FLTKButton* smooth;
+	FLTKCheckButton* other;
+	//Matrix3D start;
+	
+public:
+	FLTKgeom_curve(int id, int x=0, int y=0, int w=260, int h=60);
+	static void x_offset_update_cb(Fl_Widget *w, void*);
+	static void button_update_cb(Fl_Widget *w, void*);
+	static void button2_update_cb(Fl_Widget *w, void*);
+	static void check_update_cb(Fl_Widget *w, void*);
+	//const Matrix3D get_start() const;
+};
+
 
 #endif

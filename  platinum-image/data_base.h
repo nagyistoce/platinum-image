@@ -35,6 +35,7 @@
 #include "global.h"
 #include "error.h"
 #include "metadata.h"
+#include "additional_data.h"
 
 class datawidget_base;
 
@@ -60,7 +61,7 @@ class data_base
     public:
 	
         virtual ~data_base();
-		
+		additional_data* helper_data;
 		//virtual const data_base & operator=(const data_base & source);
 		bool is_supported(RENDERER_TYPE type){
 			for(int i = 0; i < supported_renderers.size(); i++){

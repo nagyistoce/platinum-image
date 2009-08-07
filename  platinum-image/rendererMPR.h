@@ -60,7 +60,7 @@ class rendererMPR : public renderer_image_base
 		rendererMPR();
 
         void connect_data(int dataID);	//add image to rendering combination
-        int renderer_type(); //return RENDERER_MPR
+		static RENDERER_TYPE renderer_type(){return RENDERER_MPR;} //return RENDERER_MPR
 
         static void render_thumbnail(unsigned char *rgb, int rgb_sx, int rgb_sy, int image_ID);
         void render_threshold (unsigned char *rgba, int rgb_sx, int rgb_sy, thresholdparvalue * threshold);

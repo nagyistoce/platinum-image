@@ -216,13 +216,13 @@ void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_imag
 
         the_image_pointer = dynamic_cast<image_base *> (pairItr->pointer);
         
-        bool OKrender = the_image_pointer != NULL;// && the_image_pointer->is_supported(renderer_type());
+        bool OKrender = the_image_pointer != NULL && the_image_pointer->is_supported(renderer_type());
         
         if(blend_mode == RENDER_THRESHOLD){
             the_image_pointer       = datamanagement.get_image<image_base>(threshold->id[0]); //TODO_R HÄR!!!!!
             the_other_image_pointer = datamanagement.get_image<image_base>(threshold->id[1]); //TODO_R HÄR!!!!!
             
-            OKrender = the_image_pointer != NULL;// && the_other_image_pointer != NULL && the_image_pointer->is_supported(renderer_type());
+            OKrender = the_image_pointer != NULL && the_other_image_pointer != NULL && the_image_pointer->is_supported(renderer_type());
         }
         
         //render images in first pass, points in second

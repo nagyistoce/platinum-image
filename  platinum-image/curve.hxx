@@ -20,14 +20,14 @@
 #define __curve_hxx__
 
 #include "curve.h"
-#include "datawidget.h"
+//#include "datawidget.h"
 
 
-
-curve_base::curve_base(string name) : data_base(get_supported_renderers())
+/*curve_base::curve_base(string name) : data_base(get_supported_renderers())
 {
     //start empty
     widget = new datawidget<curve_base>(this, name);
+	modified = false;
 }
 
 vector<RENDERER_TYPE> curve_base::get_supported_renderers(){
@@ -38,7 +38,7 @@ vector<RENDERER_TYPE> curve_base::get_supported_renderers(){
 
 curve_base::~curve_base() {}
 
-void curve_base::redraw() {}
+void curve_base::redraw() {}*/
 
 /*Begin curve_scalar*/
 template<class ELEMTYPE>
@@ -50,6 +50,8 @@ public:
 	double get_min() const;
 	double get_scale() const;
 	double get_offset() const;
+	void set_scale(double scale);
+	void set_offset(double offset);
 	int get_data_size() const;
 	RGBvalue* get_color() const;
 	void set_color(int r, int g, int b);
@@ -104,6 +106,15 @@ double curve_scalar<ELEMTYPE>::get_offset() const{
 }
 
 template<class ELEMTYPE>
+void curve_scalar<ELEMTYPE>::set_scale(double scale){
+	my_data->x_res = scale;
+}
+template<class ELEMTYPE>
+void curve_scalar<ELEMTYPE>::set_offset(double offset){
+	my_data->x_axis_start = offset;
+}
+
+template<class ELEMTYPE>
 int curve_scalar<ELEMTYPE>::get_data_size() const{
 	return my_data->size();
 }
@@ -133,13 +144,16 @@ void curve_scalar<ELEMTYPE>::increase_resolution(){
 	temp->assign(0, my_data->size()*2-1);
 	temp->config_x_axis(my_data->x_res, my_data->x_axis_start);
 
-
-	for(int i = 0; i < my_data->size()-1; i++){
+	int i;
+	for(i = 0; i < my_data->size()-1; i++){
 		temp->push_back(my_data->at(i));
 		temp->push_back(abs(my_data->at(i) + my_data->at(i+1))/2);
 	}
 	temp->push_back(my_data->at(i));
 	
+	temp->config_x_axis(temp->x_res/2,temp->x_axis_start);
+
+	modified = true;
 	my_data->clear();
 	my_data = temp;
 }

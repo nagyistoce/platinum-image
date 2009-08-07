@@ -54,6 +54,8 @@ class curve_base : public data_base
 		virtual double get_min() const = 0;
 		virtual double get_scale() const = 0;
 		virtual double get_offset() const = 0;
+		virtual void set_scale(double scale){};
+		virtual void set_offset(double offset){}; 
 		virtual void set_color(int r, int g, int b){};
 		virtual void set_line(char type){};
 		virtual void increase_resolution(){};
@@ -67,6 +69,8 @@ class curve_base : public data_base
 		virtual vector<double> approximate_curve(int degree) const = 0;
 
 		virtual void simplify_curve(){};
+
+		bool modified;
 /*
 		point_collection(const point_collection & source);	// copy constructor
 		const point_collection & operator=(const point_collection & source);

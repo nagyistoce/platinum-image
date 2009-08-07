@@ -74,6 +74,7 @@ data_base::data_base(vector<RENDERER_TYPE> support)
     ID = data_next_ID++;
     widget = NULL;
     from_file(false);
+	helper_data = new additional_data();
 
 	meta = metadata();
     }
@@ -83,7 +84,7 @@ data_base::data_base()
     ID = data_next_ID++;
     widget = NULL;
     from_file(false);
-
+	helper_data = new additional_data();
 	meta = metadata();
     }
 

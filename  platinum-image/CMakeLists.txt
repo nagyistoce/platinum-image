@@ -71,6 +71,7 @@ OPTION(BUILD_SHARED "Build Platinum as a shared library" OFF)
 #SET (PLATINUM_SOURCE_FILES bruker.h color.h colormap.h cursor3D.h data_base.h ${WIN32_DIRENT_HEAD} datamanager.h datawidget.h error.h event.h fileutils.h FLTKuserIOparameters.h FLTKutilities.h FLTKviewport.h global.h histo2D_tool.h histogram.h image_base.h image_binary.h image_complex.h image_general.h image_integer.h image_label.h image_multi.h image_scalar.h image_storage.h landmark_tool.h listedfactory.h metadata.h Utilities/vxl/contrib/mil3d_trilin_interp_3d.h platinumprogram.h point_collection.h points_seq_func1D.h point.h rawimporter.h dicom_importer.h renderer_base.h rendererVTK.h rendererMIP.h rendererMPR.h rendergeometry.h rendercombination.h rendermanager.h ptmath.h statusarea.h stringmatrix.h threshold.h transfer.h transferfactory.h transferfactory.hxx userIO.h userIOmanager.h viewport.h viewporttool.h viewmanager.h bruker.cc color.cc colormap.cc cursor3D.cc data_base.cc datamanager.cc datawidget.cc error.cc fileutils.cc Utilities/fltk/Fl_Table.cxx Utilities/fltk/Fl_Table_Row.cxx FLTKuserIOparameters.cc FLTKutilities.cc FLTKviewport.cc histo2D_tool.cc histogram.cc event.cc histogram.hxx image_base.cc image_binary.hxx image_binaryprocess.hxx image_complex.hxx image_general.hxx image_generalfile.hxx image_storage_iterator.hxx image_integer.hxx image_label.hxx image_multi.hxx image_scalar.hxx image_scalarprocess.hxx image_storage.hxx landmark_tool.cc mainwindow.cc metadata.cc point.cc point_collection.cc points_seq_func1D.hxx rawimporter.cc dicom_importer.cc renderer_base.cc rendererMIP.cc rendererMPR.cc rendererVTK.cc rendergeometry.cc rendercombination.cc rendermanager.cc ptmath.cc statusarea.cc stringmatrix.cc threshold.cc transfer.hxx transfer_interpolated.hxx userIO.cc userIOmanager.cc transferfactory.cc viewport.cc viewporttool.cc viewmanager.cc ${WIN32_DIRENT_SRC} CMakeLists.txt)
 
 SET (PLATINUM_SOURCE_FILES 
+additional_data.h
 bias_base.h
 bias_field.h
 bruker.h 
@@ -142,6 +143,7 @@ Utilities/vxl/contrib/mil3d_trilin_interp_3d.h
 Utilities/configfile/configfile.h
 Utilities/vtkFl/vtkFlRenderWindowInteractor.h
 
+additional_data.cc
 bias_base.cc
 bias_field.hxx
 bruker.cc 
@@ -149,6 +151,7 @@ color.cc
 colormap.cc 
 cursor3D.cc 
 curve.hxx
+curve.cc
 curve_tool.cc
 data_base.cc 
 datamanager.cc 
@@ -326,6 +329,7 @@ image_multi.hxx
 image_scalar.hxx)
 
 SOURCE_GROUP(Data FILES 
+additional_data.h
 curve.h 
 datamanager.h 
 data_base.h 
@@ -341,7 +345,9 @@ dicom_importer.h
 ultrasound_importer.h
 voxel_tools.h
 
+additional_data.cc
 curve.hxx
+curve.cc
 datamanager.cc 
 data_base.cc 
 image_base.cc 

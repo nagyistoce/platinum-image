@@ -64,7 +64,12 @@ void datawidget_base::name_field_callback(Fl_Input* o, void* v) {
 void datawidget_base::edit_geometry_callback(Fl_Widget *callingwidget, void *){
     datawidget_base * the_datawidget=(datawidget_base *)(callingwidget->user_data());
 //	cout<<"the_datawidget->get_data_id()="<<the_datawidget->get_data_id()<<endl;
-    the_datawidget->show_hide_edit_geometry();
+    the_datawidget->show_hide_edit_geometry('i');
+}
+void datawidget_base::edit_curve_geometry_callback(Fl_Widget *callingwidget, void *){
+    datawidget_base * the_datawidget=(datawidget_base *)(callingwidget->user_data());
+//	cout<<"the_datawidget->get_data_id()="<<the_datawidget->get_data_id()<<endl;
+    the_datawidget->show_hide_edit_geometry('c');
 }
 
 const Fl_Menu_Item datawidget_base::the_base_items[] = {
@@ -85,10 +90,10 @@ const Fl_Menu_Item datawidget_base::the_image_base_items[] = {
 
 const Fl_Menu_Item datawidget_base::the_curve_items[] = {
  {"Remove", 0,  (Fl_Callback*)datamanager::removedata_callback, (void*)(&datamanagement), 0, FL_NORMAL_LABEL, 0, 14, 0},
- {0,0,0,0,0,0,0,0,0},
- {0,0,0,0,0,0,0,0,0},
- {0,0,0,0,0,0,0,0,0},
- {0,0,0,0,0,0,0,0,0},
+ {"Save additional data", 0,  (Fl_Callback*)datamanager::save_additional_data_callback, (void*)(&datamanagement), 0, FL_NORMAL_LABEL, 0, 14, 0},
+ {"Save curve", 0,  (Fl_Callback*)datamanager::save_curve_callback, (void*)(&datamanagement), 0, FL_NORMAL_LABEL, 0, 14, 0},
+ {"Connect additional data", 0,  (Fl_Callback*)datamanager::connect_additional_data_callback, (void*)(&datamanagement), 0, FL_NORMAL_LABEL, 0, 14, 0},
+ {"Property Edit(Show/Hide)", 0, (Fl_Callback*)datawidget_base::edit_curve_geometry_callback,0,0, FL_NORMAL_LABEL, 0, 14, 0},
  {0,0,0,0,0,0,0,0,0},
  {0,0,0,0,0,0,0,0,0},
  {0,0,0,0,0,0,0,0,0}
@@ -228,10 +233,14 @@ bool datawidget_base::from_file() const
     return fromFile;
     }
 
-void datawidget_base::show_hide_edit_geometry()
+void datawidget_base::show_hide_edit_geometry(char param)
 {
 	if(geom_widget==NULL){
-		geom_widget = new FLTKgeom_image(data_id);
+		if(param == 'c'){
+			geom_widget = new FLTKgeom_curve(data_id);
+		}else{
+			geom_widget = new FLTKgeom_image(data_id);
+		}
 		extras->add(geom_widget);
 		geom_widget->show();
 	}else{
@@ -373,6 +382,7 @@ void datawidget<image_base>::cb_show_hide_tfunction(Fl_Widget* callingwidget, vo
 datawidget<curve_base>::datawidget(curve_base *p, std::string n): datawidget_base(p,n)
 {
     data_menu_button->menu(the_curve_items);
+	geom_widget = NULL;
 }
 
 
@@ -471,12 +481,100 @@ Vector3D FLTKVector3D::value()
 	return v;
 }
 
+/*------------------------------------------------------------*/
+FLTKVector2D::FLTKVector2D(Vector2D v, int x, int y, int w, int h, const char *sx, const char *sy):Fl_Group(x,y,w,h)
+{
+	int dh = int(float(h)/2.0);
+	const int margin = 15;
+	
+	data_x = new Fl_Value_Input(x + margin, y, w - margin, dh-2, sx);
+	data_y = new Fl_Value_Input(x + margin, y + dh, w - margin, dh-2, sy);
+	data_x->callback(vector_cb);	data_x->when(FL_WHEN_RELEASE);
+	data_y->callback(vector_cb);	data_y->when(FL_WHEN_RELEASE);
+
+	value(v);
+	
+//	resizable(NULL);
+
+	end();
+}	
+
+void FLTKVector2D::value(Vector2D v)
+{
+	data_x->value(v[0]);
+	data_y->value(v[1]);
+}
+
+Vector2D FLTKVector2D::value()
+{
+	Vector2D v;
+	v[0] = data_x->value();
+	v[1] = data_y->value();
+	return v;
+}
+
+/*------------------------------------------------------------*/
+void FLTKVector2D::vector_cb(Fl_Widget *w, void*)
+{
+//	cout<<"vector_cb(Fl_Widget *w, void*)"<<endl;
+	FLTKVector2D* v2D = (FLTKVector2D*)w->parent();
+	v2D->do_callback(v2D);
+}
+/*----------------------------------------------------------*/
+
+FLTKButton::FLTKButton(int x, int y, int w, int h, const char *sx):Fl_Group(x,y,w,h)
+{
+	int dh = int(float(h)/2.0);
+	const int margin = 15;
+	
+	butt = new Fl_Button(x + margin, y, w - margin, dh-2, sx);
+	butt->callback(button_cb);	butt->when(FL_WHEN_RELEASE);
+
+	end();
+}	
+
+/*------------------------------------------------------------*/
+void FLTKButton::button_cb(Fl_Widget *w, void*)
+{
+//	cout<<"vector_cb(Fl_Widget *w, void*)"<<endl;
+	FLTKButton* b = (FLTKButton*)w->parent();
+	b->do_callback(b);
+}
+
+/*----------------------------------------------------------*/
+
 void FLTKVector3D::vector_cb(Fl_Widget *w, void*)
 {
 //	cout<<"vector_cb(Fl_Widget *w, void*)"<<endl;
 	FLTKVector3D* v3D = (FLTKVector3D*)w->parent();
 	v3D->do_callback(v3D);
 }
+
+FLTKCheckButton::FLTKCheckButton(int x, int y, int w, int h, const char *sx):Fl_Group(x,y,w,h)
+{
+	int dh = int(float(h)/2.0);
+	const int margin = 15;
+	
+	butt = new Fl_Check_Button(x + margin, y, w - margin, dh-2, sx);
+	butt->callback(check_cb);	butt->when(FL_WHEN_RELEASE);
+	butt->value(0);
+
+	end();
+}	
+
+/*------------------------------------------------------------*/
+void FLTKCheckButton::check_cb(Fl_Widget *w, void*)
+{
+//	cout<<"vector_cb(Fl_Widget *w, void*)"<<endl;
+	FLTKButton* b = (FLTKButton*)w->parent();
+	b->do_callback(b);
+}
+bool FLTKCheckButton::turned_on(){
+	bool on = butt->value() ? 1 : 0;
+	return on;
+}
+
+
 //-----------------------------
 FLTKMatrix3D::FLTKMatrix3D(Matrix3D m, int x, int y, int w, int h):Fl_Group(x,y,w,h)
 {
@@ -657,6 +755,73 @@ void FLTKgeom_image::slice_orient_update_cb(Fl_Widget *w, void*)
 	FLTKslice_orientation_menu *m = (FLTKslice_orientation_menu*)w;
 	FLTKgeom_image *g = (FLTKgeom_image*)m->parent();
 	datamanagement.get_image<image_base>(g->data_id)->set_slice_orientation(m->value()); //TODO_R HÄR!!!!!
+	datamanagement.data_has_changed(g->data_id);
+}
+
+
+FLTKgeom_curve::FLTKgeom_curve(int id, int x, int y, int w, int h):FLTKgeom_base(id,x,y,w,h){
+	
+	const int slice_w = 20.0/60.0*w;
+
+	int h_coord = h*3/4;
+	int button_increase = h_coord/2;
+	
+	
+	Vector2D res;
+	res[0] = datamanagement.get_image<curve_base>(data_id)->get_scale();
+	res[1] = datamanagement.get_image<curve_base>(data_id)->get_offset();
+	int x_val;
+	int y_val;
+	fl_measure("x offset",x_val,y_val);
+	int b_x, b_y;
+	fl_measure("dummy",b_x,b_y);
+	
+	x_resolution = new FLTKVector2D(res, x+x_val, y, slice_w, h_coord, "x scale", "x offset");
+	smooth = new FLTKButton(x+x_val+slice_w, y, b_x*2, h_coord, "dummy");
+	//other = new FLTKButton(x+x_val+slice_w, y+button_increase, b_x*2, h_coord, "dummy2");
+	other = new FLTKCheckButton(x+x_val+slice_w, y+button_increase, b_x*2, h_coord, "h data");
+	//Knappar
+	x_resolution->callback(x_offset_update_cb);
+	smooth->callback(button_update_cb);
+	other->callback(check_update_cb);
+
+	resizable(NULL);
+}
+
+void FLTKgeom_curve::x_offset_update_cb(Fl_Widget *w, void*)
+{
+	FLTKVector2D *v = (FLTKVector2D*)w;
+	FLTKgeom_curve *g = (FLTKgeom_curve*)v->parent();
+	datamanagement.get_image<curve_base>(g->data_id)->set_scale(v->value()[0]);
+	datamanagement.get_image<curve_base>(g->data_id)->set_offset(v->value()[1]);
+	datamanagement.data_has_changed(g->data_id);
+}
+
+void FLTKgeom_curve::button_update_cb(Fl_Widget *w, void*)
+{
+	FLTKButton *v = (FLTKButton*)w;
+	FLTKgeom_curve *g = (FLTKgeom_curve*)v->parent();
+	//datamanagement.get_image<curve_base>(g->data_id)->increase_resolution();
+	std::cout << "dummy button pushed" << std::endl;
+	datamanagement.data_has_changed(g->data_id);
+}
+void FLTKgeom_curve::button2_update_cb(Fl_Widget *w, void*)
+{
+	FLTKButton *v = (FLTKButton*)w;
+	FLTKgeom_curve *g = (FLTKgeom_curve*)v->parent();
+	//datamanagement.get_image<curve_base>(g->data_id)->increase_resolution();
+	std::cout << "dummy2 button pushed" << std::endl;
+	datamanagement.data_has_changed(g->data_id);
+}
+void FLTKgeom_curve::check_update_cb(Fl_Widget *w, void*)
+{
+	FLTKCheckButton *v = (FLTKCheckButton*)w;
+	FLTKgeom_curve *g = (FLTKgeom_curve*)v->parent();
+	//datamanagement.get_image<curve_base>(g->data_id)->increase_resolution();
+	if(v->turned_on())
+		std::cout << "draw additional data" << std::endl;
+	else
+		std::cout << "do not draw additional data" << std::endl;
 	datamanagement.data_has_changed(g->data_id);
 }
 

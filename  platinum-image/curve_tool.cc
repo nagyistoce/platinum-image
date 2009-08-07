@@ -68,12 +68,11 @@ void curve_tool::handle(viewport_event &event)
     const int * mouse2d = event.mouse_pos_local();
     FLTK_Event_pane *fp = event.get_FLTK_Event_pane();
 
-	if(event.state() == pt_event::end && myPort->ROI_rect_is_changing && event.type() != pt_event::hover)
-       {
+	if(event.state() == pt_event::end && myPort->ROI_rect_is_changing && event.type() != pt_event::hover){
 		//hover is excluded since this event.type is thown when mouse is first clicked
 		   //Knapp släpps upp
 		cout << "Knapp släpps upp" << endl;
-        }
+    }
 	if(event.state() == pt_event::begin){
 		zoom_start = ((rendergeom_curve *)myRenderer->the_rg)->view_to_curve(event.mouse_pos_local()[0], event.mouse_pos_local()[1], fp->w(), fp->h());	
 		zoom_start_world = ((rendergeom_curve *)myRenderer->the_rg)->curve_to_view(zoom_start[0], zoom_start[1], fp->w(), fp->h());
@@ -131,7 +130,7 @@ void curve_tool::handle(viewport_event &event)
 					//Can use zoom_start for this also!
 					double dx = abs(after[0] - zoom_start[0]);
 					numbers.str("");
-					numbers << "width: " << std::fixed << std::setprecision(2) << dx*((rendergeom_curve *)myRenderer->the_rg)->x_scale; //TODO_R läs x_scale från the_rg
+					numbers << "width: " << std::fixed << std::setprecision(2) << dx*((rendergeom_curve *)myRenderer->the_rg)->x_scale;
 					userIOmanagement.interactive_message(numbers.str());
 
                     fp->needs_rerendering();				
@@ -189,9 +188,6 @@ void curve_tool::handle(viewport_event &event)
 							((rendergeom_curve *)myRenderer->the_rg)->mouse_location[0] = event.mouse_pos_local()[0];
 							numbers << "x: " << std::fixed << std::setprecision(2) << val[0] << " f(x): " << val[1];
 							userIOmanagement.interactive_message(numbers.str());
-
-							//TODO skriv värden på kurvan istället för koordinater
-							//TODO rita en linje så att man ser skärningen också (eller kanske bara en punkt på kurvan där det skär.
 							event.grab();
 							fp->needs_rerendering();
 					}

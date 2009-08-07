@@ -43,16 +43,8 @@ class renderer_curve : public renderer_curve_base
     private:
 
         static void render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_curve *rg, rendercombination *rc);
-
-		//static void draw_cross(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_image *rg, Vector3D point, std::vector<int>);
-		
-		//static void draw_slice_locators(uchar *pixels, int sx, int sy, rendergeom_image *rg, rendercombination *rc);
-		//static void paint_slice_locators_to_overlay(int h_offset, int vp_w, int vp_h_pane, rendergeom_image *rg, rendercombination *rc);
-		//static void paint_rendergeometry_to_overlay(int h_offset, int vp_w, int vp_h_pane, rendergeom_image *rg, rendercombination *rc);
-		//static void paint_overlay_line(int h_offset, int vp_w, int vp_h_pane, line2D local_vp_line);
-		
 		static int sgn(long a);
-		
+		static void render_additional_data(uchar *pixels, curve_base *the_curve_pointer, rendergeom_curve *rg, int rgb_sx, int rgb_sy, vector<int> col);
 		static void draw_line(uchar *pixels, int sx, int sy, int a, int b, int c, int d, std::vector<int> color);
 		static void draw_axes(uchar *pixels, curve_base *curve, rendergeom_curve *rg, int width, int height);
 	
@@ -60,7 +52,7 @@ class renderer_curve : public renderer_curve_base
     public:
 		renderer_curve();
         void connect_data(int dataID);	//add image to rendering combination
-		int renderer_type(){return RENDERER_CURVE;} //return RENDERER_CURVE
+		static RENDERER_TYPE renderer_type(){return RENDERER_CURVE;} //return RENDERER_CURVE
 
         static void render_thumbnail(unsigned char *rgb, int rgb_sx, int rgb_sy, int image_ID); //Here for future support
 		void render_threshold (unsigned char *rgba, int rgb_sx, int rgb_sy, thresholdparvalue * threshold){}
