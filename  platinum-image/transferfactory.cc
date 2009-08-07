@@ -40,7 +40,7 @@ const std::string transferfactory::tfunction_names[] =
 const std::string panefactory::pane_names[] =
     {"Pt_MPR",
     "VTK_MIP",
-	"Pt_Curve"
+	"Pt_Curve",
     "" };
 
 transferfactory transfer_manufactured::factory = transferfactory();
