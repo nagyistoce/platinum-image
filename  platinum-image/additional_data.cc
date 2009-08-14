@@ -87,7 +87,7 @@ void point_data::calc_data(unsigned char* pixels, int width, int height, renderg
 	
 	//vector<Vector3D> points_to_draw;
 	points_to_draw.clear();
-	int pix_addr;
+//	int pix_addr;
 	
 	int span = floor(point_size/2.0);
 	for(int i = -span; i<=span; i++){
