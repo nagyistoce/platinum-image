@@ -818,10 +818,8 @@ void FLTKgeom_curve::check_update_cb(Fl_Widget *w, void*)
 	FLTKCheckButton *v = (FLTKCheckButton*)w;
 	FLTKgeom_curve *g = (FLTKgeom_curve*)v->parent();
 	//datamanagement.get_image<curve_base>(g->data_id)->increase_resolution();
-	if(v->turned_on())
-		std::cout << "draw additional data" << std::endl;
-	else
-		std::cout << "do not draw additional data" << std::endl;
+	std::cout << "draw additional data: " << v->turned_on() << std::endl;
+	datamanagement.get_data(g->data_id)->draw_additional_data = v->turned_on();
 	datamanagement.data_has_changed(g->data_id);
 }
 

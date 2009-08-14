@@ -247,7 +247,9 @@ void renderer_curve::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_c
 			if(measure[0] != -1){
 				draw_line(pixels, rgb_sx, rgb_sy, measure[0], 0, measure[0], rgb_sy, col);
 			}
-			render_additional_data(pixels,the_curve_pointer, rg, rgb_sx, rgb_sy, col);
+			if(the_curve_pointer->draw_additional_data){
+				render_additional_data(pixels,the_curve_pointer, rg, rgb_sx, rgb_sy, col);
+			}
 			//the_curve_pointer->helper_data->draw_all_data(pixels,rgb_sx,rgb_sy,rg,renderer_type());
 			//draw_axes(pixels, the_curve_pointer, rg, rgb_sx, rgb_sy);
 
@@ -257,17 +259,29 @@ void renderer_curve::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_c
 }//render_ function
 void renderer_curve::render_additional_data(uchar *pixels, curve_base *the_curve_pointer, rendergeom_curve *rg, int rgb_sx, int rgb_sy, vector<int> col){
 	for(int i = 0; i < the_curve_pointer->helper_data->data.size(); i++){
+
+
+		vector<Vector3D> vals = the_curve_pointer->helper_data->data.at(i)->points_to_draw;
+		if(vals.empty() || the_curve_pointer->modified){
+			the_curve_pointer->helper_data->data.at(i)->calc_data(pixels,rgb_sx, rgb_sy,rg,renderer_type());
+			vals = the_curve_pointer->helper_data->data.at(i)->points_to_draw;
+		}
+
 		//Rita ut dom här istället...
 		ADDITIONAL_TYPE type = the_curve_pointer->helper_data->data.at(i)->type;
 		if(type == AT_STRING){
+			Vector3D point = rg->curve_to_view(vals.at(0)[0], vals.at(0)[1], rgb_sx, rgb_sy);
+			point[0] = round(point[0]);
+			point[1] = round(point[1]);
+			string s = (dynamic_cast<text_data*>(the_curve_pointer->helper_data->data.at(i)))->s;
+			fl_font(FL_COURIER, 10);
+			fl_color(FL_BLACK);
+			fl_draw(s.c_str(),point[0],point[1]);
+	
 			//FL_DRAW ...
 		}else{
 		
-			vector<Vector3D> vals = the_curve_pointer->helper_data->data.at(i)->points_to_draw;
-			if(vals.empty() || the_curve_pointer->modified){
-				the_curve_pointer->helper_data->data.at(i)->calc_data(pixels,rgb_sx, rgb_sy,rg,renderer_type());
-				vals = the_curve_pointer->helper_data->data.at(i)->points_to_draw;
-			}
+			
 			if(type == AT_POINT){
 				for(int j = 0; j < vals.size(); j++){
 					int pix_addr;

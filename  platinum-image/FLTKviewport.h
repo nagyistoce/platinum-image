@@ -382,6 +382,7 @@ class FLTK_Pt_Curve_pane : public FLTK_Pt_pane
 	    Fl_Pack			*button_pack2;		//group containing per-viewport widgets such as the image menu
 		Fl_Menu_Button	*colormenu_button;
 	    Fl_Menu_Button	*bgmenu_button;
+		void create_curve_menu(int W);
    
 	protected:
 

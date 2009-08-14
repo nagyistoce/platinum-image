@@ -112,6 +112,9 @@ class data_base
 		string resolve_tooltip_data_base(); //resolves tooltip data typical for this class
 		void set_tooltip(string s);
 		virtual vtkAlgorithmOutput* getvtkStructuredPoints(); //allows porting to VTK for MIP-rendering
+		int read_helper_data_from_file(string file_path);
+		int save_helper_data_to_file(string file_path);
+		bool draw_additional_data;
     };
 
 #endif

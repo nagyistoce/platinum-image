@@ -82,6 +82,7 @@ ELEMTYPE* pt_vector<ELEMTYPE>::get_maximum_in_range(int from, int to){
 	if(this->size() < from)
 		return NULL;
 	maximum[1] = this->at(from);
+	maximum[0] = from;
 	for(int i = from; i<=to && i<this->size(); i++){
 		if(this->at(i) > maximum[1]){
 			maximum[1] = this->at(i);

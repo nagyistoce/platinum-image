@@ -937,6 +937,7 @@ viewport* FLTK_Pt_pane::get_viewport_parent()
 FLTK_Pt_MPR_pane::FLTK_Pt_MPR_pane()
 {
 	cout<<"FLTK_Pt_MPR_pane()"<<endl;
+	cout << "Denna ska inte köras!!! Fel konstruktor!!!" << endl;
     int buttonleft=0;
 	int buttonheight=20;
 	int buttonwidth=70;
@@ -950,7 +951,7 @@ FLTK_Pt_MPR_pane::FLTK_Pt_MPR_pane()
 //FLTK_Pt_pane::FLTK_Pt_pane(int X,int Y,int W,int H, viewport *vp_parent) : Fl_Overlay_Window(X,Y,W,H)
 FLTK_Pt_MPR_pane::FLTK_Pt_MPR_pane(int X,int Y,int W,int H) : FLTK_Pt_pane(X,Y,W,H)
 {
-//	cout<<"FLTK_Pt_MPR_pane("<<X<<","<<Y<<","<<W<<","<<H<<")"<<endl;
+	cout<<"FLTK_Pt_MPR_pane("<<X<<","<<Y<<","<<W<<","<<H<<")"<<endl;
     int buttonleft=0;
 	int buttonheight=20;
 	int buttonwidth=70;
@@ -1196,12 +1197,13 @@ void FLTK_Pt_MPR_pane::refresh_menus()
 //--------------------------------------------------------
 //--------------------------------------------------------
 
-FLTK_Pt_Curve_pane::FLTK_Pt_Curve_pane()
+FLTK_Pt_Curve_pane::FLTK_Pt_Curve_pane() : FLTK_Pt_pane(0,20,100,100)
 {
 	cout<<"FLTK_Pt_Curve_pane()"<<endl;
     int buttonleft=0;
 	int buttonheight=20;
 	int buttonwidth=70;
+	create_curve_menu(100);
 	event_pane = new FLTK_Event_pane(0,buttonheight,100,100-buttonheight, this);
 
 	this->resizable(event_pane);			//Make sure thes is resized too...
@@ -1214,6 +1216,18 @@ FLTK_Pt_Curve_pane::FLTK_Pt_Curve_pane(int X,int Y,int W,int H) : FLTK_Pt_pane(X
 {
 	cout<<"FLTK_Pt_Curve_pane("<<X<<","<<Y<<","<<W<<","<<H<<")"<<endl;
     int buttonleft=0;
+	int buttonheight=20;
+	int buttonwidth=70;
+/*
+Here the code for the menu was before
+*/
+	create_curve_menu(W);
+	event_pane = new FLTK_Event_pane(0,buttonheight,W,H-buttonheight,this);
+	this->resizable(event_pane);			//Make sure thes is resized too...
+	this->end();
+}
+void FLTK_Pt_Curve_pane::create_curve_menu(int W){
+	int buttonleft=0;
 	int buttonheight=20;
 	int buttonwidth=70;
 
@@ -1291,12 +1305,7 @@ FLTK_Pt_Curve_pane::FLTK_Pt_Curve_pane(int X,int Y,int W,int H) : FLTK_Pt_pane(X
 	//---------------------------------------
 	button_pack2->end();
 	//--------------------------------
-
-	event_pane = new FLTK_Event_pane(0,buttonheight,W,H-buttonheight,this);
-	this->resizable(event_pane);			//Make sure thes is resized too...
-	this->end();
 }
-
 FLTK_Pt_Curve_pane::~FLTK_Pt_Curve_pane()
 {}
 
@@ -1463,7 +1472,6 @@ FLTKviewport::FLTKviewport(int xpos,int ypos,int width,int height, viewport *vp_
     
     button_pack_top->end();
     
-
 	// -------------- pane_widget -------------------
 
 	if( (viewport_parent->vp_type == PT_MPR) || (viewport_parent->vp_type == PT_MIP) ){
@@ -1864,7 +1872,7 @@ void FLTKviewport::switch_pane(factoryIdType type)
 
 	Fl_Group::current(this); //TITTA HÄR!!! Dwenna körs då man byter rendrerare
 	
-	this->pane_widget = rendermanager::pane_factory.Create(type);
+	this->pane_widget = rendermanager::pane_factory.Create(type); //Denna kör fel konstruktor!!! Använd nåt annat så övriga vitala saker skapas!
 
 	this->pane_widget->x(x);
 	this->pane_widget->y(y);
@@ -1881,6 +1889,7 @@ void FLTKviewport::switch_pane(factoryIdType type)
 	cout<<"shown()"<<this->pane_widget->shown()<<endl;
 	this->pane_widget->show();
 	cout<<"shown()"<<this->pane_widget->shown()<<endl;
+
 	//viewmanagement.list_viewports();
 }
 

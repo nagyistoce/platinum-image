@@ -75,6 +75,7 @@ data_base::data_base(vector<RENDERER_TYPE> support)
     widget = NULL;
     from_file(false);
 	helper_data = new additional_data();
+	draw_additional_data= false;
 
 	meta = metadata();
     }
@@ -85,6 +86,7 @@ data_base::data_base()
     widget = NULL;
     from_file(false);
 	helper_data = new additional_data();
+	draw_additional_data = false;
 	meta = metadata();
     }
 
@@ -95,6 +97,8 @@ data_base::data_base (data_base * const source, vector<RENDERER_TYPE> support)
     ID = data_next_ID++;
     widget = NULL;
     from_file(source->from_file());
+	helper_data = source->helper_data;
+	draw_additional_data = false;
 	meta = source->meta;
     }
 /*
@@ -194,4 +198,13 @@ void data_base::set_tooltip(string s)
 vtkAlgorithmOutput* data_base::getvtkStructuredPoints()
 {
 	return NULL;
+}
+int data_base::read_helper_data_from_file(string file_path){
+	helper_data->read_all_data_from_file(file_path);
+	return 1;
+}
+
+int data_base::save_helper_data_to_file(string file_path){
+	helper_data->write_all_data_to_file(file_path);
+	return 1;
 }

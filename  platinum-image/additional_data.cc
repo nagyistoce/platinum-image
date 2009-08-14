@@ -15,6 +15,63 @@ void additional_data::draw_all_data(unsigned char* rgb_map, int width, int heigh
 		//data[i]->draw_data(rgb_map, width, height, rg, type);
 	}
 }
+void additional_data::write_all_data_to_file(string file){
+	ofstream myfile(file.c_str());
+	if(myfile.is_open()){
+		myfile << data.size() << "\n";
+		for(int i = 0; i < data.size(); i++){
+			data.at(i)->write_data(myfile);
+		}
+		myfile.close();
+	}
+}
+void additional_data::read_all_data_from_file(string file){
+	int nr_items;
+	ADDITIONAL_TYPE type;
+	int t;
+	Vector3D vec1, vec2;
+	int size;
+	float r1, r2;
+	string s;
+
+	ifstream myfile(file.c_str());
+	if(myfile.is_open()){
+		myfile >> nr_items;
+		for(int i = 0; i < nr_items; i++){
+			cout << i <<"/"<<nr_items<<endl;
+			myfile >> t;
+			type = (ADDITIONAL_TYPE) t;
+			switch(type){
+				case AT_POINT:
+					myfile >> vec1[0] >> vec1[1] >> vec1[2] >> size;
+					add_point(vec1,size);
+					break;
+				case AT_LINE:
+					myfile >> vec1[0] >> vec1[1] >> vec1[2];
+					myfile >> vec2[0] >> vec2[1] >> vec2[2];
+					add_line(vec1, vec2);
+					break;
+				case AT_CIRCLE:
+					myfile >> vec1[0] >> vec1[1] >> vec1[2];
+					myfile >> vec2[0] >> vec2[1] >> vec2[2];
+					myfile >> r1 >> r2;
+					add_circle(vec1, vec2, r1, r2);
+					break;
+				case AT_STRING:
+					myfile >> vec1[0] >> vec1[1] >> vec1[2];
+					myfile >> s;
+					add_text(vec1,s);
+					break;
+				case AT_GAUSS:
+					myfile >> r1 >> r2;
+					add_gauss(r1, r2);
+				default:
+					break;
+			}
+		}
+		myfile.close();
+	}
+}
 
 void additional_data::add_point(Vector3D p, int size){
 	data.push_back(new point_data(p, size));
@@ -30,6 +87,12 @@ void additional_data::add_rect(Vector3D c1, Vector3D c2, Vector3D c3, Vector3D c
 }
 void additional_data::add_line(Vector3D x1, Vector3D x2){
 	data.push_back(new line_data(x1, x2));
+}
+void additional_data::add_text(Vector3D p, string s){
+	data.push_back(new text_data(p, s));
+}
+void additional_data::add_gauss(float mean, float std){
+	data.push_back(new gauss_data(mean, std));
 }
 
 /* -------------------------------------------- */
@@ -82,6 +145,10 @@ void point_data::draw_data(unsigned char* pixels, int width, int height, renderg
 	int b = round(point_size/2.0);
 	fl_rectf(p[0]-b,p[1]-b,point_size,point_size);
 }
+void point_data::write_data(ofstream &myfile){
+	myfile << type << "\n";
+	myfile << p[0] << " " << p[1] << " " << p[2] << point_size <<"\n";
+}
 
 void point_data::calc_data(unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type){
 	
@@ -126,6 +193,12 @@ void circle_data::draw_data(unsigned char* pixels, int width, int height, render
 	fl_arc(10, 10,10,0,360);
 	fl_line(10,10,500,500);
 	cout << "drawing circle" << endl;
+}
+void circle_data::write_data(ofstream &myfile){
+	myfile << type << "\n";
+	myfile << c[0] << " " << c[1] << " " << c[2] <<"\n";
+	myfile << n[0] << " " << n[1] << " " << n[2] <<"\n";
+	myfile << radius << "\n" << radius1 << "\n";
 }
 
 void circle_data::calc_data(unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type){
@@ -183,81 +256,13 @@ void line_data::draw_data(unsigned char* pixels, int width, int height, renderge
 	fl_color(FL_BLACK);
 	fl_line(start[0],start[1], stop[0], stop[1]);
 }
-
+void line_data::write_data(ofstream &myfile){
+	myfile << type << "\n";
+	myfile << start[0] << " " << start[1] << " " << start[2] <<"\n";
+	myfile << stop[0] << " " << stop[1] << " " << stop[2] <<"\n";
+}
 void line_data::calc_data(unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type){
-	//vector<Vector3D> points_to_draw;
-	/*points_to_draw.clear();
-	int i, dx, dy, dz, l, m, n, x_inc, y_inc, z_inc, err_1, err_2, dx2, dy2, dz2;
-    Vector3D pixel;
 
-	pixel = start;
-    dx = stop[0] - start[0];
-    dy = stop[1] - start[1];
-    dz = stop[2] - start[2];
-
-    x_inc = (dx < 0) ? -1 : 1;
-    l = abs(dx);
-    y_inc = (dy < 0) ? -1 : 1;
-    m = abs(dy);
-    z_inc = (dz < 0) ? -1 : 1;
-    n = abs(dz);
-    dx2 = l << 1;
-    dy2 = m << 1;
-    dz2 = n << 1;
-
-    if ((l >= m) && (l >= n)) {
-        err_1 = dy2 - l;
-        err_2 = dz2 - l;
-        for (i = 0; i < l; i++) {
-			points_to_draw.push_back(pixel);
-            if (err_1 > 0) {
-                pixel[1] += y_inc;
-                err_1 -= dx2;
-            }
-            if (err_2 > 0) {
-                pixel[2] += z_inc;
-                err_2 -= dx2;
-            }
-            err_1 += dy2;
-            err_2 += dz2;
-            pixel[0] += x_inc;
-        }
-    } else if ((m >= l) && (m >= n)) {
-        err_1 = dx2 - m;
-        err_2 = dz2 - m;
-        for (i = 0; i < m; i++) {
-            points_to_draw.push_back(pixel);
-            if (err_1 > 0) {
-                pixel[0] += x_inc;
-                err_1 -= dy2;
-            }
-            if (err_2 > 0) {
-                pixel[2] += z_inc;
-                err_2 -= dy2;
-            }
-            err_1 += dx2;
-            err_2 += dz2;
-            pixel[1] += y_inc;
-        }
-    } else {
-        err_1 = dy2 - n;
-        err_2 = dx2 - n;
-        for (i = 0; i < n; i++) {
-            points_to_draw.push_back(pixel);
-            if (err_1 > 0) {
-                pixel[1] += y_inc;
-                err_1 -= dz2;
-            }
-            if (err_2 > 0) {
-                pixel[0] += x_inc;
-                err_2 -= dz2;
-            }
-            err_1 += dy2;
-            err_2 += dx2;
-            pixel[2] += z_inc;
-        }
-    }
-    points_to_draw.push_back(pixel);*/
 	points_to_draw.push_back(start);
 	points_to_draw.push_back(stop);
 
@@ -276,7 +281,53 @@ void text_data::draw_data(unsigned char* pixels, int width, int height, renderge
 	fl_color(FL_BLACK);
 	fl_draw(s.c_str(),p[0],p[1]);
 }
-
+void text_data::write_data(ofstream &myfile){
+	myfile << type << "\n";
+	myfile << p[0] << " " << p[1] << " " << p[2] << "\n";
+	myfile << s << "\n";
+}
 void text_data::calc_data(unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type){
+	points_to_draw.push_back(p);
+}
 
+
+gauss_data::gauss_data(float mean, float std) : additional_data_base(){
+		omega = std;
+		my = mean;
+		type = AT_GAUSS;
+}
+
+void gauss_data::draw_data(unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type){
+}
+void gauss_data::write_data(ofstream &myfile){
+	myfile << type << "\n";
+	myfile << omega << " " << my <<"\n";
+}
+void gauss_data::calc_data(unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type){
+	points_to_draw.clear();
+	float ans;
+	double multi = 1.0;
+	ans = (1/(omega*sqrt(2*pt_PI)))*exp(-(pow(my-my,2)/(2*pow(omega,2))));;
+	
+	if(type = RENDERER_CURVE){
+		int curve_delta = height/(dynamic_cast<rendergeom_curve*>(rg))->qy;
+		multi = curve_delta/ans;
+	}
+	Vector3D point;
+	point[0] = my;
+	ans = (1/(omega*sqrt(2*pt_PI)))*exp(-(pow(my-my,2)/(2*pow(omega,2))));
+	point[1] = ans*multi;
+	point[2] = 1;
+	points_to_draw.push_back(point);
+	
+	for(int i = my+1; ans > 0.0002 ; i++){
+		point[0] = i;
+		ans = (1/(omega*sqrt(2*pt_PI)))*exp(-(pow(i-my,2)/(2*pow(omega,2))));
+		point[1] = ans*multi;
+		point[2] = 1;
+		points_to_draw.push_back(point);
+		point[0] = my + (my-i);
+		points_to_draw.insert(points_to_draw.begin(),point);
+	}
+	//this->draw_it(points_to_draw, pixels, width, height, rg, type);
 }

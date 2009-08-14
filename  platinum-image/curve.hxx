@@ -67,6 +67,8 @@ public:
 	vector<double> approximate_curve(int degree) const;
 
 	void increase_resolution();
+	void save_curve_to_file(std::string s) const;
+	void read_curve_from_file(std::string s);
 	pt_vector<ELEMTYPE> *my_data;
 
 private:
@@ -326,12 +328,47 @@ vector<double> curve_scalar<ELEMTYPE>::approximate_curve(int degree) const{
 		ret_vec.push_back(ans[t]);
 	return ret_vec;
 }
+template<class ELEMTYPE>
+void curve_scalar<ELEMTYPE>::save_curve_to_file(std::string s) const{
+	ofstream myfile(s.c_str());
+	if(myfile.is_open()){
+		myfile << my_data->size() << "\n";
+		myfile << get_offset() << " " << get_scale() << "\n";
+		for(int i = 0; i < my_data->size(); i++){
+			myfile << my_data->at(i) << "\n";
+		}
+		myfile.close();
+		
+	}
+}
+template<class ELEMTYPE>
+void curve_scalar<ELEMTYPE>::read_curve_from_file(std::string s){
+	ifstream myfile(s.c_str(), ios::binary);
+	int size;
+	double offset, scale;
+	ELEMTYPE t;
+	if(myfile.is_open()){
+		myfile >> size;
+		myfile >> offset >> scale;
+		
+		my_data->config_x_axis(scale, offset);
+		for(int i = 0; i < size; i++){
+			myfile >> t ;
+			my_data->push_back(t);
+		}
+		myfile.close();
+	}
+	int index = s.find_last_of("/") + 1;
+	int stop = s.find_last_of(".");
+	this->name(s.substr(index,stop-index));
+}
+
 
 /* End curve_scalar*/
 
 /*Begin curve_integer*/
 
-template<class ELEMTYPE>
+/*template<class ELEMTYPE>
 class curve_integer : public curve_scalar<ELEMTYPE>{
 public:
 	curve_integer(int start_size, string name);
@@ -345,5 +382,5 @@ curve_integer<ELEMTYPE>::curve_integer(int start_size, string name) : curve_scal
 template<class ELEMTYPE>
 curve_integer<ELEMTYPE>::curve_integer(int start_size, int r, int g, int b) : curve_scalar<ELEMTYPE>(start_size, r, g, b){
 	//Empty contructor
-}
+}*/
 #endif

@@ -162,7 +162,7 @@ void datamanager::save_additional_data_callback(Fl_Widget *callingwidget, void *
     int image_index=((datamanager*)thisdatamanager)->find_data_index(the_datawidget->get_data_id());
 
 	string last_path = pt_config::read<string>("latest_path");
-	Fl_File_Chooser chooser(last_path.c_str(),"Additional data files (*.pladd)",Fl_File_Chooser::CREATE,"Save additional data");
+	Fl_File_Chooser chooser(last_path.c_str(),"*",Fl_File_Chooser::CREATE,"Save additional data");
     chooser.ok_label("Save") ;
     chooser.preview(false); 
     chooser.show();
@@ -174,8 +174,8 @@ void datamanager::save_additional_data_callback(Fl_Widget *callingwidget, void *
         fprintf(stderr, "(User hit 'Cancel')\n");
         return;
     }
-	std::cout << "Yatta! Additional data saved :D " << path_parent(chooser.value(1)) << std::endl;
-    //((datamanager*)thisdatamanager)->dataItems[image_index]->save_to_DCM_file(chooser.value(1));
+	std::cout << "Yatta! Additional data saved :D " << std::endl;
+	((datamanager*)thisdatamanager)->dataItems[image_index]->save_helper_data_to_file(chooser.value(1));
 	pt_config::write("latest_path",path_parent(chooser.value(1)));
 }
 
@@ -184,7 +184,7 @@ void datamanager::save_curve_callback(Fl_Widget *callingwidget, void * thisdatam
     int image_index=((datamanager*)thisdatamanager)->find_data_index(the_datawidget->get_data_id());
 
 	string last_path = pt_config::read<string>("latest_path");
-	Fl_File_Chooser chooser(last_path.c_str(),"Additional data files (*.pladd)",Fl_File_Chooser::CREATE,"Save additional data");
+	Fl_File_Chooser chooser(last_path.c_str(),"*",Fl_File_Chooser::CREATE,"Save additional data");
     chooser.ok_label("Save") ;
     chooser.preview(false); 
     chooser.show();
@@ -198,6 +198,7 @@ void datamanager::save_curve_callback(Fl_Widget *callingwidget, void * thisdatam
     }
 	std::cout << "Yatta! Curve saved :D " << std::endl;
     //((datamanager*)thisdatamanager)->dataItems[image_index]->save_to_DCM_file(chooser.value(1));
+	(dynamic_cast<curve_base*>(((datamanager*)thisdatamanager)->dataItems[image_index]))->save_curve_to_file(chooser.value(1));
 	pt_config::write("latest_path",path_parent(chooser.value(1)));
 }
 
@@ -206,8 +207,8 @@ void datamanager::connect_additional_data_callback(Fl_Widget *callingwidget, voi
     int image_index=((datamanager*)thisdatamanager)->find_data_index(the_datawidget->get_data_id());
 
 	string last_path = pt_config::read<string>("latest_path");
-	Fl_File_Chooser chooser(last_path.c_str(),"Additional data files (*.pladd)",Fl_File_Chooser::CREATE,"Save additional data");
-    chooser.ok_label("Save") ;
+	Fl_File_Chooser chooser(last_path.c_str(),"Platinum additional data (*.pad)",Fl_File_Chooser::CREATE,"Save additional data");
+    chooser.ok_label("Open") ;
     chooser.preview(false); 
     chooser.show();
     while(chooser.shown())
@@ -218,9 +219,10 @@ void datamanager::connect_additional_data_callback(Fl_Widget *callingwidget, voi
         fprintf(stderr, "(User hit 'Cancel')\n");
         return;
     }
-	std::cout << "Yatta! Additional data connected :D " << path_parent(chooser.value(1)) << std::endl;
-    //((datamanager*)thisdatamanager)->dataItems[image_index]->save_to_DCM_file(chooser.value(1));
+	
+    ((datamanager*)thisdatamanager)->dataItems[image_index]->read_helper_data_from_file(chooser.value(1));
 	pt_config::write("latest_path",path_parent(chooser.value(1)));
+	std::cout << "Yatta! Additional data connected :D " << std::endl;
 }
 
 

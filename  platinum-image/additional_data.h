@@ -29,6 +29,7 @@
 #include <vector>
 #include <string>
 #include <FL/fl_draw.H>
+#include <iostream>
 #include "global.h"
 #include "rendergeometry.h"
 
@@ -46,6 +47,9 @@ public:
 	void add_text(Vector3D p, string text);
 	void add_line(Vector3D start, Vector3D stop);
 	void add_rect(Vector3D c1, Vector3D c2, Vector3D c3, Vector3D c4);
+	void add_gauss(float mean, float std);
+	void write_all_data_to_file(string file);
+	void read_all_data_from_file(string file);
 	vector<additional_data_base*> data;
 private:
 	
@@ -58,6 +62,7 @@ public:
 	virtual void draw_data(unsigned char* rgb_map, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type){}; 
 	virtual void draw_it(vector<Vector3D> points_to_draw, unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type);
 	virtual void calc_data(unsigned char* rgb_map, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type){};
+	virtual void write_data(ofstream &myfile){};
 	vector<Vector3D> points_to_draw;
 	ADDITIONAL_TYPE type;
 	
@@ -69,6 +74,7 @@ public:
 	point_data(Vector3D p, int size);
 	void calc_data(unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type);
 	void draw_data(unsigned char* rgb_map, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type);
+	void write_data(ofstream &myfile);
 	int point_size;
 	Vector3D p;
 };
@@ -79,6 +85,7 @@ public:
 	circle_data(Vector3D p, Vector3D n, float r, float r1 = -1);
 	void calc_data(unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type);
 	void draw_data(unsigned char* rgb_map, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type);
+	void write_data(ofstream &myfile);
 	Vector3D c;
 	Vector3D n;
 	float radius, radius1;
@@ -90,6 +97,7 @@ public:
 	line_data(Vector3D start, Vector3D stop);
 	void calc_data(unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type);
 	void draw_data(unsigned char* rgb_map, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type);
+	void write_data(ofstream &myfile);
 	Vector3D start;
 	Vector3D stop;
 };
@@ -100,8 +108,18 @@ public:
 	text_data(Vector3D p, string text);
 	void draw_data(unsigned char* rgb_map, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type);
 	void calc_data(unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type);
+	void write_data(ofstream &myfile);
 	string s;
 	Vector3D p;
+};
+
+class gauss_data : public additional_data_base{
+public:
+	gauss_data(float mean, float std);
+	void draw_data(unsigned char* rgb_map, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type);
+	void calc_data(unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type);
+	void write_data(ofstream &myfile);
+	float omega, my;
 };
 	
 #endif
