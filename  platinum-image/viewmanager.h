@@ -92,7 +92,7 @@ class viewmanager
 		
 		
 		std::vector<int> viewports_from_renderers(const std::vector<int> & rendererIDs);	// return a set of viewport ids
-		int viewport_from_renderer(int); // return a viewport id
+		int viewport_from_renderer(int renderer_id); // return a viewport id
 		viewport *get_viewport( int viewportID );	// return a viewport
 		
 		// if the margin is set to -1 the point will always be centered

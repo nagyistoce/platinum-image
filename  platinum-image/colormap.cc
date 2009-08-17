@@ -30,7 +30,7 @@ colormap::colormap()
 
 colormap::colormap(std::vector<colornode> c)
 {
-	for(int i=0;i<c.size();i++){
+	for(unsigned short i=0;i<c.size();i++){
 		colors[c[i].position] = c[i];
 	}
 	print_all();

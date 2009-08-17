@@ -149,7 +149,7 @@ class datamanager
                                                                      //DEPRECATED: use image_base::alike instead
         int find_data_index(int uniqueID);
 		
-		template<class T> T* get_image (int ID){ //TODO_R kolla så det funkar med detta
+		template<class T> T* get_image (int ID){ //TODO_R kolla så det funkar med detta 
 			vector<data_base*>::iterator itr=dataItems.begin();
 
 			while (itr != dataItems.end()){

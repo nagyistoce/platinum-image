@@ -147,8 +147,8 @@ void platinum_setup (Fl_Window & window, int num_viewports_h, int num_viewports_
 
     // *** skapa ett antal views ***
     //
-    const int antalvp = num_viewports_h * num_viewports_v;
-    for (int i=0;i < antalvp; i++) // create some views w/ renderers
+    const int num_vp = num_viewports_h * num_viewports_v;
+    for (int i=0;i < num_vp; i++) // create some views w/ renderers
         {
         viewmanagement.create_viewport();
         }
@@ -157,7 +157,7 @@ void platinum_setup (Fl_Window & window, int num_viewports_h, int num_viewports_
 
     // viewmanagement.demo_setup_tiles(); // initialize tile layout; could as well load from file or ...
 
-    viewmanagement.setup_regular_tiles (num_viewports_h, num_viewports_v);  //initialize regular tile layout
+    viewmanagement.setup_regular_tiles(num_viewports_h, num_viewports_v);  //initialize regular tile layout
 //	viewmanagement.setup_irregular_tiles_h();
 
     viewmanagement.erase_all_connections(); // only do this once...

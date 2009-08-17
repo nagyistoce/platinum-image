@@ -149,23 +149,19 @@ void viewmanager::setup_regular_tiles(int t_h, int t_v, int t_vv)
 
     
     irregular_tiles = false;
-    
-    for (int vv= 0; vv < t_vv; vv++)
-        {
-        noofhorizontaltiles [vv] = t_h;
+    for(int vv= 0; vv < t_vv; vv++){
+        noofhorizontaltiles[vv] = t_h;
         
-        for (int h = 0; h < t_h; h++ )
-            {
+        for(int h = 0; h < t_h; h++ ){
             noofverticaltiles [vv][h] = t_v;
             tilewidthpercent[vv][h] = 1.0/t_h;
             
-            for (int v = 0; v < t_v; v++ )
-                {
-                tileheightpercent[vv][h][v] = 1.0/t_v; 
-                }
-            }
-        }
-    }
+            for(int v = 0; v < t_v; v++ ){
+                tileheightpercent[vv][h][v] = 1.0/t_v;
+			}
+		}
+	}
+}
 
 void viewmanager::setup_irregular_tiles_h(vector<int> num_vert_in_these_columns, int t_vv)
     {
@@ -252,6 +248,8 @@ void viewmanager::setup_views(int virtualview, int areawidth, int areaheight) //
     Fl_Widget *boxes[MAXHORIZONTALGRID*MAXVERTICALGRID];
     int vtilesused = 0;
     int boxesused = 0;
+	int tile_width_px = 0;
+	int tile_height_px = 0;
 
     ////
     // this sets up a full virtual view in the CURRENT window. We prepared ...
@@ -261,20 +259,27 @@ void viewmanager::setup_views(int virtualview, int areawidth, int areaheight) //
     
     Fl_Tile *verticaltiles[MAXHORIZONTALGRID];
 
-    float tilewidthpercentsum = 0;
+   // float tilewidthpercentsum = 0;
     for (int h=0; h < noofhorizontaltiles[virtualview]; h++)
         {
-        int tilewidth = int(tilewidthpercent[virtualview][h]*areawidth);
-        if (h==noofhorizontaltiles[virtualview]-1)
-            { tilewidth=areawidth-int(tilewidthpercentsum*areawidth); } // avoid rounding errors
-        if (irregular_tiles)
-            {verticaltiles[vtilesused] = new Fl_Tile(int(tilewidthpercentsum*areawidth), 0,tilewidth ,areaheight);}
-        float tileheightpercentsum = 0;
+        int tilewidth = int(tilewidthpercent[virtualview][h]*areawidth); //JK //RN Warning "round"
+        if (h==noofhorizontaltiles[virtualview]-1){
+			tilewidth=areawidth-tile_width_px;
+			//tilewidth=areawidth-int(tilewidthpercentsum*areawidth); //Fippel
+		} // avoid rounding errors in last column
+        if (irregular_tiles){
+			//verticaltiles[vtilesused] = new Fl_Tile(int(tilewidthpercentsum*areawidth), 0,tilewidth ,areaheight); //Fippel
+			verticaltiles[vtilesused] = new Fl_Tile(tile_width_px, 0,tilewidth ,areaheight);
+		}
+      //  float tileheightpercentsum = 0;
+		tile_height_px = 0;
         for (int v=0; v < noofverticaltiles[virtualview][h]; v++)
             {
             int tileheight = int(tileheightpercent[virtualview][h][v]*areaheight);
-            if (v==noofverticaltiles[virtualview][h]-1)
-                { tileheight = areaheight - int(tileheightpercentsum*areaheight); }
+            if (v==noofverticaltiles[virtualview][h]-1){
+				//tileheight = areaheight - int(tileheightpercentsum*areaheight); //Fippel
+				tileheight = areaheight - tile_height_px;
+			}
             if (viewportmapping[v][h][virtualview] >= 0)
                 {
                 int VPind = find_viewport_index( viewportmapping[v][h][virtualview] );
@@ -282,23 +287,26 @@ void viewmanager::setup_views(int virtualview, int areawidth, int areaheight) //
 
                 //Create viewport widget and set position
 
-                viewports[ VPind ].initialize_viewport(int(tilewidthpercentsum*areawidth),int(tileheightpercentsum*areaheight),tilewidth,tileheight,vp_type);
-               // viewports[ VPind ].initialize_viewport(int(tilewidthpercentsum*areawidth),int(tileheightpercentsum*areaheight),tilewidth,tileheight,PT_MIP);
+               // viewports[ VPind ].initialize_viewport(int(tilewidthpercentsum*areawidth),int(tileheightpercentsum*areaheight),tilewidth,tileheight,vp_type); //Fippel
+				viewports[ VPind ].initialize_viewport(tile_width_px,tile_height_px,tilewidth,tileheight,vp_type);
                 }
             else
                 {
                 //placeholder
-                boxes[boxesused] = new Fl_Button(int(tilewidthpercentsum*areawidth),int(tileheightpercentsum*areaheight),tilewidth,tileheight,"placeholder");
+               // boxes[boxesused] = new Fl_Button(int(tilewidthpercentsum*areawidth),int(tileheightpercentsum*areaheight),tilewidth,tileheight,"placeholder"); //Fippel
+				boxes[boxesused] = new Fl_Button(tile_width_px,tile_height_px,tilewidth,tileheight,"placeholder");
                 boxes[boxesused]->box(FL_DOWN_BOX);
                 boxes[boxesused]->align(FL_ALIGN_CLIP);
                 boxes[boxesused]++;
                 }
-            tileheightpercentsum += tileheightpercent[virtualview][h][v];
+        //    tileheightpercentsum += tileheightpercent[virtualview][h][v];
+			tile_height_px += tileheightpercent[virtualview][h][v]*areaheight;
             }
                 if (irregular_tiles)
                     {verticaltiles[vtilesused]->end();}
         vtilesused++;
-        tilewidthpercentsum += tilewidthpercent[virtualview][h];
+  //      tilewidthpercentsum += tilewidthpercent[virtualview][h];
+		tile_width_px += tilewidthpercent[virtualview][h]*areawidth;
         }
 
     //htile->box(FL_BORDER_FRAME);
@@ -406,7 +414,7 @@ int viewmanager::find_viewport_no_images()
 
 void viewmanager::connect_views_viewports()
     {
-    //int antalvp = viewports.size();
+    //int num_vp = viewports.size();
 
     //set up connection between virtual views and viewports
     
@@ -434,7 +442,7 @@ void viewmanager::connect_renderer_to_viewport(int viewportID, int rendererID)
 
 void viewmanager::list_connections()
     {
-    //int antalvp = viewports.size();
+    //int num_vp = viewports.size();
 
     std::cout << "Listing of viewport to view connections:" << std::endl;
     for (int vv=0; vv < MAXVIRTUALVIEWS; vv++) // samma mˆnster fˆr alla virtuella vyer - distribuera viewports

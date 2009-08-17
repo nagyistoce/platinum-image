@@ -766,7 +766,7 @@ FLTKpane2::FLTKpane2(int X,int Y,int W,int H): FLTKpane(X,Y,W,H)
 
 FLTK_Event_pane::FLTK_Event_pane(int X,int Y,int W,int H, FLTK_Pt_pane *fpp) : Fl_Widget(X,Y,W,H)
 {
-//	cout<<"FLTK_Event_pane("<<X<<","<<Y<<","<<W<<","<<H<<")"<<endl;
+	cout<<"FLTK_Event_pane("<<X<<","<<Y<<","<<W<<","<<H<<")"<<endl;
 	my_base_pt_pane = fpp;
 }
 
@@ -878,8 +878,8 @@ FLTK_Pt_pane::FLTK_Pt_pane():FLTKpane(0,0,100,100)
 
 //	event_pane = new FLTK_Event_pane(0,buttonheight,100,100-buttonheight);
 
-//	Fl_Button *b = new Fl_Button(10,50,20,200, "pt_pane()_button");
-//	b->color(FL_BLUE);
+	Fl_Button *b = new Fl_Button(10,50,20,200, "pt_pane()_button");
+	b->color(FL_BLUE);
 
  //   this->box(FL_BORDER_BOX);
 //    this->align(FL_ALIGN_CLIP);
@@ -893,6 +893,9 @@ FLTK_Pt_pane::FLTK_Pt_pane():FLTKpane(0,0,100,100)
 FLTK_Pt_pane::FLTK_Pt_pane(int X,int Y,int W,int H) : FLTKpane(X,Y,W,H)
 {
 //	cout<<"FLTK_Pt_pane("<<X<<","<<Y<<","<<W<<","<<H<<")"<<endl;
+	Fl_Button *b = new Fl_Button(10,50,20,200, "pt_pane()_button");
+	b->color(FL_BLUE);
+
 }
 
 FLTK_Pt_pane::~FLTK_Pt_pane()
@@ -920,8 +923,10 @@ void FLTK_Pt_pane::resize_content(int w,int h)
 	cout<<"FLTK_Pt_pane::resize_content("<<w<<","<<h<<")"<<endl;
 	if(event_pane == NULL)
 		cout << "NULL!!!" << endl;
-	else
-	event_pane->resize(0,0,w,h);
+	else{
+//		event_pane->resize(0,0,w,h); //JK //RN --> se för fan till att det står 20 här!!!!
+		event_pane->resize(event_pane->x(),event_pane->y(),w,h); //JK //RN --> se för fan till att det står 20 här!!!!
+	}
 }
 
 viewport* FLTK_Pt_pane::get_viewport_parent()
@@ -934,17 +939,27 @@ viewport* FLTK_Pt_pane::get_viewport_parent()
 //--------------------------------------------------------
 //--------------------------------------------------------
 
-FLTK_Pt_MPR_pane::FLTK_Pt_MPR_pane()
+FLTK_Pt_MPR_pane::FLTK_Pt_MPR_pane() : FLTK_Pt_pane(0,0,100,100)
 {
 	cout<<"FLTK_Pt_MPR_pane()"<<endl;
-	cout << "Denna ska inte köras!!! Fel konstruktor!!!" << endl;
     int buttonleft=0;
 	int buttonheight=20;
 	int buttonwidth=70;
+	create_MPR_menu(100);
 
-	event_pane = new FLTK_Event_pane(0,buttonheight,100,100-buttonheight, this);
+//	Fl_Group::current(this);	//JK //RN test
+//	Fl_Button *b = new Fl_Button(0,buttonheight,100,100-buttonheight, "FLTK_Pt_MPR_pane()_button");	 //JK //RN test
+	Fl_Button *b = new Fl_Button(0,buttonheight,100,100-buttonheight, "FLTK_Pt_MPR_pane()_button");	 //JK //RN test
+	b->color(FL_RED);
 
-	this->resizable(event_pane);			//Make sure thes is resized too...
+	event_pane = NULL;
+	event_pane = new FLTK_Event_pane(0,buttonheight,100,100-buttonheight, this); //JK //RN test
+
+//	viewport::set_the_widget_static_callback(viewport_callback, this->parent());
+//	event_pane->callback(viewport_callback, this->parent()); //viewport (_not_ FLTK_Pt_pane) handles the callbacks
+
+
+	this->resizable(event_pane);			//Make sure this is resized too...
 	this->end();
 }
 
@@ -952,7 +967,30 @@ FLTK_Pt_MPR_pane::FLTK_Pt_MPR_pane()
 FLTK_Pt_MPR_pane::FLTK_Pt_MPR_pane(int X,int Y,int W,int H) : FLTK_Pt_pane(X,Y,W,H)
 {
 	cout<<"FLTK_Pt_MPR_pane("<<X<<","<<Y<<","<<W<<","<<H<<")"<<endl;
-    int buttonleft=0;
+
+	int buttonleft=0;
+	int buttonheight=20;
+	int buttonwidth=70;
+
+	create_MPR_menu(W);
+	//--------------------------------
+
+	event_pane = new FLTK_Event_pane(0,buttonheight,W,H-buttonheight,this);
+
+//	Fl_Button *b = new Fl_Button(25,5,200,200, "pt_pane(xywh)_button");
+//	b->color(FL_BLUE);
+
+//    this->box(FL_BORDER_BOX);
+//    this->align(FL_ALIGN_CLIP);
+	this->resizable(event_pane);			//Make sure thes is resized too...
+	this->end();
+}
+
+FLTK_Pt_MPR_pane::~FLTK_Pt_MPR_pane()
+{}
+
+void FLTK_Pt_MPR_pane::create_MPR_menu(int W){
+	int buttonleft=0;
 	int buttonheight=20;
 	int buttonwidth=70;
 
@@ -1007,27 +1045,13 @@ FLTK_Pt_MPR_pane::FLTK_Pt_MPR_pane(int X,int Y,int W,int H) : FLTK_Pt_pane(X,Y,W
       }
     blend_menu_items[m].label(NULL);    //terminate menu
     
-    blendmenu_button = new Fl_Menu_Button(0+(buttonleft+=buttonwidth),0,buttonwidth,buttonheight);
+    blendmenu_button = new Fl_Menu_Button(0+(buttonleft+=buttonwidth),0,buttonwidth,buttonheight, blend_mode_labels[1] );
     blendmenu_button->copy(blend_menu_items);
     blendmenu_button->box(FL_THIN_UP_BOX);
     blendmenu_button->labelsize(FLTK_SMALL_LABEL);
 
 	button_pack2->end();
-	//--------------------------------
-
-	event_pane = new FLTK_Event_pane(0,buttonheight,W,H-buttonheight,this);
-
-//	Fl_Button *b = new Fl_Button(25,5,200,200, "pt_pane(xywh)_button");
-//	b->color(FL_BLUE);
-
-//    this->box(FL_BORDER_BOX);
-//    this->align(FL_ALIGN_CLIP);
-	this->resizable(event_pane);			//Make sure thes is resized too...
-	this->end();
 }
-
-FLTK_Pt_MPR_pane::~FLTK_Pt_MPR_pane()
-{}
 
 viewport* FLTK_Pt_MPR_pane::get_viewport_parent()
 {
@@ -1475,15 +1499,13 @@ FLTKviewport::FLTKviewport(int xpos,int ypos,int width,int height, viewport *vp_
 	// -------------- pane_widget -------------------
 
 	if( (viewport_parent->vp_type == PT_MPR) || (viewport_parent->vp_type == PT_MIP) ){
-//		pane_widget = new FLTK_Pt_pane(0,0+buttonheight,width,height-buttonheight);
-//		((FLTK_Pt_pane*)pane_widget)->event_pane->callback(viewport_callback, this); //viewport (_not_ FLTK_Pt_pane) handles the callbacks
-
 		pane_widget = new FLTK_Pt_MPR_pane(0,0+buttonheight,width,height-buttonheight);
-		((FLTK_Pt_MPR_pane*)pane_widget)->event_pane->callback(viewport_callback, this); //viewport (_not_ FLTK_Pt_pane) handles the callbacks
+		((FLTK_Pt_pane*)pane_widget)->event_pane->callback(viewport_callback, this); //viewport (_not_ FLTK_Pt_pane) handles the callbacks
 
 	}else if(viewport_parent->vp_type == PT_CURVE){
 		pane_widget = new FLTK_Pt_Curve_pane(0,0+buttonheight,width,height-buttonheight);
-		((FLTK_Pt_Curve_pane*)pane_widget)->event_pane->callback(viewport_callback, this);
+		((FLTK_Pt_pane*)pane_widget)->event_pane->callback(viewport_callback, this);
+
 	}else{ 
 		pane_widget = new FLTK_VTK_Cone_pane(0,0+buttonheight,width,height-buttonheight);
 	}
@@ -1862,12 +1884,14 @@ void FLTKviewport::set_direction_callback(Fl_Widget *callingwidget, void * p )
 
 void FLTKviewport::switch_pane(factoryIdType type)
 {
+	viewport_parent->set_vp_type_from_factoryIdType(type);	//we need to change this param also...
+
 	int x = this->pane_widget->x();
 	int y = this->pane_widget->y();
 	int w = this->pane_widget->w();
 	int h = this->pane_widget->h();
 
-	this->pane_widget->parent()->remove(this->pane_widget);
+	this->pane_widget->parent()->remove(this->pane_widget); //länkar av...
 	delete this->pane_widget;
 
 	Fl_Group::current(this); //TITTA HÄR!!! Dwenna körs då man byter rendrerare
@@ -1880,15 +1904,54 @@ void FLTKviewport::switch_pane(factoryIdType type)
 	this->pane_widget->h(h);
 	this->pane_widget->resize_content(w,h);
 	
-
 	//Måste man inte lägga till parent igen på något sätt?
 	//Det skapas ingen ny rendrerare här. Borde det inte det???
 
-	this->pane_widget->callback(viewport_callback, this); //viewport (_not_ FLTK_Pt_pane) handles the callbacks
+	//this->pane_widget->callback(viewport_callback, this); //viewport (_not_ FLTK_Pt_pane) handles the callbacks
 
-	cout<<"shown()"<<this->pane_widget->shown()<<endl;
+	//pane_factory.Register<FLTK_Pt_MPR_pane>("MPR");			//JK2 //Bytte från PT_pane
+    //pane_factory.Register<FLTK_VTK_Cone_pane>("VTK-Cone");	//JK2
+    //pane_factory.Register<FLTK_VTK_MIP_pane>("VTK-MIP");	//JK2
+	//pane_factory.Register<FLTK_Pt_Curve_pane>("Curve");	//Hmm...
+	cout<<type<<endl;
+	cout<<type.find("VTK")<<endl;
+
+//	viewport_parent->initialize_viewport(x,y,w,h,PT_MPR);//	PT_MPR
+
+	//--------------
+	int old_rendID = viewmanagement.get_renderer_id(viewport_parent->ID);
+	cout<<old_rendID<<endl;
+	rendermanagement.remove_renderer(old_rendID);
+	//--------------
+	viewport_parent->busyTool = NULL; //this will force the tool to re_init_its pointers etc.
+
+	if(type.find("VTK") == string::npos){	//if a "platinum" p
+		((FLTK_Pt_pane*)pane_widget)->event_pane->callback(viewport_callback, this);
+
+
+		int tmp_rendID;
+		if(viewport_parent->vp_type == PT_MPR){	//PT_MPR, PT_MIP, VTK_EXAMPLE, VTK_MIP, VTK_ISOSURF};
+			tmp_rendID = rendermanagement.create_renderer(RENDERER_MPR);
+		}else if(viewport_parent->vp_type == PT_MIP){
+			tmp_rendID = rendermanagement.create_renderer(RENDERER_MIP);
+		}else if(viewport_parent->vp_type == PT_CURVE){
+			tmp_rendID = rendermanagement.create_renderer(RENDERER_CURVE);
+		}
+		viewmanagement.connect_renderer_to_viewport(viewport_parent->ID,tmp_rendID);     //attach MPR renderer - so that all viewports can be populated for additional views
+
+	}
+
+	viewmanagement.list_viewports();
+//	viewmanagement.list_connections();
+	rendermanagement.print_renderers();
+	
 	this->pane_widget->show();
-	cout<<"shown()"<<this->pane_widget->shown()<<endl;
+
+	this->resizable(pane_widget);
+    this->end();
+    this->box(FL_BORDER_BOX);
+    this->align(FL_ALIGN_CLIP);
+
 
 	//viewmanagement.list_viewports();
 }

@@ -80,6 +80,9 @@ private:
 	void change_line_type(char type); //Used in curve
 
 	bool paint_rendergeometry;
+
+	void set_vp_type_from_factoryIdType(string type);	//called when changed from GUI...
+
 	
 public:
     viewport(VIEWPORT_TYPE vpt=PT_MPR);
@@ -92,6 +95,7 @@ public:
 	int h();
 	int h_pane(); //height of the pane ( total height minus button height)
     
+
     int get_id() const ;
 	int get_renderer_id() const ;
 	void connect_renderer(int rID);

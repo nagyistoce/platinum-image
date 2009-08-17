@@ -79,24 +79,23 @@ void viewport::initialize_viewport(int xpos, int ypos, int width, int height, VI
 {
 	vp_type = vpt;
 	the_widget = NULL;
+	
+	int tmp_rendID;
+	if(vp_type == PT_MPR){	//PT_MPR, PT_MIP, VTK_EXAMPLE, VTK_MIP, VTK_ISOSURF};
+		tmp_rendID = rendermanagement.create_renderer(RENDERER_MPR);
+	}else if(vp_type == PT_MIP){
+		tmp_rendID = rendermanagement.create_renderer(RENDERER_MIP);
+	}else if(vp_type == PT_CURVE){
+		tmp_rendID = rendermanagement.create_renderer(RENDERER_CURVE);
+	}
+	viewmanagement.connect_renderer_to_viewport(ID,tmp_rendID);     //attach MPR renderer - so that all viewports can be populated for additional views
+
+
     const int buttonheight=20;
     const int buttonwidth=70;
-   
-	int rendID;
-	if(vp_type == PT_MPR){	//PT_MPR, PT_MIP, VTK_EXAMPLE, VTK_MIP, VTK_ISOSURF};
-		rendID = rendermanagement.create_renderer(RENDERER_MPR);
-	}else if(vp_type == PT_MIP){
-		rendID = rendermanagement.create_renderer(RENDERER_MIP);
-	}else if(vp_type == PT_CURVE){
-		rendID = rendermanagement.create_renderer(RENDERER_CURVE);
-	}
-    //attach MPR renderer - so that all viewports can be populated for additional views
-	viewmanagement.connect_renderer_to_viewport(ID,rendID); 
-
-    update_viewsize(width, height - 2*buttonheight);
+    update_viewsize(width, height - 2*buttonheight);	//allocates/changes rgb_pixmap...
     
 	the_widget = new FLTKviewport(xpos,ypos,width,height,this,buttonheight,buttonwidth); //The FLTKviewport can access the VIEWPORT_TYPE using the pointer to this viewport
-
 }
 
 int viewport::x(){
@@ -154,6 +153,29 @@ void viewport::change_line_type(char line){
 	((FLTK_Pt_Curve_pane*)the_widget->pane_widget)->change_line(line); 
 }
 
+
+void viewport::set_vp_type_from_factoryIdType(string type)
+{
+	//pane_factory.Register<FLTK_Pt_MPR_pane>("MPR");			
+    //pane_factory.Register<FLTK_VTK_Cone_pane>("VTK-Cone");	
+    //pane_factory.Register<FLTK_VTK_MIP_pane>("VTK-MIP");	
+	//pane_factory.Register<FLTK_Pt_Curve_pane>("Curve");	
+
+	if(type=="MPR"){
+		this->vp_type = PT_MPR;		//enum VIEWPORT_TYPE {PT_MPR, PT_MIP, VTK_EXAMPLE, VTK_MIP, VTK_ISOSURF, PT_CURVE};
+	}else if(type=="VTK-Cone"){
+		this->vp_type = VTK_EXAMPLE;
+	}else if(type=="VTK-MIP"){
+		this->vp_type = VTK_MIP;
+	}else if(type=="Curve"){
+		this->vp_type = PT_CURVE;
+
+	}else{
+		cout<<"oops. check set_vp_type_from_factoryIdType..."<<endl;
+	}
+
+
+}
 
 int viewport::get_id () const
 {

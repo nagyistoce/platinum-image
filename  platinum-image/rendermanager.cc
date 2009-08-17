@@ -586,7 +586,8 @@ void rendermanager::center2d(const int rendererID, const int imageID)
 void rendermanager::center3d_and_fit(const int rendererID, const int imageID)
 {
 	image_base * image = datamanagement.get_image<image_base>(imageID); //TODO_R HÄR!!!!!
-	viewport *vp = viewmanagement.get_viewport(rendererID); //JK Warning rendererID and vp_ID might not be the same in the future....
+	int vp_ID = viewmanagement.viewport_from_renderer(rendererID);
+	viewport *vp = viewmanagement.get_viewport(vp_ID); //JK Warning rendererID and vp_ID might not be the same in the future....
 
 //	cout<<"center3d_and_fit..."<<endl;
     int r_ind = find_renderer_index(rendererID);

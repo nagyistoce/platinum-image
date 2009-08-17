@@ -117,7 +117,7 @@ class RGBvalue:public color_base
 			void set_rgb_from_complex(std::complex<float> &c, float magn_min, float magn_max) 
 			{
 				float grey = (abs(c)-magn_min)/magn_max*255.0;
-				set_mono( grey );
+				set_mono( (IMGELEMCOMPTYPE)grey );
 			}
 		friend std::ostream &operator<<(std::ostream &ut, const RGBvalue &v)
         { ut << "[color==("<<int(v.values[0])<<" "<<int(v.values[1])<<" "<<int(v.values[2])<<")"; return ut; }

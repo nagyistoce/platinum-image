@@ -92,6 +92,7 @@ public:
 		}
 
 		string change_top_image(int i){ //Denna har R lagt till för at testa!!!
+			string s = "";
 			if(!renderdata.empty()){
 				if(i >0){
 					renderdata.push_back(renderdata.front());
@@ -101,8 +102,9 @@ public:
 					renderdata.pop_back();
 				}
 				//return the name of the last image to know it is the one to be configured
-				return renderdata.back().pointer->name();
+				s = renderdata.back().pointer->name();
 			}
+			return s;
 		}
 
         void add_data(int dataID);
