@@ -68,6 +68,10 @@ class rendererMPR : public renderer_image_base
 
         virtual Vector3D view_to_voxel(int vx, int vy,int sx,int sy,int imageID = -1) const;
         virtual Vector3D view_to_world(int vx, int vy,int sx,int sy) const;
+
+		RENDERER_TYPE type() const{
+			return renderer_type();
+		};
         
         virtual bool supports_mode (int m);
         

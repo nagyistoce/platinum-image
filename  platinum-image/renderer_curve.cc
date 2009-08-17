@@ -125,7 +125,6 @@ void renderer_curve::render_position(unsigned char *rgb, int rgb_sx, int rgb_sy)
 //render orthogonal slices using memory-order scanline
 void renderer_curve::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_curve *rg, rendercombination *rc)
 {
-	cout << "Curve renderer used" << endl;
 
     if(rc->empty()){       //*** no images: exit ***
         return;

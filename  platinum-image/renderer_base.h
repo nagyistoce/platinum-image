@@ -66,7 +66,7 @@ public:
     rendergeometry_base *the_rg;                 //lookat and direction vectors for rendering
     void connect_geometry(rendergeometry_base *rg);       //attach a certain geometry to this renderer
 	int geometry_id() const;
-
+	virtual RENDERER_TYPE type() const = 0;
 
 	// ----- rendering & data interaction ------
 	virtual void render_position(unsigned char *rgb, int rgb_sx, int rgb_sy);

@@ -38,6 +38,11 @@ class rendererMIP  : public renderer_image_base
 		virtual void connect_data(int dataID);
 		virtual void paint_overlay(int h_offset, int vp_w, int vp_h_pane, bool paint_rendergeometry);
 
+		static RENDERER_TYPE renderer_type(){return RENDERER_MIP;}
+		RENDERER_TYPE type() const{
+			return renderer_type();
+		};
+
 };
 
 

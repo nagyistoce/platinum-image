@@ -1633,43 +1633,58 @@ void FLTKviewport::update_data_menu()
     unsigned int baseMenuSize = fl_menu_size(base_menu);
     
     //Fl_Menu_Item new_menu[baseMenuSize+1];
-    Fl_Menu_Item *new_menu = new Fl_Menu_Item[baseMenuSize+1];
+	renderer_base * r = rendermanagement.get_renderer(viewport_parent->get_renderer_id());
+	bool *supported = new bool[baseMenuSize]; //RN
+	int size_of_support = 0;
+	for(int i = 0; i < baseMenuSize; i++){
+		supported[i] = datamanagement.get_data(base_menu[i].argument())->is_supported(r->type());
+		size_of_support++;
+	} //RN stop
+    //Fl_Menu_Item *new_menu = new Fl_Menu_Item[baseMenuSize+1];
+	 Fl_Menu_Item *new_menu = new Fl_Menu_Item[size_of_support+1];
     
     if(cur_menu!=NULL){
         //delete old callback data (menu is deleted by fl_menu::copy)
         fl_menu_userdata_delete(cur_menu);
 	}
-    
+	int counter = 0;
+	
     if(base_menu != NULL && viewport_parent->rendererIndex >= 0){
         do{
-            memcpy (&new_menu[m],&base_menu[m],sizeof(Fl_Menu_Item));
-                
-            if(new_menu[m].label()!=NULL){
-                //long v=base_menu[m].argument();
-                //attach menu_callback_params and
-                //set checkmarks according to displayed images
-                    
-                menu_callback_params * p= new menu_callback_params;
-                p->rend_index=viewport_parent->rendererIndex;
-                p->vol_id=base_menu[m].argument();  //image ID is stored in user data initially
-//				p->vport = this; //JK
-                    
-                new_menu[m].callback((Fl_Callback *)toggle_data_callback);
-                new_menu[m].user_data(p);
-                new_menu[m].flags=FL_MENU_TOGGLE;
-                if(rendermanagement.image_rendered(viewport_parent->rendererIndex,p->vol_id) !=BLEND_NORENDER){
-                    //checked
-                    new_menu[m].set();
+			if(supported[m]){
+				memcpy (&new_menu[counter],&base_menu[m],sizeof(Fl_Menu_Item));
+	                
+				if(new_menu[counter].label()!=NULL){
+					//long v=base_menu[m].argument();
+					//attach menu_callback_params and
+					//set checkmarks according to displayed images
+	                    
+					menu_callback_params * p= new menu_callback_params;
+					p->rend_index=viewport_parent->rendererIndex;
+					p->vol_id=base_menu[m].argument();  //image ID is stored in user data initially
+
+	//				p->vport = this; //JK
+	                    
+					new_menu[counter].callback((Fl_Callback *)toggle_data_callback);
+					new_menu[counter].user_data(p);
+					new_menu[counter].flags=FL_MENU_TOGGLE;
+					if(rendermanagement.image_rendered(viewport_parent->rendererIndex,p->vol_id) !=BLEND_NORENDER){
+						//checked
+						new_menu[counter].set();
+					}
 				}
+				counter++;
 			}
+			m++;
 		}
-		while(new_menu[m++].label() !=NULL && m <= baseMenuSize);
-        
+		while(new_menu[counter].label() !=NULL && m <= baseMenuSize);
+        m = size_of_support;
         datamenu_button->copy(new_menu);
         delete new_menu;
         }
     else
         { datamenu_button->menu(NULL); }
+	free(supported);
 }
 
 
@@ -1921,6 +1936,13 @@ void FLTKviewport::switch_pane(factoryIdType type)
 	//--------------
 	int old_rendID = viewmanagement.get_renderer_id(viewport_parent->ID);
 	cout<<old_rendID<<endl;
+	rendercombination *temp_rc = rendermanagement.get_renderer(old_rendID)->the_rc;
+	vector<int> data_in_combo;
+	for(rendercombination::iterator pairItr = temp_rc->begin();pairItr != temp_rc->end();pairItr++){
+		pt_error::error_if_null(pairItr->pointer,"Rendered data object is NULL");//Crash here when closing an image
+		data_in_combo.push_back((dynamic_cast<data_base *> (pairItr->pointer))->get_id());
+	}
+
 	rendermanagement.remove_renderer(old_rendID);
 	//--------------
 	viewport_parent->busyTool = NULL; //this will force the tool to re_init_its pointers etc.
@@ -1928,7 +1950,7 @@ void FLTKviewport::switch_pane(factoryIdType type)
 	if(type.find("VTK") == string::npos){	//if a "platinum" p
 		((FLTK_Pt_pane*)pane_widget)->event_pane->callback(viewport_callback, this);
 
-
+		
 		int tmp_rendID;
 		if(viewport_parent->vp_type == PT_MPR){	//PT_MPR, PT_MIP, VTK_EXAMPLE, VTK_MIP, VTK_ISOSURF};
 			tmp_rendID = rendermanagement.create_renderer(RENDERER_MPR);
@@ -1938,6 +1960,12 @@ void FLTKviewport::switch_pane(factoryIdType type)
 			tmp_rendID = rendermanagement.create_renderer(RENDERER_CURVE);
 		}
 		viewmanagement.connect_renderer_to_viewport(viewport_parent->ID,tmp_rendID);     //attach MPR renderer - so that all viewports can be populated for additional views
+
+		temp_rc = rendermanagement.get_renderer(tmp_rendID)->the_rc;
+		for(int j = 0; j<data_in_combo.size(); j++){ //The filtering is done in "update_data_menu"
+			//No filtering of data here. Old unsupported data remains in combination
+			temp_rc->add_data(data_in_combo.at(j));
+		}
 
 	}
 

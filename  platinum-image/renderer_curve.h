@@ -65,6 +65,10 @@ class renderer_curve : public renderer_curve_base
         
         static const std::string typekey ()
             {return "Curve renderer";}
+
+		RENDERER_TYPE type() const{
+			return renderer_type();
+		};
         
         virtual std::string find_typekey() const
             {return typekey();}
