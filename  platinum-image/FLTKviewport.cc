@@ -1918,24 +1918,10 @@ void FLTKviewport::switch_pane(factoryIdType type)
 	this->pane_widget->w(w);
 	this->pane_widget->h(h);
 	this->pane_widget->resize_content(w,h);
-	
-	//Måste man inte lägga till parent igen på något sätt?
-	//Det skapas ingen ny rendrerare här. Borde det inte det???
-
-	//this->pane_widget->callback(viewport_callback, this); //viewport (_not_ FLTK_Pt_pane) handles the callbacks
-
-	//pane_factory.Register<FLTK_Pt_MPR_pane>("MPR");			//JK2 //Bytte från PT_pane
-    //pane_factory.Register<FLTK_VTK_Cone_pane>("VTK-Cone");	//JK2
-    //pane_factory.Register<FLTK_VTK_MIP_pane>("VTK-MIP");	//JK2
-	//pane_factory.Register<FLTK_Pt_Curve_pane>("Curve");	//Hmm...
-	cout<<type<<endl;
-	cout<<type.find("VTK")<<endl;
-
-//	viewport_parent->initialize_viewport(x,y,w,h,PT_MPR);//	PT_MPR
 
 	//--------------
 	int old_rendID = viewmanagement.get_renderer_id(viewport_parent->ID);
-	cout<<old_rendID<<endl;
+	//RN Does not seem to work when changing from VTK.
 	rendercombination *temp_rc = rendermanagement.get_renderer(old_rendID)->the_rc;
 	vector<int> data_in_combo;
 	for(rendercombination::iterator pairItr = temp_rc->begin();pairItr != temp_rc->end();pairItr++){
@@ -1945,6 +1931,7 @@ void FLTKviewport::switch_pane(factoryIdType type)
 
 	rendermanagement.remove_renderer(old_rendID);
 	//--------------
+
 	viewport_parent->busyTool = NULL; //this will force the tool to re_init_its pointers etc.
 
 	if(type.find("VTK") == string::npos){	//if a "platinum" p
@@ -1969,9 +1956,9 @@ void FLTKviewport::switch_pane(factoryIdType type)
 
 	}
 
-	viewmanagement.list_viewports();
+//	viewmanagement.list_viewports();
 //	viewmanagement.list_connections();
-	rendermanagement.print_renderers();
+//	rendermanagement.print_renderers();
 	
 	this->pane_widget->show();
 

@@ -63,6 +63,7 @@ public:
 	vector<Vector2D> find_maximas_in_intervall(int from, int to) const;
 	vector<Vector2D> find_minimas_in_intervall(int from, int to) const;
 	void simplify_curve();
+	void create_dy_curve();
 
 	vector<double> approximate_curve(int degree) const;
 
@@ -291,6 +292,21 @@ void curve_scalar<ELEMTYPE>::simplify_curve(){
 
 		}
 }
+template<class ELEMTYPE>
+void curve_scalar<ELEMTYPE>::create_dy_curve(){
+	int y1, y2;
+	if(my_data->empty())
+		return;
+	y1 = my_data->at(0);
+	for(int i = 1; i < my_data->size(); i++){
+		y2 = my_data->at(i);
+		my_data->at(i-1) = abs(y2-y1);
+		y1 = y2;
+	}
+	my_data->pop_back();
+}
+
+
 /* Fit points to polynomial curve with least square approximation. Can be slow due to matrix inverse calculation*/
 template<class ELEMTYPE>
 vector<double> curve_scalar<ELEMTYPE>::approximate_curve(int degree) const{

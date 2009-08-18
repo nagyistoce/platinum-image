@@ -131,7 +131,8 @@ stringmatrix.h
 threshold.h 
 transfer.h 
 transferfactory.h 
-transferfactory.hxx 
+transferfactory.hxx
+ultra1dops.h 
 ultrasound_importer.h
 userIO.h 
 userIOmanager.h 
@@ -207,6 +208,7 @@ threshold.cc
 transfer.hxx 
 transfer_interpolated.hxx 
 transferfactory.cc 
+ultra1dops.cc
 ultrasound_importer.cc
 userIO.cc 
 userIOmanager.cc 
@@ -442,6 +444,7 @@ listedfactory.h
 pt_vector.h
 ptconfig.h
 threshold.h 
+ultra1dops.h
 
 bias_base.cc
 bias_field.hxx
@@ -462,7 +465,8 @@ pt_vector.cc
 ptconfig.cc
 ptmath.cc 
 stringmatrix.cc 
-threshold.cc)
+threshold.cc
+ultra1dops.cc)
 
 SOURCE_GROUP(Utilities FILES 
 Utilities/fltk/Fl_Table.cxx 
