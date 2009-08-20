@@ -79,6 +79,7 @@ void ultrasound_importer::read_file(string filepath){
 								scan->mean_vector->at(i)+= ((sum - scan->mean_vector->at(i))/(j+1));
 								row->push_back(sum);
 							}
+							row->config_x_axis(0.04,0);
 							scan->rows.push_back(row);
 						}
 						scan->mean_vector->config_x_axis(0.04,0);

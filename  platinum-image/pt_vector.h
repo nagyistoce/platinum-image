@@ -38,7 +38,7 @@ protected:
 	
 public:
 	pt_vector(int);
-	~pt_vector(void);
+	~pt_vector(void){};
 	void config_x_axis(double resolution, double start);
 	ELEMTYPE* get_maximum_in_range(int from, int to);
 	ELEMTYPE* get_minimum_in_range(int from, int to);
@@ -234,7 +234,7 @@ template<class ELEMTYPE>
 class pts_vector : public pt_vector<ELEMTYPE>{
 public: 
 	pts_vector(int);
-	~pts_vector(void);
+	~pts_vector(void){};
 
 };
 
@@ -242,6 +242,24 @@ template<class ELEMTYPE>
 pts_vector<ELEMTYPE>::pts_vector(int start_size) : pt_vector<ELEMTYPE>(start_size){
 	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* Scalar ends here */
 /* Complex starts here */
 template<class ELEMTYPE>

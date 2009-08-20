@@ -119,3 +119,83 @@ vector<Vector3D> ultra1dops::simplify_the_curve(curve_scalar<unsigned short> *cu
 	keep.push_back(p.back());
 	return keep;
 }
+void ultra1dops::recalculate_mean_curve(us_scan * scan){
+	scan->mean_vector->assign(scan->rows.at(0)->size(),0);
+
+	for(int i = 0; i< scan->rows.size(); i ++){
+		for(int j = 0; j<scan->rows.at(i)->size(); j++){
+			scan->mean_vector->at(j) = scan->mean_vector->at(j) + (scan->rows.at(i)->at(j) - scan->mean_vector->at(j))/(i+1);
+		}
+	}
+}
+
+void ultra1dops::shift(vector<pts_vector<unsigned short>*> curve, pts_vector<int> *s){
+	for(int i = 0; i < s->size(); i++){
+		if(s->at(i) > 0){
+			curve.at(i)->erase(curve.at(i)->begin(), curve.at(i)->begin() + s->at(i));
+			for(int j = 0; j < s->at(i); j++){
+				curve.at(i)->push_back(0);
+			}
+		}else{
+			for(int j = 0; j < abs(s->at(i)); j++){
+				curve.at(i)->pop_back();
+				curve.at(i)->insert(curve.at(i)->begin(),0);
+			}
+		}
+	}
+}
+
+void ultra1dops::straighten_the_peaks(us_scan * scan, int intima, int adventitia){
+	double mass, pos, cog;
+	pts_vector<double> *s = new pts_vector<double>(0);
+	int search_area = pt_config::read<double>("scope_for_maximum_diff",CURVE_CONF_PATH)/scan->rows.at(0)->x_res;
+	vector<float> area;
+	float a;
+	for(int i = 0; i< scan->rows.size(); i++){
+		a = 0;
+		for(int j = adventitia -5; j < intima + 5; j++){
+			a+= scan->rows.at(i)->at(j)/10;
+		}
+		area.push_back(a);
+	}
+
+	for(int i = 0; i < scan->rows.size(); i++){
+		mass = pos = 0;
+		for(int j = -search_area; j <= search_area; j++){
+			mass += scan->rows.at(i)->at(intima+j);
+			pos += scan->rows.at(i)->at(intima+j)*(intima+j);
+		}
+		s->push_back(pos/mass - intima);
+	}
+	s->mean_value_smoothing(1);
+	pts_vector<int> *s_m = new pts_vector<int>(0);
+	double weight, A, dx, c;
+	for(int i = 2; i < s->size()-2; i++){
+		A = dx = weight = c = 0;
+		for(int j = -2; j<=2; j++){
+			A += area.at(i);
+			dx += s->at(i)*area.at(i);
+		}
+		//s_m->push_back(round(dx/A));
+		s_m->push_back(round(dx/A));
+	}
+	s_m->insert(s_m->begin(), s_m->at(0));
+	s_m->insert(s_m->begin(), s_m->at(0));
+	s_m->push_back(round(s->at(s->size()-2)));
+	s_m->push_back(round(s->at(s->size()-1)));
+
+	cout << endl;
+	curve_scalar<int> *diff = new curve_scalar<int>(0, "diff", 0, 1);
+	extern datamanager datamanagement;
+	datamanagement.add(diff);
+	diff->my_data = s_m;
+
+	shift(scan->rows, s_m);
+	recalculate_mean_curve(scan);
+}
+
+
+void ultra1dops::fit_gaussian_curve_and_calculate(pts_vector<double> *curve;, int intima, int adventitia){
+	int search_area = pt_config::read<double>("scope_for_maximum_diff",CURVE_CONF_PATH)/scan->rows.at(0)->x_res;
+	
+}

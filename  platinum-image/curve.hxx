@@ -46,6 +46,7 @@ template<class ELEMTYPE>
 class curve_scalar : public curve_base{
 public:
 	curve_scalar(int start_size, string name, double offset, double scale);
+	curve_scalar<ELEMTYPE>* copy_curve();
 	double get_data(int i) const;
 	double get_max() const;
 	double get_min() const;
@@ -64,6 +65,7 @@ public:
 	vector<Vector2D> find_minimas_in_intervall(int from, int to) const;
 	void simplify_curve();
 	void create_dy_curve();
+
 
 	vector<double> approximate_curve(int degree) const;
 
@@ -84,6 +86,12 @@ curve_scalar<ELEMTYPE>::curve_scalar(int start_size, string name, double offset,
 	color = new RGBvalue();
 	color->set_rgb(255,0,0); //Default color = red
 	line = '-';
+}
+template<class ELEMTYPE>
+curve_scalar<ELEMTYPE>* curve_scalar<ELEMTYPE>::copy_curve(){
+	curve_scalar<ELEMTYPE> *c = new curve_scalar<ELEMTYPE>(0, name() + " copy", get_offset(), get_scale());
+	c->my_data->assign(my_data->begin(), my_data->end());
+	return c;
 }
 
 template<class ELEMTYPE>
