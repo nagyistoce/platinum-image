@@ -19,7 +19,7 @@
 
 
 // *** histogram_typed ***
-
+#include "pt_vector.h"
 
 
 
@@ -143,6 +143,9 @@ void histogram_1D<ELEMTYPE>::resize (unsigned long newNum)
 
 	//resize() is called from the constructor
     calculate_from_image_data(this->num_buckets);	 //the new number of buckets needs to be sent as argument
+
+	this->bucket_vector->config_x_axis(get_scalefactor(), this->min());
+
 }
 
 
@@ -319,6 +322,7 @@ histogram_1D<ELEMTYPE>::histogram_1D(string hist_text_file_path, std::string sep
 		this->readytorender = true;
 		pt_error::error("histogram_1D - constructor - file does not exist...",pt_error::debug);
 	}
+	this->bucket_vector->config_x_axis(get_scalefactor(), this->min());
 }
 
 
@@ -375,6 +379,7 @@ void histogram_1D<ELEMTYPE>::recalc_min_max_data()
         this->max_value = std::numeric_limits<ELEMTYPE>::max(); 
         this->min_value = std::numeric_limits<ELEMTYPE>::min();
     }
+	bucket_vector->config_x_axis(get_scalefactor(), this->min()); //XXX testing
 }
 
 template <class ELEMTYPE>
@@ -405,6 +410,7 @@ void histogram_1D<ELEMTYPE>::refill_bucket_data()
         this->max_value = std::numeric_limits<ELEMTYPE>::max(); 
         this->min_value = std::numeric_limits<ELEMTYPE>::min();
     }
+	this->bucket_vector->config_x_axis(get_scalefactor(), this->min());
 }
 
 /*
@@ -571,6 +577,7 @@ void histogram_1D<ELEMTYPE>::add_histogram_data(histogram_1D<ELEMTYPE> *hist2){
 	}else{
 		pt_error::error("histogram_1D - add_histogram_data - not same size...",pt_error::debug);
 	}
+	this->bucket_vector->config_x_axis(get_scalefactor(), this->min());
 }
 
 template <class ELEMTYPE>
@@ -580,6 +587,7 @@ void histogram_1D<ELEMTYPE>::clear_zero_intentisty_bucket(){
 		//this->buckets[zero_bucket_pos] = 0;
 		this->bucket_vector->at(zero_bucket_pos) = 0;
 	}
+	this->bucket_vector->config_x_axis(get_scalefactor(), this->min());
 }
 
 
@@ -590,6 +598,7 @@ void histogram_1D<ELEMTYPE>::set_sum_of_bucket_contents_to_value(double value){ 
 		//this->buckets[i] *= scale_factor;
 		this->bucket_vector->at(i) *= scale_factor;
 	}
+	this->bucket_vector->config_x_axis(get_scalefactor(), this->min());
 }
 
 template <class ELEMTYPE>
@@ -609,7 +618,7 @@ void histogram_1D<ELEMTYPE>::logarithm(int zero_handling)
 		else if (zero_handling==2) 
 			{this->bucket_vector->at(i) = std::numeric_limits<ELEMTYPE>::min();}
 	}
-
+	this->bucket_vector->config_x_axis(get_scalefactor(), this->min());
 }
 
 template <class ELEMTYPE>
@@ -668,7 +677,7 @@ void histogram_1D<ELEMTYPE>::smooth_mean(int nr_of_neighbours, int nr_of_times, 
 //			smooth(5, nr_of_times, end_filt, to);
 		}
 	}
-
+	this->bucket_vector->config_x_axis(get_scalefactor(), this->min());
 	delete res;
 }
 
@@ -882,73 +891,7 @@ bool histogram_1D<ELEMTYPE>::is_histogram_bimodal(int start_bucket, int end_buck
 template <class ELEMTYPE>
 void histogram_1D<ELEMTYPE>::fit_gaussian_to_intensity_range(float &amp, float &center, float &sigma, ELEMTYPE from_int, ELEMTYPE to_int, bool print_info)
 {
-//	cout<<"fit_gaussian_to_intensity_range..."<<endl;
-//	cout<<"this->max()="<<this->max()<<endl;
-//	cout<<"this->min()="<<this->min()<<endl;
-//	cout<<"this->num_buckets()="<<this->num_buckets<<endl;
-	cout<<"from_int="<<from_int<<endl;
-	cout<<"to_int="<<to_int<<endl;
-	cout<<"this->get_max_value_in_bucket_range(0,3)="<<this->get_max_value_in_bucket_range(0,3)<<endl;
-
-	int from_bucket = std::max(0, int(intensity_to_bucketpos(from_int)));
-	int to_bucket = std::min(int(this->num_buckets-1), int(intensity_to_bucketpos(to_int)));
-//	cout<<"from_bucket="<<from_bucket<<endl;
-//	cout<<"to_bucket="<<to_bucket<<endl;
-
-	gaussian g(amp,center,sigma);
-	g.amplitude = float(this->get_max_value_in_bucket_range(from_bucket,to_bucket));
-	g.center = get_mean_intensity_in_bucket_range(from_bucket,to_bucket);
-//	g.center = this->get_max_value_in_bucket_range(from_bucket,to_bucket);
-	g.sigma = sqrt(this->get_variance_in_bucket_range(from_bucket,to_bucket)); //intensity variance...
-	int dyn_from_bucket = std::max(from_bucket, intensity_to_bucketpos(g.center-1.5*g.sigma));
-	int dyn_to_bucket = std::min(to_bucket, intensity_to_bucketpos(g.center+1.5*g.sigma));
-
-//	cout<<"***INIT***"<<endl;
-//	cout<<"amp="<<g.amplitude<<endl;
-//	cout<<"center="<<g.center<<endl;
-//	cout<<"sigma="<<g.sigma<<endl;
-
-	if(print_info)
-	{
-	cout<<"**************"<<endl;
-	cout<<"**************"<<endl;
-	cout<<"from_bucket="<<from_bucket<<endl;
-	cout<<"to_bucket="<<to_bucket<<endl;
-	cout<<"amp="<<g.amplitude<<endl;
-	cout<<"center="<<g.center<<endl;
-	cout<<"sigma="<<g.sigma<<endl;
-	cout<<"dyn_from_bucket="<<dyn_from_bucket<<endl;
-	cout<<"dyn_to_bucket="<<dyn_to_bucket<<endl;
-	}
-
-	float tmp;
-	int nr_iterations=8;
-	for(int i=0;i<nr_iterations;i++){
-		g.amplitude = find_better_amplitude(g,dyn_from_bucket,dyn_to_bucket,0.8,1.2,10+i);
-		g.center = find_better_center(g,dyn_from_bucket,dyn_to_bucket,0.8,1.2,10+i);
-		g.sigma = find_better_sigma(g,dyn_from_bucket,dyn_to_bucket,0.8,1.2,10+i);
-		
-		//consider shape of gaussian but dont go outside given limits...
-		tmp = std::max(float(from_int),float(g.center-1.1*g.sigma)); //limits intensity range...
-		dyn_from_bucket = std::max(from_bucket, intensity_to_bucketpos(tmp)); //limits bucket range...
-		dyn_to_bucket = std::min(to_bucket, intensity_to_bucketpos(g.center+1.1*g.sigma));
-
-		if(print_info){
-			cout<<"**************"<<endl;
-			cout<<"iter="<<i<<"/"<<nr_iterations<<endl;
-			cout<<"g.amplitude="<<g.amplitude<<endl;
-			cout<<"g.center="<<g.center<<endl;
-			cout<<"g.sigma="<<g.sigma<<endl;
-			cout<<"tmp="<<tmp<<endl;
-			cout<<"dyn_from_bucket="<<dyn_from_bucket<<endl;
-			cout<<"dyn_to_bucket="<<dyn_to_bucket<<endl;
-		}
-	}
-
-	//set the reference variables again...
-	amp = g.amplitude;
-	center = g.center;
-	sigma = g.sigma;
+	this->bucket_vector->fit_gaussian_to_intensity_range(amp, center, sigma, from_int, to_int, print_info);
 }
 
 
@@ -956,95 +899,25 @@ void histogram_1D<ELEMTYPE>::fit_gaussian_to_intensity_range(float &amp, float &
 template <class ELEMTYPE>
 float histogram_1D<ELEMTYPE>::find_better_amplitude(gaussian g, int from_bucket, int to_bucket, float factor1, float factor2, int nr_steps)
 {
-	float start = factor1*g.amplitude;
-	float end = factor2*g.amplitude;
-	float step = (end-start)/float(nr_steps);
-	float best = 0;
-	double error_sum = 0;
-	double error_min = 100000000000000000.0;
-
-	for(g.amplitude=start; g.amplitude<=end; g.amplitude+=step){
-		error_sum = get_sum_square_diff_between_buckets(g, from_bucket, to_bucket);
-		if(error_sum<error_min){
-			error_min = error_sum;
-			best = g.amplitude;
-		}
-	}
-	return best;
+	return this->bucket_vector->find_better_amplitude(g,from_bucket, to_bucket, factor1, factor2, nr_steps);
 }
 
 template <class ELEMTYPE>
 float histogram_1D<ELEMTYPE>::find_better_center(gaussian g, int from_bucket, int to_bucket, float factor1, float factor2, int nr_steps)
 {
-	float start = factor1*g.center;
-	float end = factor2*g.center;
-	if(g.center==0){
-		start = this->bucketpos_to_intensity(from_bucket);
-		end = this->bucketpos_to_intensity(to_bucket);
-	}
-	float step = (end-start)/float(nr_steps);
-	float best = 0;
-	double error_sum = 0;
-	double error_min = 100000000000000000.0;
-
-	for(g.center=start; g.center<=end; g.center+=step){
-		error_sum = get_sum_square_diff_between_buckets(g, from_bucket, to_bucket);
-		if(error_sum<error_min){
-			error_min = error_sum;
-			best = g.center;
-		}
-	}
-	return best;
+	return this->bucket_vector->find_better_center(g, from_bucket, to_bucket, factor1, factor2, nr_steps);
 }
 
 template <class ELEMTYPE>
 float histogram_1D<ELEMTYPE>::find_better_sigma(gaussian g, int from_bucket, int to_bucket, float factor1, float factor2, int nr_steps)
 {
-	float start = factor1*g.sigma;
-	float end = factor2*g.sigma;
-	float step = (end-start)/float(nr_steps);
-	float best = 0;
-	double error_sum = 0;
-	double error_min = 100000000000000000.0;
-
-	for(g.sigma=start; g.sigma<=end; g.sigma+=step){
-		error_sum = get_sum_square_diff_between_buckets(g, from_bucket, to_bucket);
-		if(error_sum<error_min){
-			error_min = error_sum;
-			best = g.sigma;
-		}
-	}
-	return best;
+	return this->bucket_vector->find_better_sigma(g,from_bucket, to_bucket, factor1, factor2, nr_steps);
 }
 
 template <class ELEMTYPE>
 double histogram_1D<ELEMTYPE>::get_sum_square_diff_between_buckets(vector<gaussian> v, int from_bucket, int to_bucket, bool ignore_zeros){
-	double error = 0;
-	float val=0;
-	int zero_intensity_bucket = intensity_to_bucketpos(0);
-
-	for(int j=from_bucket;j<=to_bucket;j++){
-		//it is very important to use the intensity, and not the bucket position...
-
-		if(this->bucket_vector->at(j)>0 || !ignore_zeros){
-			if(j != zero_intensity_bucket){ //dont include the commonly seen peak at zero intensity
-
-				val=0;
-				ELEMTYPE intensity = bucketpos_to_intensity(j);
-				for(int i=0;i<v.size();i++){
-					val += v[i].evaluate_at(intensity);	
-				}
-
-				if(j<0){
-					error += pow(val - 0, 2);
-				}else{
-					error += pow(val - float(this->bucket_vector->at(j)), 2);
-				}
-			}
-
-		}
-	}
-	return error;
+	
+	return this->get_sum_square_diff_between_buckets(v, from_bucket, to_bucket, ignore_zeros);
 }
 
 
@@ -1062,20 +935,14 @@ double histogram_1D<ELEMTYPE>::get_sum_square_diff(vector<gaussian> v, bool igno
 
 template <class ELEMTYPE>
 double histogram_1D<ELEMTYPE>::get_sum_square_diff(gaussian g, bool ignore_zeros){
-	vector<gaussian> v;
-	v.push_back(g);
-	return get_sum_square_diff_between_buckets(v,0,this->num_buckets-1,ignore_zeros);
+	return this->bucket_vector->get_sum_square_diff(g,ignore_zeros);
 }
 
 
 template <class ELEMTYPE>
 double histogram_1D<ELEMTYPE>::get_gaussian_area(gaussian g, int from_bucket, int to_bucket)
 {
-	double area=0;
-	for(int i=from_bucket;i<=to_bucket;i++){
-		area += g.evaluate_at(bucketpos_to_intensity(i));
-	}
-	return area;
+	return this->bucket_vector->get_gaussian_area(g,from_bucket, to_bucket);
 }
 
 template <class ELEMTYPE>
@@ -1087,26 +954,13 @@ double histogram_1D<ELEMTYPE>::get_gaussian_area(gaussian g)
 template <class ELEMTYPE>
 vector<double> histogram_1D<ELEMTYPE>::get_gaussian_areas(vector<gaussian> v)
 {
-	vector<double> v2;
-	for(int i=0;i<v.size();i++){
-		v2.push_back(this->get_gaussian_area(v[i]));
-	}
-	return v2;
+	return this->bucket_vector->get_gaussian_areas(v);
 }
 
 template <class ELEMTYPE>
 double histogram_1D<ELEMTYPE>::get_sum_square_gaussian_overlap(vector<gaussian> v, int from_bucket, int to_bucket)
 {
-	double sum=0;
-	double min_val=10000;
-	for(int i=from_bucket;i<=to_bucket;i++){
-		for(int j=0;j<v.size();j++){
-			min_val = std::min( min_val, double(v[j].evaluate_at(bucketpos_to_intensity(i))) );
-		}
-		sum += min_val*min_val;
-		min_val=10000;
-	}
-	return sum;
+	return this->bucket_vector->get_sum_square_gaussian_overlap(v, from_bucket, to_bucket);
 }
 
 template <class ELEMTYPE>
@@ -1118,34 +972,7 @@ double histogram_1D<ELEMTYPE>::get_sum_square_gaussian_overlap(vector<gaussian> 
 template <class ELEMTYPE>
 vector<double> histogram_1D<ELEMTYPE>::get_overlaps_in_percent(vector<gaussian> v)
 {
-	vector<double> areas = this->get_gaussian_areas(v);
-	vector<double> overlap_percent;
-
-	//for each g, for each bucket, max_of_others, min(my_height,max_of_others);
-	double my_val;
-	double moa_val; //max_of_others
-	double sum_overlap;
-
-	for(int j=0;j<v.size();j++){
-		sum_overlap=0;
-		for(int i=0;i<this->num_buckets;i++){
-			my_val = v[j].evaluate_at(bucketpos_to_intensity(i));
-			moa_val=0;
-			for(int k=0;k<v.size();k++){
-				//cout<<"j,i,k-"<<j<<","<<i<<","<<k<<endl;
-				if(k != j){
-					moa_val = std::max( moa_val, double(v[k].evaluate_at(bucketpos_to_intensity(i))) );
-				}
-			}
-
-			sum_overlap += std::min(my_val,moa_val);
-		}
-
-		overlap_percent.push_back( sum_overlap/areas[j] );
-//		cout<<"overlap_percent="<<overlap_percent[j]<<endl;
-	}
-
-	return overlap_percent;
+	return this->bucket_vector->get_overlaps_in_percent(v);
 }
 
 
@@ -1153,55 +980,15 @@ vector<double> histogram_1D<ELEMTYPE>::get_overlaps_in_percent(vector<gaussian> 
 
 template <class ELEMTYPE>
 vnl_vector<double> histogram_1D<ELEMTYPE>::get_vnl_vector_with_start_guess_of_num_gaussians(int num_gaussians){
-	vnl_vector<double> x(3*num_gaussians);
-
-	int from_bucket=1;
-	int to_bucket=0;
-	for(int i=0;i<num_gaussians;i++){
-		to_bucket = this->get_bucket_at_histogram_lower_percentile( float(i+1)/float(num_gaussians), true);
-		cout<<from_bucket<<" -->"<<to_bucket<<endl;
-		//height
-		//center (intensity)
-		//SD (int)
-		x[i*3+0] = this->get_max_value_in_bucket_range(from_bucket,to_bucket);
-		x[i*3+1] = this->get_intensity_at_histogram_lower_percentile( float(i+0.5)/float(num_gaussians), true );
-		x[i*3+2] = sqrt(this->get_variance_in_bucket_range(from_bucket,to_bucket));
-
-		from_bucket = to_bucket;
-	}
-	return x;
+	
+	return this->bucket_vector->get_vnl_vector_with_start_guess_of_num_gaussians(num_gaussians);
 }
 
 
 template <class ELEMTYPE>
 ELEMTYPE histogram_1D<ELEMTYPE>::fit_two_gaussians_to_histogram_and_return_threshold(string save_histogram_file_path)
 {
-	fit_gaussians_to_histogram_1D_cost_function<ELEMTYPE> cost(this,2, true, true);
-	vnl_amoeba amoeba_optimizer = vnl_amoeba(cost);
-	amoeba_optimizer.verbose = false;
-	amoeba_optimizer.set_x_tolerance(1);
-//	amoeba_optimizer.set_relative_diameter(0.10);
-//	amoeba_optimizer.set_max_iterations(10);
-//	amoeba_optimizer.set_f_tolerance(1);
-
-	vnl_vector<double> x = this->get_vnl_vector_with_start_guess_of_num_gaussians(2);
-	cout<<"x="<<x<<endl;
-	amoeba_optimizer.minimize(cost,x);
-	cout<<"x="<<x<<endl;
-	cout<<"amoeba_optimizer.maxiter="<<amoeba_optimizer.maxiter<<endl;
-	cout<<"amoeba_optimizer.F_tolerance="<<amoeba_optimizer.F_tolerance<<endl;
-	cout<<"amoeba_optimizer.X_tolerance="<<amoeba_optimizer.X_tolerance<<endl;
-
-	gaussian g = gaussian(x[0],x[1],x[2]);
-	gaussian g2 = gaussian(x[3],x[4],x[5]);
-
-	if(save_histogram_file_path != ""){
-		vector<gaussian> v; v.push_back(g); v.push_back(g2);
-		this->save_histogram_to_txt_file(save_histogram_file_path,v);
-	}
-
-//	return x[1] + 3*x[2]; //pos + 2*SD
-	return g.get_value_at_intersection_between_centers(g2);
+	return this->bucket_vector->fit_two_gaussians_to_histogram_and_return_threshold(save_histogram_file_path);
 }
 
 //-----------------------------
@@ -1209,38 +996,7 @@ ELEMTYPE histogram_1D<ELEMTYPE>::fit_two_gaussians_to_histogram_and_return_thres
 template <class ELEMTYPE>
 void histogram_1D<ELEMTYPE>::fit_rayleigh_distr_to_intensity_range(float &amp, float &sigma, ELEMTYPE from_int, ELEMTYPE to_int, bool print_info)
 {
-	cout<<"fit_rayleigh_distr_to_intensity_range..."<<endl;
-
-	fit_rayleighian_to_histogram_1D_cost_function<ELEMTYPE> cost(this);
-
-	vnl_amoeba amoeba_optimizer = vnl_amoeba(cost);
-	amoeba_optimizer.verbose = false;
-	amoeba_optimizer.set_x_tolerance(1000);
-//	amoeba_optimizer.set_relative_diameter(0.10);
-//	amoeba_optimizer.set_max_iterations(10);
-//	amoeba_optimizer.set_f_tolerance(1);
-
-	vnl_vector<double> x(2);
-	int hist_max_val_bucket_pos;
-	ELEMTYPE hist_max = this->get_max_value_in_bucket_range(this->intensity_to_bucketpos(from_int),this->intensity_to_bucketpos(to_int), hist_max_val_bucket_pos);
-	ELEMTYPE intensity_at_hist_max = this->bucketpos_to_intensity(hist_max_val_bucket_pos);
-
-//	x[1] = sqrt(2.0)*intensity_at_hist_max; //M = sqrt(2)*intensity_at_hist_max
-//	x[0] = 0.5*hist_max*x[1]*exp(1.0); //amp = 0.5*hist_max_val*M*exp(1)
-
-	x[1] = intensity_at_hist_max; //sig = intensity_at_hist_max
-	x[0] = hist_max*x[1]*exp(0.5); //amp = hist_max_val*sigma*exp(0.5)
-
-	cout<<"x="<<x<<endl;
-	amoeba_optimizer.minimize(cost,x);
-	cout<<"x="<<x<<endl;
-
-	cout<<"amoeba_optimizer.maxiter="<<amoeba_optimizer.maxiter<<endl;
-	cout<<"amoeba_optimizer.F_tolerance="<<amoeba_optimizer.F_tolerance<<endl;
-	cout<<"amoeba_optimizer.X_tolerance="<<amoeba_optimizer.X_tolerance<<endl;
-
-	amp = x[0];
-	sigma = x[1];
+	this->bucket_vector->fit_rayleigh_distr_to_intensity_range(amp, sigma,from_int, to_int, print_info);
 }
 
 		
@@ -1251,23 +1007,7 @@ double histogram_1D<ELEMTYPE>::get_sum_square_diff(rayleighian r, bool ignore_ze
 
 template <class ELEMTYPE>
 double histogram_1D<ELEMTYPE>::get_sum_square_diff_from_buckets(rayleighian r, int from_bucket, int to_bucket, bool ignore_zeros){
-	double error = 0;
-	float val=0;
-	int zero_intensity_bucket = intensity_to_bucketpos(0);
-
-	for(int j=from_bucket;j<=to_bucket;j++){
-		//it is very important to use the intensity, and not the bucket position...
-
-		if(this->bucket_vector->at(j)>0 || !ignore_zeros){
-			if(j != zero_intensity_bucket){ //dont include the commonly seen peak at zero intensity
-
-				ELEMTYPE intensity = bucketpos_to_intensity(j);
-				val = r.evaluate_at(intensity);	
-				error += pow(val - float(this->bucket_vector->at(j)), 2);
-			}
-		}
-	}
-	return error;
+	return this->bucket_vector->get_sum_square_diff_from_buckets(r, from_bucket, to_bucket, ignore_zeros);
 }
 
 
@@ -1282,16 +1022,12 @@ ELEMTYPE histogram_1D<ELEMTYPE>::get_min_value_in_bucket_range(int from, int to)
 template <class ELEMTYPE>
 ELEMTYPE histogram_1D<ELEMTYPE>::get_min_value_in_bucket_range(int from, int to, int &min_val_bucket_pos)
 {
-	ELEMTYPE min_v = std::numeric_limits<ELEMTYPE>::max();
-
-	for(int i=from; i<=to; i++){
-		if(this->bucket_vector->at(i)<min_v){
-			min_v = this->bucket_vector->at(i);
-			min_val_bucket_pos = i;
-		}
-	}
-
-	return min_v;
+	ELEMTYPE min_value = std::numeric_limits<ELEMTYPE>::min();
+	ELEMTYPE  *m = this->bucket_vector->get_minimum_in_range(from, to);
+	min_val_bucket_pos = m[0];
+	min_value = m[1];
+	free(m);
+	return min_value;
 }
 
 
@@ -1307,63 +1043,37 @@ template <class ELEMTYPE>
 ELEMTYPE histogram_1D<ELEMTYPE>::get_max_value_in_bucket_range(int from, int to, int &max_val_bucket_pos)
 {
 	ELEMTYPE max_value = std::numeric_limits<ELEMTYPE>::min();
-
-	for(int i=from; i<=to; i++){
-		if(this->bucket_vector->at(i)>max_value){
-			max_val_bucket_pos = i;
-			max_value = this->bucket_vector->at(i);
-		}
-	}
-
+	ELEMTYPE  *m = this->bucket_vector->get_maximum_in_range(from, to);
+	max_val_bucket_pos = m[0];
+	max_value = m[1];
+	free(m);
 	return max_value;
 }
 
 template <class ELEMTYPE>
 float histogram_1D<ELEMTYPE>::get_mean_intensity_in_bucket_range(int from, int to)
 {
-	float intensity_sum=0;
-	float num_values=0;
-	for(int i=from; i<=to; i++){
-		//this number of pixels with this intensity
-		intensity_sum += this->bucket_vector->at(i)*bucketpos_to_intensity(i);
-		num_values += this->bucket_vector->at(i);
-	}
-	return intensity_sum/num_values;
+	return this->bucket_vector->get_mean_in_range(from, to);
 }
 
 template <class ELEMTYPE>
 float histogram_1D<ELEMTYPE>::get_mean_intensity()
-{
-	return this->get_mean_intensity_in_bucket_range(0,this->num_buckets-1);
-}
-
-template <class ELEMTYPE>
-float histogram_1D<ELEMTYPE>::get_variance_in_bucket_range(int from, int to)
-{
-	float mean = get_mean_intensity_in_bucket_range(from,to);
-	float sum = 0;
-	float num_values = 0;
-	float diff=0;
-	for(int i=from; i<=to; i++){
-		diff = mean-bucketpos_to_intensity(i);
-		sum += float(this->bucket_vector->at(i))*diff*diff; //this number of pixels with this (mean_intensity_diff)^2...
-		num_values += float(this->bucket_vector->at(i));
-	}
-	return sum/num_values;
+{	
+	return this->bucket_vector->get_mean_in_range(0,this->bucket_vector->size()-1);
 }
 
 
 template <class ELEMTYPE>
 float histogram_1D<ELEMTYPE>::get_variance_in_intensity_range(ELEMTYPE from, ELEMTYPE to)
 {
-	return get_variance_in_bucket_range(intensity_to_bucketpos(from),intensity_to_bucketpos(to));
+	return this->bucket_vector->get_variance_in_range(intensity_to_bucketpos(from),intensity_to_bucketpos(to));
 }
 
 template <class ELEMTYPE>
 int histogram_1D<ELEMTYPE>::get_bucket_pos_with_largest_value_in_bucket_range(int from, int to)
 {
 	int pos=0;
-	get_max_value_in_bucket_range(from, to, pos);
+	bucket_vector->get_max_value_in_range(from, to, pos);
 	return pos;
 }
 
@@ -1372,100 +1082,9 @@ template <class ELEMTYPE>
 int histogram_1D<ELEMTYPE>::get_bucket_pos_with_largest_value_in_intensity_range(ELEMTYPE from, ELEMTYPE to)
 {
 	int pos=0;
-	get_max_value_in_bucket_range(intensity_to_bucketpos(from), intensity_to_bucketpos(to), pos);
+	bucket_vector->get_max_value_in_range(intensity_to_bucketpos(from), intensity_to_bucketpos(to), pos);
 	return pos;
 }
-
-
-
-
-template<class ELEMTYPE>
-fit_gaussians_to_histogram_1D_cost_function<ELEMTYPE>::fit_gaussians_to_histogram_1D_cost_function(histogram_1D<ELEMTYPE> *h, int num, bool punish_overl, bool punish_large_area_diffs):vnl_cost_function(num*3)
-{
-	the_hist = h;
-	num_gaussians = num;
-	punish_overlap = punish_overl;
-	punish_large_area_differences = punish_large_area_diffs;
-}
-
-template<class ELEMTYPE>
-double fit_gaussians_to_histogram_1D_cost_function<ELEMTYPE>::f(vnl_vector<double> const &x)
-{
-	vector<gaussian> v;
-	for(int i=0;i<num_gaussians;i++){
-		v.push_back( gaussian(x[i*3+0],x[i*3+1],x[i*3+2]) );
-	}
-	double res = the_hist->get_sum_square_diff(v);
-//	cout<<x<<"-->"<<res<<endl;
-
-	//-------------------------------
-	//-------------------------------
-	//if(punish_variance_differences){
-	double mean_sigma=0;
-	double mean_sigma_diff=0;
-	for(int i=0;i<v.size();i++){
-		mean_sigma += v[i].sigma;
-	}
-	mean_sigma = mean_sigma/v.size();
-
-	for(int i=0;i<v.size();i++){
-		mean_sigma_diff += abs(v[i].sigma-mean_sigma)/mean_sigma;
-	}
-	mean_sigma_diff = mean_sigma_diff/v.size();
-	res = res*(1+0.2*mean_sigma_diff);
-
-	//-------------------------------
-	//-------------------------------
-
-
-	if(punish_overlap){
-		vector<double> overlaps = the_hist->get_overlaps_in_percent(v);
-		double mean_ = mean<double>(overlaps);
-//		cout<<"mean_="<<mean_<<endl;
-		res = res*(1+mean_);
-
-		res += the_hist->get_sum_square_gaussian_overlap(v);
-	}
-
-	if(punish_large_area_differences){
-
-		vector<double> areas = the_hist->get_gaussian_areas(v);
-		
-		double mean_area = mean<double>(areas);
-//		cout<<"mean_area="<<mean_area<<endl;
-
-		double mean_diff_percent=0;
-		for(int i=0;i<areas.size();i++){
-			mean_diff_percent += abs(mean_area - areas[i])/mean_area;
-//			cout<<"mean_diff_percent="<<mean_diff_percent<<endl;
-		}
-		mean_diff_percent = mean_diff_percent/areas.size();
-
-//		cout<<"*mean_diff_percent="<<mean_diff_percent<<endl;
-
-		res = res*(1+0.2*mean_diff_percent);
-	}
-
-	return res;
-}
-
-
-template<class ELEMTYPE>
-fit_rayleighian_to_histogram_1D_cost_function<ELEMTYPE>::fit_rayleighian_to_histogram_1D_cost_function(histogram_1D<ELEMTYPE> *h):vnl_cost_function(2)
-{
-	the_hist = h;
-}
-
-template<class ELEMTYPE>
-double fit_rayleighian_to_histogram_1D_cost_function<ELEMTYPE>::f(vnl_vector<double> const &x)
-{
-	rayleighian r(x[0],x[1]);
-	double res = the_hist->get_sum_square_diff(r, true);
-	cout<<x<<"-->"<<res<<endl;
-
-	return res;
-}
-
 
 /*
 template<class ELEMTYPE, int IMAGEDIM>

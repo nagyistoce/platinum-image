@@ -47,6 +47,7 @@ void histogram_base::reallocate_buckets_if_necessary(int new_num_buckets)
 		this->bucket_vector->clear();  
 		this->bucket_vector = NULL;
         this->bucket_vector=new pts_vector<unsigned long>(this->num_buckets);
+
 	}
     }
 

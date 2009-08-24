@@ -185,17 +185,78 @@ void ultra1dops::straighten_the_peaks(us_scan * scan, int intima, int adventitia
 	s_m->push_back(round(s->at(s->size()-1)));
 
 	cout << endl;
-	curve_scalar<int> *diff = new curve_scalar<int>(0, "diff", 0, 1);
+	/*curve_scalar<int> *diff = new curve_scalar<int>(0, "diff", 0, 1);
 	extern datamanager datamanagement;
 	datamanagement.add(diff);
-	diff->my_data = s_m;
+	diff->my_data = s_m;*/
 
 	shift(scan->rows, s_m);
 	recalculate_mean_curve(scan);
 }
 
 
-void ultra1dops::fit_gaussian_curve_and_calculate(pts_vector<double> *curve;, int intima, int adventitia){
-	int search_area = pt_config::read<double>("scope_for_maximum_diff",CURVE_CONF_PATH)/scan->rows.at(0)->x_res;
+void ultra1dops::fit_gaussian_curve_and_calculate(curve_scalar<unsigned short> *curve, int intima, int adventitia){
 	
+	int search_area = pt_config::read<double>("scope_for_vally_loc",CURVE_CONF_PATH)/curve->get_scale();
+	gaussian in, adv;
+	float i_l, i_m, m_a;
+	
+	pts_vector<unsigned short> *v;
+	if((v = dynamic_cast<pts_vector<unsigned short>*>(curve->my_data)) == NULL)
+		return;
+	
+
+	in = v->fit_gaussian_with_amoeba(intima-search_area, intima+search_area);
+		//v->fit_gaussian_with_amoeba(amp, center, sigma, intima-search_area, intima+search_area);
+	//v->fit_gaussian_to_intensity_range(amp,center,sigma,intima-search_area, intima+search_area, false);
+	//Beräkna två mätpunkter här
+
+	adv = v->fit_gaussian_with_amoeba(adventitia-search_area, adventitia+search_area);
+	//v->fit_gaussian_with_amoeba(amp2, center2, sigma2, adventitia-search_area, adventitia+search_area);
+
+
+	i_l = in.center + v->from_x_to_val(intima-search_area) + in.sigma; //everything in x_scale coords. NOT index coords!
+	i_m = in.center + v->from_x_to_val(intima-search_area) - in.sigma;//everything in x_scale coords
+	m_a = adv.center + v->from_x_to_val(adventitia-search_area) + adv.sigma;//everything in x_scale coords
+
+	in.sigma = (in.sigma - v->x_axis_start)/v->x_res; //convert to unrounded index coordinates
+	adv.sigma = (adv.sigma - v->x_axis_start)/v->x_res; //convert to unrounded index coordinates
+
+	
+
+	cout << "gaussian way" << endl;
+	cout << "intima: " << i_l - i_m << endl;
+	cout << "media: "  << i_m - m_a << endl;
+
+	curve->helper_data->add_gauss(v->from_val_to_x(in.center) + (intima-search_area), in.sigma, in.amplitude);
+	curve->helper_data->add_gauss(v->from_val_to_x(adv.center) + (adventitia-search_area), adv.sigma, adv.amplitude);
+}
+
+void ultra1dops::find_steep_slope_and_calculate(curve_scalar<unsigned short> *curve, int intima, int adventitia){
+	//curve->save_curve_to_file("./" + curve->name() + ".ptc");
+	float i_l = mark_point(curve, intima, get_vally(curve, intima, 1)); //intima end
+	float i_m = mark_point(curve, get_vally(curve, intima, -1), intima); //intima begin
+	float m_a = mark_point(curve, adventitia, get_vally(curve, adventitia, 1)); //media begin
+
+	Vector3D s;
+	Vector3D p;
+	s[0] = i_l;
+	s[1] = curve->get_data(i_l);
+	s[2] = 0;
+	p = s;
+	p[1] = 0;
+	//	curve->helper_data->add_line(s,p);
+
+	p[0] = i_m;
+	s[0] = i_m;
+	s[1] = curve->get_data(i_m);
+	//	curve->helper_data->add_line(s,p);
+
+	p[0] = m_a;
+	s[0] = m_a;
+	s[1] = curve->get_data(m_a);
+	//	curve->helper_data->add_line(s,p);
+	cout << "manual way" << endl;
+	cout << "intima: " << (i_l - i_m)*curve->get_scale() << endl;
+	cout << "media: "  << (i_m - m_a)*curve->get_scale()<< endl;
 }

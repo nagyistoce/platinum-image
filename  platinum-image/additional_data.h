@@ -47,7 +47,7 @@ public:
 	void add_text(Vector3D p, string text);
 	void add_line(Vector3D start, Vector3D stop);
 	void add_rect(Vector3D c1, Vector3D c2, Vector3D c3, Vector3D c4);
-	void add_gauss(float mean, float std);
+	void add_gauss(float mean, float std, float amp);
 	void write_all_data_to_file(string file);
 	void read_all_data_from_file(string file);
 	vector<additional_data_base*> data;
@@ -115,11 +115,11 @@ public:
 
 class gauss_data : public additional_data_base{
 public:
-	gauss_data(float mean, float std);
+	gauss_data(float mean, float std, float amplitude);
 	void draw_data(unsigned char* rgb_map, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type);
 	void calc_data(unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type);
 	void write_data(ofstream &myfile);
-	float omega, my;
+	float omega, my, amp;
 };
 	
 #endif

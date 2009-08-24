@@ -246,7 +246,7 @@ class histogram_1D : public histogram_typed<ELEMTYPE> //horizontal 1D graph hist
     };
 
 
-template<class ELEMTYPE>
+/*template<class ELEMTYPE>
 class fit_gaussians_to_histogram_1D_cost_function : public vnl_cost_function
 {
 	histogram_1D<ELEMTYPE> *the_hist;
@@ -267,7 +267,7 @@ class fit_rayleighian_to_histogram_1D_cost_function : public vnl_cost_function
 public:
 	fit_rayleighian_to_histogram_1D_cost_function(histogram_1D<ELEMTYPE> *h);
 	double f(vnl_vector<double> const &x);
-};
+};*/
 
 
 // This class extends histogram_1D<class ELEMTYPE> just to implement one function

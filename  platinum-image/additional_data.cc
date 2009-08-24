@@ -31,7 +31,7 @@ void additional_data::read_all_data_from_file(string file){
 	int t;
 	Vector3D vec1, vec2;
 	int size;
-	float r1, r2;
+	float r1, r2, a;
 	string s;
 
 	ifstream myfile(file.c_str());
@@ -63,8 +63,8 @@ void additional_data::read_all_data_from_file(string file){
 					add_text(vec1,s);
 					break;
 				case AT_GAUSS:
-					myfile >> r1 >> r2;
-					add_gauss(r1, r2);
+					myfile >> r1 >> r2 >> a;
+					add_gauss(r1, r2, a);
 				default:
 					break;
 			}
@@ -91,8 +91,8 @@ void additional_data::add_line(Vector3D x1, Vector3D x2){
 void additional_data::add_text(Vector3D p, string s){
 	data.push_back(new text_data(p, s));
 }
-void additional_data::add_gauss(float mean, float std){
-	data.push_back(new gauss_data(mean, std));
+void additional_data::add_gauss(float mean, float std, float amp){
+	data.push_back(new gauss_data(mean, std, amp));
 }
 
 /* -------------------------------------------- */
@@ -291,9 +291,10 @@ void text_data::calc_data(unsigned char* pixels, int width, int height, renderge
 }
 
 
-gauss_data::gauss_data(float mean, float std) : additional_data_base(){
+gauss_data::gauss_data(float mean, float std, float amplitude) : additional_data_base(){
 		omega = std;
 		my = mean;
+		amp = amplitude;
 		type = AT_GAUSS;
 }
 
@@ -301,28 +302,31 @@ void gauss_data::draw_data(unsigned char* pixels, int width, int height, renderg
 }
 void gauss_data::write_data(ofstream &myfile){
 	myfile << type << "\n";
-	myfile << omega << " " << my <<"\n";
+	myfile << omega << " " << my << " " << amp <<"\n";
 }
 void gauss_data::calc_data(unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type){
 	points_to_draw.clear();
 	float ans;
 	double multi = 1.0;
-	ans = (1/(omega*sqrt(2*pt_PI)))*exp(-(pow(my-my,2)/(2*pow(omega,2))));;
+	//ans = amp*(1/(omega*sqrt(2*pt_PI)))*exp(-(pow(my-my,2)/(2*pow(omega,2))));
+	ans = amp* exp( -0.5 * pow((my-my),2)/pow(omega,2) );
 	
 	if(type = RENDERER_CURVE){
 		int curve_delta = height/(dynamic_cast<rendergeom_curve*>(rg))->qy;
-		multi = curve_delta/ans;
+		multi = 1.0;//curve_delta/ans;
 	}
 	Vector3D point;
 	point[0] = my;
-	ans = (1/(omega*sqrt(2*pt_PI)))*exp(-(pow(my-my,2)/(2*pow(omega,2))));
+	//ans = amp*(1/(omega*sqrt(2*pt_PI)))*exp(-(pow(my-my,2)/(2*pow(omega,2))));
+	ans = amp* exp( -0.5 * pow((my-my),2)/pow(omega,2) );
 	point[1] = ans*multi;
 	point[2] = 1;
 	points_to_draw.push_back(point);
 	
 	for(int i = my+1; ans > 0.0002 ; i++){
 		point[0] = i;
-		ans = (1/(omega*sqrt(2*pt_PI)))*exp(-(pow(i-my,2)/(2*pow(omega,2))));
+		//ans = amp*(1/(omega*sqrt(2*pt_PI)))*exp(-(pow(i-my,2)/(2*pow(omega,2))));
+		ans = amp* exp( -0.5 * pow((i-my),2)/pow(omega,2) );
 		point[1] = ans*multi;
 		point[2] = 1;
 		points_to_draw.push_back(point);
