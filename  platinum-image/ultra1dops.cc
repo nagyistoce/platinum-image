@@ -37,6 +37,9 @@ int ultra1dops::mark_point(curve_scalar<unsigned short> *curve, int from, int to
 	int y1, y2;
 	x = from;
 	dy = 0;
+	if(from == -1 || to == -1){
+		return -1;
+	}
 
 	y1 = curve->get_data(from);
 	for(int i = from+1 ; i <= to; i++){
@@ -59,6 +62,8 @@ int ultra1dops::get_vally(curve_scalar<unsigned short> *curve, int x, int dir){
 	int scope = pt_config::read<float>("scope_for_vally_loc",CURVE_CONF_PATH)/curve->get_scale();
 
 	for(int i = 1; i < scope; i++){
+		if(x + i*dir >= curve->get_data_size())
+			return -1;
 		if(min[1] > curve->get_data(x + i*dir)){
 			min[0] = x + i*dir;
 			min[1] = curve->get_data(x + i*dir);
@@ -72,10 +77,21 @@ int ultra1dops::count_peaks(vector<Vector3D> c, curve_scalar<unsigned short> *cu
 	Vector3D bottom;
 	bottom[2] =0;
 	int min_thresh = pt_config::read<int>("min_val_for_peak",CURVE_CONF_PATH);
+	//TODO come up with a smart way to set dynamic threshold
+	int sum = 0;
+	int m_count = 0;
+	for(int i = 0; i < c.size(); i++){
+		if(is_max(c,i)){
+			sum+=c[i][1];
+			m_count++;
+		}
+	}
+	min_thresh = (sum/m_count)/2;
+	cout << "threshold: " << min_thresh << endl;
 	double max_dist = pt_config::read<double>("max_dist_between_peaks",CURVE_CONF_PATH)/curve->get_scale();
 	int start = 0;
 	for(int i = c.size()-1; i>= 0; i --){
- 		if(start - c[i][0] > max_dist){
+		if(start - c[i][0] > max_dist){
 				return peaks;
 		}
 		if(c[i][1] > min_thresh && is_max(c,i)){
@@ -83,6 +99,9 @@ int ultra1dops::count_peaks(vector<Vector3D> c, curve_scalar<unsigned short> *cu
 			bottom = c[i];
 			bottom[1] = 0;
 			//curve->helper_data->add_line(c[i],bottom);
+			if(peaks == 1 && peak[0][1] < c[i][1]/3){ //Added to prevent bump before intima to become peak
+				peaks--;
+			}
 			if(peaks < 2)
 				peak[peaks] = c[i];
 			peaks++;
@@ -153,14 +172,21 @@ void ultra1dops::straighten_the_peaks(us_scan * scan, int intima, int adventitia
 	float a;
 	for(int i = 0; i< scan->rows.size(); i++){
 		a = 0;
+		int count = 0;
 		for(int j = adventitia -5; j < intima + 5; j++){
-			a+= scan->rows.at(i)->at(j)/10;
+			if(j < scan->rows.at(i)->size() && j >=0){
+				a+= scan->rows.at(i)->at(j)/10;
+			}else{
+				return;
+			}
 		}
 		area.push_back(a);
 	}
 
 	for(int i = 0; i < scan->rows.size(); i++){
 		mass = pos = 0;
+		int temp_ = scan->rows.at(i)->size()-1 - intima;
+		search_area = std::min(temp_, search_area);
 		for(int j = -search_area; j <= search_area; j++){
 			mass += scan->rows.at(i)->at(intima+j);
 			pos += scan->rows.at(i)->at(intima+j)*(intima+j);
@@ -195,16 +221,27 @@ void ultra1dops::straighten_the_peaks(us_scan * scan, int intima, int adventitia
 }
 
 
-void ultra1dops::fit_gaussian_curve_and_calculate(curve_scalar<unsigned short> *curve, int intima, int adventitia){
+Vector3D ultra1dops::fit_gaussian_curve_and_calculate(curve_scalar<unsigned short> *curve, int intima, int adventitia){
 	
 	int search_area = pt_config::read<double>("scope_for_vally_loc",CURVE_CONF_PATH)/curve->get_scale();
 	gaussian in, adv;
-	float i_l, i_m, m_a;
-	
+	float i_l, i_m, m_a, s_a;
+	Vector3D res;
+
 	pts_vector<unsigned short> *v;
 	if((v = dynamic_cast<pts_vector<unsigned short>*>(curve->my_data)) == NULL)
-		return;
-	
+		return res;
+	if(intima+search_area >= v->size() || intima-search_area < 0){
+		Vector3D r;
+		r[0] = r[1] = r[2] = -1;
+		return r;
+	}
+
+	if(adventitia+search_area >= v->size() || adventitia-search_area < 0){
+		Vector3D r;
+		r[0] = r[1] = r[2] = -1;
+		return r;
+	}
 
 	in = v->fit_gaussian_with_amoeba(intima-search_area, intima+search_area);
 		//v->fit_gaussian_with_amoeba(amp, center, sigma, intima-search_area, intima+search_area);
@@ -218,11 +255,14 @@ void ultra1dops::fit_gaussian_curve_and_calculate(curve_scalar<unsigned short> *
 	i_l = in.center + v->from_x_to_val(intima-search_area) + in.sigma; //everything in x_scale coords. NOT index coords!
 	i_m = in.center + v->from_x_to_val(intima-search_area) - in.sigma;//everything in x_scale coords
 	m_a = adv.center + v->from_x_to_val(adventitia-search_area) + adv.sigma;//everything in x_scale coords
+	s_a = adv.center + v->from_x_to_val(adventitia-search_area) - adv.sigma;//everything in x_scale coords
 
 	in.sigma = (in.sigma - v->x_axis_start)/v->x_res; //convert to unrounded index coordinates
 	adv.sigma = (adv.sigma - v->x_axis_start)/v->x_res; //convert to unrounded index coordinates
 
-	
+	res[0] = i_l - i_m;//intima
+	res[1] = i_m - m_a;//media
+	res[2] = i_l - s_a; //Total wall thickness
 
 	cout << "gaussian way" << endl;
 	cout << "intima: " << i_l - i_m << endl;
@@ -230,13 +270,24 @@ void ultra1dops::fit_gaussian_curve_and_calculate(curve_scalar<unsigned short> *
 
 	curve->helper_data->add_gauss(v->from_val_to_x(in.center) + (intima-search_area), in.sigma, in.amplitude);
 	curve->helper_data->add_gauss(v->from_val_to_x(adv.center) + (adventitia-search_area), adv.sigma, adv.amplitude);
+
+	return res;
 }
 
-void ultra1dops::find_steep_slope_and_calculate(curve_scalar<unsigned short> *curve, int intima, int adventitia){
+Vector3D ultra1dops::find_steep_slope_and_calculate(curve_scalar<unsigned short> *curve, int intima, int adventitia){
 	//curve->save_curve_to_file("./" + curve->name() + ".ptc");
 	float i_l = mark_point(curve, intima, get_vally(curve, intima, 1)); //intima end
 	float i_m = mark_point(curve, get_vally(curve, intima, -1), intima); //intima begin
 	float m_a = mark_point(curve, adventitia, get_vally(curve, adventitia, 1)); //media begin
+	float s_a = mark_point(curve, get_vally(curve, adventitia, -1), adventitia); //adventitia begin
+
+	if(i_l == -1 ||i_m == -1 ||m_a == -1 || s_a == -1){
+		Vector3D r;
+		r[0] = r[1] = r[2] = -1;
+		return r;
+	}
+
+	Vector3D res;
 
 	Vector3D s;
 	Vector3D p;
@@ -256,7 +307,14 @@ void ultra1dops::find_steep_slope_and_calculate(curve_scalar<unsigned short> *cu
 	s[0] = m_a;
 	s[1] = curve->get_data(m_a);
 	//	curve->helper_data->add_line(s,p);
+
+	res[0] = (i_l - i_m)*curve->get_scale();
+	res[1] = (i_m - m_a)*curve->get_scale();
+	res[2] = (i_l - s_a)*curve->get_scale();
+
 	cout << "manual way" << endl;
 	cout << "intima: " << (i_l - i_m)*curve->get_scale() << endl;
 	cout << "media: "  << (i_m - m_a)*curve->get_scale()<< endl;
+	
+	return res;
 }

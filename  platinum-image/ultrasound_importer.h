@@ -28,6 +28,7 @@
 
 #include "image_scalar.h"
 //#include "curve.hxx"
+#include <string>
 #include "pt_vector.h"
 using namespace std;
 
@@ -49,6 +50,7 @@ public:
 	int scan_index;
 	int row_index;
 	bool loaded;
+	string name;
 	
 };
 

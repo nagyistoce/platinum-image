@@ -22,6 +22,9 @@ ultrasound_importer::ultrasound_importer(string file){
 	scan_index = 0;
 	row_index = 0;
 	read_file(file);
+	file.substr(0, 2);
+	name = file.substr(file.find_last_of('/')+1);
+	cout << "File name: " << name;
 
 }
 
@@ -30,68 +33,69 @@ ultrasound_importer::~ultrasound_importer(){
 
 void ultrasound_importer::read_file(string filepath){
 	string line = "";
-		int header_size = 0; //To be determined or ignored ;)
-		int linesize = 176;//Verifyed; 
-		int nr_of_lines = 208;//Verifyed
+	int header_size = 0; //To be determined or ignored ;)
+	int linesize = 176;//Verifyed; 
+	int nr_of_lines = 208;//Verifyed
+	int line_offset = 102; //verifyed
 
-		//string filepath = userIOmanagement.get_parameter<string>(userIO_ID,0);
-		if(filepath.empty()){
-			return;
-		}
-		long pos_ = 0;
-		unsigned long f_length, begin, end;
-		ifstream myfile(filepath.c_str(),ios::in | ios::binary); //BINARY SOLVED EVERYTHING!!!
+	//string filepath = userIOmanagement.get_parameter<string>(userIO_ID,0);
+	if(filepath.empty()){
+		return;
+	}
+	long pos_ = 0;
+	unsigned long f_length, begin, end;
+	ifstream myfile(filepath.c_str(),ios::in | ios::binary); //BINARY SOLVED EVERYTHING!!!
 
 
 
-		if(myfile.is_open()){
+	if(myfile.is_open()){
 
-			//Get length of file
-			begin = myfile.tellg();
-			myfile.seekg (0, ios::end);
-			end = myfile.tellg();
-			f_length = end-begin;
-			myfile.seekg (0, ios::beg);
+		//Get length of file
+		begin = myfile.tellg();
+		myfile.seekg (0, ios::end);
+		end = myfile.tellg();
+		f_length = end-begin;
+		myfile.seekg (0, ios::beg);
 
-			unsigned short val;
-			char input;
-			char buff[8];
-			int id = 0;
-			while(pos_ < f_length){// && (pos_ > -1)){
-				input = myfile.get();
-				//myfile.read( (char *)(&val), sizeof(val) );
-				if(input == 'S'){
-					myfile.read(buff,8);
-					string line(buff);
-					if(line.find("can ",0)!=string::npos){ //It says "Scan XXX" in the file, where XXX is a number
-						string name = "Scan ";
-						name.append(line, 4, 3);
-						us_scan *scan = new us_scan(name, linesize, nr_of_lines);
+		unsigned short val;
+		char input;
+		char buff[8];
+		int id = 0;
+		while(pos_ < f_length){// && (pos_ > -1)){
+			input = myfile.get();
+			//myfile.read( (char *)(&val), sizeof(val) );
+			if(input == 'S'){
+				myfile.read(buff,8);
+				string line(buff);
+				if(line.find("can ",0)!=string::npos){ //It says "Scan XXX" in the file, where XXX is a number
+					string name = "Scan ";
+					name.append(line, 4, 3);
+					us_scan *scan = new us_scan(name, linesize, nr_of_lines);
 
-						int olle = myfile.tellg();
+					int olle = myfile.tellg();
 
-						myfile.seekg(olle+102);
-						for(int j = 0; j<nr_of_lines; j++){
-							pts_vector<unsigned short>* row = new pts_vector<unsigned short>(0);
-							for(int i = 0; i < linesize; i++){
-								myfile.read( (char *)(&val), sizeof(val) );
-								unsigned short sum = numeric_limits<unsigned short>::max() - val;
-								scan->mean_vector->at(i)+= ((sum - scan->mean_vector->at(i))/(j+1));
-								row->push_back(sum);
-							}
-							row->config_x_axis(0.04,0);
-							scan->rows.push_back(row);
+					myfile.seekg(olle+line_offset);
+					for(int j = 0; j<nr_of_lines; j++){
+						pts_vector<unsigned short>* row = new pts_vector<unsigned short>(0);
+						for(int i = 0; i < linesize; i++){
+							myfile.read( (char *)(&val), sizeof(val) );
+							unsigned short sum = numeric_limits<unsigned short>::max() - val;
+							scan->mean_vector->at(i)+= ((sum - scan->mean_vector->at(i))/(j+1));
+							row->push_back(sum);
 						}
-						scan->mean_vector->config_x_axis(0.04,0);
-						all_scans.push_back(scan);
+						row->config_x_axis(0.04,0);
+						scan->rows.push_back(row);
 					}
+					scan->mean_vector->config_x_axis(0.04,0);
+					all_scans.push_back(scan);
 				}
-				pos_ = myfile.tellg();
 			}
-			cout << "bytes read: " << pos_  << "/" << f_length << endl;
-			myfile.close();
-			loaded = true;
+			pos_ = myfile.tellg();
 		}
+		cout << "bytes read: " << pos_  << "/" << f_length << endl;
+		myfile.close();
+		loaded = true;
+	}
 }
 
 string ultrasound_importer::set_current_scan(int i){

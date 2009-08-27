@@ -53,9 +53,9 @@ class ultra1dops{
 		static void straighten_the_peaks(us_scan * scan, int intima, int adventitia);
 		static void shift(vector<pts_vector<unsigned short>*> curve, pts_vector<int> *s);
 		static void recalculate_mean_curve(us_scan * scan);
-		static void fit_gaussian_curve_and_calculate(curve_scalar<unsigned short> *curve, int intima, int adventitia);
+		static Vector3D fit_gaussian_curve_and_calculate(curve_scalar<unsigned short> *curve, int intima, int adventitia);
 
-		static void find_steep_slope_and_calculate(curve_scalar<unsigned short> *curve, int intima, int adventitia);
+		static Vector3D find_steep_slope_and_calculate(curve_scalar<unsigned short> *curve, int intima, int adventitia);
 };
 
 #endif __ultra1dops__
