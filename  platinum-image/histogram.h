@@ -95,6 +95,9 @@ class histogram_base
 
 		unsigned long num_values ()
 			{return num_distinct_values;}
+
+		pts_vector<unsigned long>* get_bucket_vector();
+
     };
 
 
@@ -247,7 +250,7 @@ class histogram_1D : public histogram_typed<ELEMTYPE> //horizontal 1D graph hist
 
 
 /*template<class ELEMTYPE>
-class fit_gaussians_to_histogram_1D_cost_function : public vnl_cost_function
+class fit_gaussians_to_curve_cost_function : public vnl_cost_function
 {
 	histogram_1D<ELEMTYPE> *the_hist;
 	int num_gaussians;
@@ -255,7 +258,7 @@ class fit_gaussians_to_histogram_1D_cost_function : public vnl_cost_function
 	bool punish_large_area_differences;
 
 public:
-	fit_gaussians_to_histogram_1D_cost_function(histogram_1D<ELEMTYPE> *h, int num, bool punish_overlap=false, bool punish_large_area_differences=false);
+	fit_gaussians_to_curve_cost_function(histogram_1D<ELEMTYPE> *h, int num, bool punish_overlap=false, bool punish_large_area_differences=false);
 	double f(vnl_vector<double> const &x);
 };
 

@@ -106,7 +106,8 @@ double curve_scalar<ELEMTYPE>::get_min() const{
 
 template<class ELEMTYPE>
 double curve_scalar<ELEMTYPE>::get_max() const{
-	return static_cast<double>( my_data->get_maximum_in_range(0, my_data->size()-1)[1]);
+	int dummy;
+	return static_cast<double>( my_data->get_maximum_in_range(0, my_data->size()-1, dummy));
 }
 template<class ELEMTYPE>
 double curve_scalar<ELEMTYPE>::get_scale() const{

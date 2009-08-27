@@ -79,6 +79,12 @@ bool histogram_base::ready ()
     return readytorender;
 }
 
+pts_vector<unsigned long>* histogram_base::get_bucket_vector()
+{
+	return bucket_vector;
+}
+
+
 // *** histogram_2D_plot ***
 
 void histogram_2D_plot::images (int image_hor,int image_vert)

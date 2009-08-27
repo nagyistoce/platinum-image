@@ -47,7 +47,7 @@ public:
 	pt_vector(int);
 	virtual ~pt_vector(void){};
 	void config_x_axis(double resolution, double start);
-	ELEMTYPE* get_maximum_in_range(int from, int to);
+	ELEMTYPE get_maximum_in_range(int from, int to, int &max_val_index_pos);
 	ELEMTYPE* get_minimum_in_range(int from, int to);
 
 	ELEMTYPE get_max_value_in_range(int from, int to);
@@ -90,17 +90,16 @@ void pt_vector<ELEMTYPE>::config_x_axis(double resolution, double start){
 
 /* Looks in a specified range and returns the maximum value found */
 template<class ELEMTYPE>
-ELEMTYPE* pt_vector<ELEMTYPE>::get_maximum_in_range(int from, int to){
-	ELEMTYPE *maximum = new ELEMTYPE[2];
-	maximum[1] = numeric_limits<ELEMTYPE>::min();
+ELEMTYPE pt_vector<ELEMTYPE>::get_maximum_in_range(int from, int to, int &max_val_index_pos){
+	ELEMTYPE maximum = numeric_limits<ELEMTYPE>::min();
 	if(this->size() < from)
 		return NULL;
-	maximum[1] = this->at(from);
-	maximum[0] = from;
+	maximum = this->at(from);
+	max_val_index_pos = from;
 	for(int i = from; i<=to && i<this->size(); i++){
-		if(this->at(i) > maximum[1]){
-			maximum[1] = this->at(i);
-			maximum[0] = i;
+		if(this->at(i) > maximum){
+			maximum = this->at(i);
+			max_val_index_pos = i;
 		}
 	}
 	return maximum;
@@ -695,7 +694,7 @@ gaussian pts_vector<ELEMTYPE>::fit_gaussian_with_amoeba(int from, int to)
 		temp->push_back(this->at(i));
 	}
 
-	fit_gaussians_to_histogram_1D_cost_function<ELEMTYPE> cost(temp,1, false, false);
+	fit_gaussians_to_curve_cost_function<ELEMTYPE> cost(temp,1, false, false);
 	vnl_amoeba amoeba_optimizer = vnl_amoeba(cost);
 	amoeba_optimizer.verbose = false;
 	amoeba_optimizer.set_x_tolerance(1);
@@ -721,7 +720,7 @@ gaussian pts_vector<ELEMTYPE>::fit_gaussian_with_amoeba(int from, int to)
 template <class ELEMTYPE>
 ELEMTYPE pts_vector<ELEMTYPE>::fit_two_gaussians_to_histogram_and_return_threshold(string save_histogram_file_path)
 {
-	fit_gaussians_to_histogram_1D_cost_function<ELEMTYPE> cost(this,2, true, true);
+	fit_gaussians_to_curve_cost_function<ELEMTYPE> cost(this,2, true, true);
 	vnl_amoeba amoeba_optimizer = vnl_amoeba(cost);
 	amoeba_optimizer.verbose = false;
 	amoeba_optimizer.set_x_tolerance(1);
@@ -873,7 +872,7 @@ ptc_vector<ELEMTYPE>::ptc_vector(int start_size) : pt_vector<ELEMTYPE>(start_siz
 
 
 template<class ELEMTYPE>
-class fit_gaussians_to_histogram_1D_cost_function : public vnl_cost_function
+class fit_gaussians_to_curve_cost_function : public vnl_cost_function
 {
 	pts_vector<ELEMTYPE> *the_hist;
 	int num_gaussians;
@@ -881,12 +880,12 @@ class fit_gaussians_to_histogram_1D_cost_function : public vnl_cost_function
 	bool punish_large_area_differences;
 
 public:
-	fit_gaussians_to_histogram_1D_cost_function(pts_vector<ELEMTYPE> *h, int num, bool punish_overlap=false, bool punish_large_area_differences=false);
+	fit_gaussians_to_curve_cost_function(pts_vector<ELEMTYPE> *h, int num, bool punish_overlap=false, bool punish_large_area_differences=false);
 	double f(vnl_vector<double> const &x);
 };
 
 template<class ELEMTYPE>
-fit_gaussians_to_histogram_1D_cost_function<ELEMTYPE>::fit_gaussians_to_histogram_1D_cost_function(pts_vector<ELEMTYPE> *h, int num, bool punish_overl, bool punish_large_area_diffs):vnl_cost_function(num*3)
+fit_gaussians_to_curve_cost_function<ELEMTYPE>::fit_gaussians_to_curve_cost_function(pts_vector<ELEMTYPE> *h, int num, bool punish_overl, bool punish_large_area_diffs):vnl_cost_function(num*3)
 {
 	the_hist = h;
 	num_gaussians = num;
@@ -895,7 +894,7 @@ fit_gaussians_to_histogram_1D_cost_function<ELEMTYPE>::fit_gaussians_to_histogra
 }
 
 template<class ELEMTYPE>
-double fit_gaussians_to_histogram_1D_cost_function<ELEMTYPE>::f(vnl_vector<double> const &x)
+double fit_gaussians_to_curve_cost_function<ELEMTYPE>::f(vnl_vector<double> const &x)
 {
 	vector<gaussian> v;
 	for(int i=0;i<num_gaussians;i++){

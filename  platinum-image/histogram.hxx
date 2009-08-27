@@ -63,7 +63,8 @@ void histogram_typed<ELEMTYPE>::calc_bucket_max(bool ignore_zero_and_one)
 			this->bucket_max = std::max(this->bucket_vector->at(i), this->bucket_max);
 			
 		}*/
-		this->bucket_vector->get_maximum_in_range(0,this->bucket_vector->size()-1);
+		int dummy;
+		this->bucket_max = this->bucket_vector->get_maximum_in_range(0,this->bucket_vector->size()-1, dummy);
 	}
 }
 
@@ -1042,12 +1043,7 @@ ELEMTYPE histogram_1D<ELEMTYPE>::get_max_value_in_bucket_range(int from, int to)
 template <class ELEMTYPE>
 ELEMTYPE histogram_1D<ELEMTYPE>::get_max_value_in_bucket_range(int from, int to, int &max_val_bucket_pos)
 {
-	ELEMTYPE max_value = std::numeric_limits<ELEMTYPE>::min();
-	ELEMTYPE  *m = this->bucket_vector->get_maximum_in_range(from, to);
-	max_val_bucket_pos = m[0];
-	max_value = m[1];
-	free(m);
-	return max_value;
+	return this->bucket_vector->get_maximum_in_range(from, to, max_val_bucket_pos);
 }
 
 template <class ELEMTYPE>
@@ -1082,7 +1078,7 @@ template <class ELEMTYPE>
 int histogram_1D<ELEMTYPE>::get_bucket_pos_with_largest_value_in_intensity_range(ELEMTYPE from, ELEMTYPE to)
 {
 	int pos=0;
-	bucket_vector->get_max_value_in_range(intensity_to_bucketpos(from), intensity_to_bucketpos(to), pos);
+	bucket_vector->get_maximum_in_range(intensity_to_bucketpos(from), intensity_to_bucketpos(to), pos);
 	return pos;
 }
 

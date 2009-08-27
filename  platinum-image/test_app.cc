@@ -93,6 +93,22 @@ void rgb_vol_function(int userIO_ID,int par_num)
 	}
 }
 
+void link_load_function(int userIO_ID,int par_num)
+{
+    if(par_num == USERIO_CB_OK){
+
+		string path = "K:/Joel/Data/Vinstudien/3P-Linköping/DICOM/DICOM/";
+
+		image_scalar<float,3> *im = new image_scalar<float,3>(path + "IM_0001");
+		image_scalar<short,3> *im2 = new image_scalar<short,3>(im);
+		datamanagement.add(im,"im");
+		datamanagement.add(im2,"im2");
+
+
+	}
+}
+
+
 
 unsigned char calc_value(unsigned char r, unsigned char g, unsigned char b)
 {
@@ -194,7 +210,10 @@ int main(int argc, char *argv[])
     userIOmanagement.finish_userIO(expand_ID);
 
 	int rgb_vol_ID=userIOmanagement.add_userIO("Create RGB volumes",rgb_vol_function,"Run");
-    userIOmanagement.finish_userIO(rgb_vol_ID);
+	userIOmanagement.finish_userIO(rgb_vol_ID);
+
+	int link_load_test_ID=userIOmanagement.add_userIO("Linkoping Load",link_load_function,"Load");
+    userIOmanagement.finish_userIO(link_load_test_ID);
 
     // *** end userIO control definitions ***
     
