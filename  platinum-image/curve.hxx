@@ -101,7 +101,8 @@ double curve_scalar<ELEMTYPE>::get_data(int i) const{
 
 template<class ELEMTYPE>
 double curve_scalar<ELEMTYPE>::get_min() const{
-	return static_cast<double>( my_data->get_minimum_in_range(0, my_data->size()-1)[1]);
+	int dummy;
+	return static_cast<double>( my_data->get_minimum_in_range(0, my_data->size()-1,dummy));
 }
 
 template<class ELEMTYPE>
@@ -269,7 +270,7 @@ void curve_scalar<ELEMTYPE>::simplify_curve(){
         
         vector<Vector2D> maximas;
 		vector<Vector2D> minimas;
-		int min_loc, max_loc, index;
+		int min_loc, max_loc;//, index;
 		min_loc = max_loc = 0;
 		bool save;
 

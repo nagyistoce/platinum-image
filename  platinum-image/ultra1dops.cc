@@ -165,7 +165,7 @@ void ultra1dops::shift(vector<pts_vector<unsigned short>*> curve, pts_vector<int
 }
 
 void ultra1dops::straighten_the_peaks(us_scan * scan, int intima, int adventitia){
-	double mass, pos, cog;
+	double mass, pos;//, cog;
 	pts_vector<double> *s = new pts_vector<double>(0);
 	int search_area = pt_config::read<double>("scope_for_maximum_diff",CURVE_CONF_PATH)/scan->rows.at(0)->x_res;
 	vector<float> area;

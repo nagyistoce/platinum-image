@@ -48,7 +48,7 @@ public:
 	virtual ~pt_vector(void){};
 	void config_x_axis(double resolution, double start);
 	ELEMTYPE get_maximum_in_range(int from, int to, int &max_val_index_pos);
-	ELEMTYPE* get_minimum_in_range(int from, int to);
+	ELEMTYPE get_minimum_in_range(int from, int to, int &min_val_index_pos);
 
 	ELEMTYPE get_max_value_in_range(int from, int to);
 	ELEMTYPE get_min_value_in_range(int from, int to);
@@ -107,18 +107,18 @@ ELEMTYPE pt_vector<ELEMTYPE>::get_maximum_in_range(int from, int to, int &max_va
 
 /* Looks in a specified range and returns the minimum value found */
 template<class ELEMTYPE>
-ELEMTYPE* pt_vector<ELEMTYPE>::get_minimum_in_range(int from, int to){
+ELEMTYPE pt_vector<ELEMTYPE>::get_minimum_in_range(int from, int to, int &min_val_index_pos){
 	
-	ELEMTYPE *minimum = new ELEMTYPE[2];
-	minimum[1] = numeric_limits<ELEMTYPE>::max();
+	ELEMTYPE minimum = numeric_limits<ELEMTYPE>::max();
 	if(this->size() < from)
 		return NULL;
-	minimum[1] = this->at(from);
-	minimum[0] = from;
+
+	minimum = this->at(from);
+	min_val_index_pos = from;
 	for(int i = from; i<=to && i<this->size(); i++){
-		if(this->at(i) < minimum[1]){
-			minimum[1] = this->at(i);
-			minimum[0] = i;
+		if(this->at(i) < minimum){
+			minimum = this->at(i);
+			min_val_index_pos = i;
 		}
 	}
 
@@ -263,8 +263,9 @@ double pt_vector<ELEMTYPE>::area_between_points(int x1, int x2){
 /* This does not work yet... */
 template<class ELEMTYPE>
 void pt_vector<ELEMTYPE>::normalize_to_maximum(){
-	ELEMTYPE min = get_minimum_in_range(0,this->size()-1);
-	ELEMTYPE max = get_maximum_in_range(0,this->size()-1);
+	int dummy;
+	ELEMTYPE min = get_minimum_in_range(0,this->size()-1,dummy);
+	ELEMTYPE max = get_maximum_in_range(0,this->size()-1,dummy);
 
 	ELEMTYPE new_max = numeric_limits<ELEMTYPE>::max();
 	ELEMTYPE new_min = numeric_limits<ELEMTYPE>::min();

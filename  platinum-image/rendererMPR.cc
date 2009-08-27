@@ -167,7 +167,7 @@ void rendererMPR::render_position(unsigned char *rgb, int rgb_sx, int rgb_sy)
 //render orthogonal slices using memory-order scanline
 void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_image *rg, rendercombination *rc, thresholdparvalue * threshold)
 {
-	cout<<"rendererMPR used"<<endl;
+//	cout<<"rendererMPR used"<<endl;
 
     if(rc->empty()){       //*** no images: exit ***
         return;

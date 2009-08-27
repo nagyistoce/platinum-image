@@ -1023,12 +1023,7 @@ ELEMTYPE histogram_1D<ELEMTYPE>::get_min_value_in_bucket_range(int from, int to)
 template <class ELEMTYPE>
 ELEMTYPE histogram_1D<ELEMTYPE>::get_min_value_in_bucket_range(int from, int to, int &min_val_bucket_pos)
 {
-	ELEMTYPE min_value = std::numeric_limits<ELEMTYPE>::min();
-	ELEMTYPE  *m = this->bucket_vector->get_minimum_in_range(from, to);
-	min_val_bucket_pos = m[0];
-	min_value = m[1];
-	free(m);
-	return min_value;
+	return this->bucket_vector->get_minimum_in_range(from, to,min_val_bucket_pos);
 }
 
 
