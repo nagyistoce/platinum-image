@@ -68,6 +68,8 @@ class viewmanager
         std::vector<threshold_overlay *> get_overlays(thresholdparvalue *);
         void list_connections();
 		bool show_in_empty_viewport(int data_id);
+		int get_viewport_id_from_index(int i){ return viewports[i].get_id();};
+		int get_nr_viewports(){return viewports.size();};
 
 		void setup_demo_tiles();   //setup an (irregular) demo tile pattern
         

@@ -42,6 +42,7 @@ public:
 	ultrasound_importer(string);
 	~ultrasound_importer(void);
 	void read_file(string name);
+	void read_old_file(string name);
 	string set_current_scan(int i);
 	int set_current_row(int i);
 	pt_vector<unsigned short>* get_mean_vector_for_scan();

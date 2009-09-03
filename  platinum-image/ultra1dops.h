@@ -33,6 +33,8 @@
 #include "string.h"
 #include "ultrasound_importer.h"
 #include "datamanager.h"
+//#include "histogram.h"
+//#include "histogram.hxx"
 
 #define CURVE_CONF_PATH "../PlatinumPrivateApps/HighResUS/curve_conf.inp"
 
@@ -45,6 +47,9 @@ class ultra1dops{
 	public:
 		static bool is_max(vector<Vector3D> p, int i);
 		static bool is_min(vector<Vector3D> p, int i);
+
+		static void calc_intensity_histogram(pt_vector<unsigned short> *curve);
+
 		static int mark_point(curve_scalar<unsigned short> *curve, int from, int to);
 		static int get_vally(curve_scalar<unsigned short> *curve, int x, int dir);
 		static int count_peaks(vector<Vector3D> c, curve_scalar<unsigned short> *curve, Vector3D *peak);
@@ -53,7 +58,7 @@ class ultra1dops{
 		static void straighten_the_peaks(us_scan * scan, int intima, int adventitia);
 		static void shift(vector<pts_vector<unsigned short>*> curve, pts_vector<int> *s);
 		static void recalculate_mean_curve(us_scan * scan);
-		static Vector3D fit_gaussian_curve_and_calculate(curve_scalar<unsigned short> *curve, int intima, int adventitia);
+		static vector<gaussian> fit_gaussian_curve_and_calculate(curve_scalar<unsigned short> *curve, int intima, int adventitia);
 
 		static Vector3D find_steep_slope_and_calculate(curve_scalar<unsigned short> *curve, int intima, int adventitia);
 };

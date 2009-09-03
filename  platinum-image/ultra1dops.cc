@@ -18,6 +18,7 @@
 //    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "ultra1dops.h"
+extern datamanager datamanagement;
 
 
 bool ultra1dops::is_max(vector<Vector3D> p, int i){
@@ -29,6 +30,33 @@ bool ultra1dops::is_min(vector<Vector3D> p, int i){
 	if(i > 0 && i < p.size()-1)
 		return p[i][1] == min(p[i][1],min(p[i-1][1],p[i+1][1]));
 	return true;
+}
+
+void ultra1dops::calc_intensity_histogram(pt_vector<unsigned short> *curve){
+	//int nr_buckets = 50;
+	int nr_buckets = numeric_limits<unsigned short>::max()+1;
+	pts_vector<unsigned short> *intensity_distr = new pts_vector<unsigned short>(nr_buckets);
+
+	int b_pos;
+	unsigned short nr_vals;
+	intensity_distr->assign(nr_buckets,0);
+	double span = (numeric_limits<unsigned short>::max()+1) / nr_buckets;
+
+	for(int i = 0; i < curve->size(); i++){
+		//b_pos = floor(curve->at(i)/span);
+		b_pos = curve->at(i);
+		intensity_distr->at(b_pos)++;
+	}
+	for(int i = intensity_distr->size()-2; i >=0; i--){
+		intensity_distr->at(i)+= intensity_distr->at(i+1);
+	}
+	for(int i = 0; i < curve->size(); i++){
+		curve->at(i) /= intensity_distr->at(curve->at(i));
+		//curve->at(i) /= intensity_distr->at(floor(curve->at(i)/span));
+	}
+	curve_scalar<unsigned short> *s = new curve_scalar<unsigned short>(0,"intensity",0,0.04); //Icke 0.04 i alla fall
+	s->my_data = intensity_distr;
+	datamanagement.add(s);
 }
 
 int ultra1dops::mark_point(curve_scalar<unsigned short> *curve, int from, int to){
@@ -221,26 +249,27 @@ void ultra1dops::straighten_the_peaks(us_scan * scan, int intima, int adventitia
 }
 
 
-Vector3D ultra1dops::fit_gaussian_curve_and_calculate(curve_scalar<unsigned short> *curve, int intima, int adventitia){
+vector<gaussian> ultra1dops::fit_gaussian_curve_and_calculate(curve_scalar<unsigned short> *curve, int intima, int adventitia){
 	
 	int search_area = pt_config::read<double>("scope_for_vally_loc",CURVE_CONF_PATH)/curve->get_scale();
 	gaussian in, adv;
 	float i_l, i_m, m_a, s_a;
 	Vector3D res;
+	vector<gaussian> g;
 
 	pts_vector<unsigned short> *v;
 	if((v = dynamic_cast<pts_vector<unsigned short>*>(curve->my_data)) == NULL)
-		return res;
+		return g;
 	if(intima+search_area >= v->size() || intima-search_area < 0){
 		Vector3D r;
 		r[0] = r[1] = r[2] = -1;
-		return r;
+		return g;
 	}
 
 	if(adventitia+search_area >= v->size() || adventitia-search_area < 0){
 		Vector3D r;
 		r[0] = r[1] = r[2] = -1;
-		return r;
+		return g;
 	}
 
 	in = v->fit_gaussian_with_amoeba(intima-search_area, intima+search_area);
@@ -251,14 +280,14 @@ Vector3D ultra1dops::fit_gaussian_curve_and_calculate(curve_scalar<unsigned shor
 	adv = v->fit_gaussian_with_amoeba(adventitia-search_area, adventitia+search_area);
 	//v->fit_gaussian_with_amoeba(amp2, center2, sigma2, adventitia-search_area, adventitia+search_area);
 
-
 	i_l = in.center + v->from_x_to_val(intima-search_area) + in.sigma; //everything in x_scale coords. NOT index coords!
 	i_m = in.center + v->from_x_to_val(intima-search_area) - in.sigma;//everything in x_scale coords
 	m_a = adv.center + v->from_x_to_val(adventitia-search_area) + adv.sigma;//everything in x_scale coords
 	s_a = adv.center + v->from_x_to_val(adventitia-search_area) - adv.sigma;//everything in x_scale coords
 
-	in.sigma = (in.sigma - v->x_axis_start)/v->x_res; //convert to unrounded index coordinates
-	adv.sigma = (adv.sigma - v->x_axis_start)/v->x_res; //convert to unrounded index coordinates
+	double sig1, sig2;
+	sig1 = (in.sigma - v->x_axis_start)/v->x_res; //convert to unrounded index coordinates
+	sig2 = (adv.sigma - v->x_axis_start)/v->x_res; //convert to unrounded index coordinates
 
 	res[0] = i_l - i_m;//intima
 	res[1] = i_m - m_a;//media
@@ -268,10 +297,15 @@ Vector3D ultra1dops::fit_gaussian_curve_and_calculate(curve_scalar<unsigned shor
 	cout << "intima: " << i_l - i_m << endl;
 	cout << "media: "  << i_m - m_a << endl;
 
-	curve->helper_data->add_gauss(v->from_val_to_x(in.center) + (intima-search_area), in.sigma, in.amplitude);
-	curve->helper_data->add_gauss(v->from_val_to_x(adv.center) + (adventitia-search_area), adv.sigma, adv.amplitude);
+	curve->helper_data->add_gauss(v->from_val_to_x(in.center) + (intima-search_area), sig1, in.amplitude);
+	curve->helper_data->add_gauss(v->from_val_to_x(adv.center) + (adventitia-search_area), sig2, adv.amplitude);
+	//TODO det ska inte vara ändrat sigma här!!!!!
+	in.center+=v->from_x_to_val(intima-search_area);
+	adv.center+=v->from_x_to_val(adventitia-search_area);
+	g.push_back(in);
+	g.push_back(adv);
 
-	return res;
+	return g;
 }
 
 Vector3D ultra1dops::find_steep_slope_and_calculate(curve_scalar<unsigned short> *curve, int intima, int adventitia){

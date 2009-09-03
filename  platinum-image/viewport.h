@@ -76,8 +76,10 @@ private:
 //	Matrix3D get_renderer_direction();
 	void set_renderer_direction(const Matrix3D &dir);
 	void set_renderer_direction(preset_direction direction); 
+
 	void change_color( colors color ); //Used in curve
 	void change_line_type(char type); //Used in curve
+	void change_geom_type(int vp_id, VIEWPORT_TYPE type);
 
 	bool paint_rendergeometry;
 

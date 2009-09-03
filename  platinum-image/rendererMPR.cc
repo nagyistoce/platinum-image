@@ -47,6 +47,7 @@ T signed_ceil(T & x){   //ceil that returns rounded absolute upwards
 rendererMPR::rendererMPR():renderer_image_base()
 {
 	the_rg = new rendergeom_image();
+	original_rg = the_rg;
 }
 
 void rendererMPR::connect_data(int dataID)

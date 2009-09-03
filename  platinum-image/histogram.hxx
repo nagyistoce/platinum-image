@@ -19,6 +19,7 @@
 
 
 // *** histogram_typed ***
+#include "histogram.h"
 #include "pt_vector.h"
 
 

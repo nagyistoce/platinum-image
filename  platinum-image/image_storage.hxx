@@ -25,7 +25,7 @@
 #include "image_storage.h"
 
 #include "transfer.hxx"
-#include "histogram.hxx"
+//#include "histogram.hxx"
 #include "transfer_interpolated.hxx"
 #include "image_storage_iterator.hxx"
 

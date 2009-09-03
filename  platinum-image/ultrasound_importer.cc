@@ -35,7 +35,7 @@ void ultrasound_importer::read_file(string filepath){
 	string line = "";
 	int header_size = 0; //To be determined or ignored ;)
 	int linesize = 176;//Verifyed; 
-	int nr_of_lines = 208;//Verifyed
+	int nr_of_lines = 208;//Verifyed but is determined by a setting on the scanner...
 	int line_offset = 102; //verifyed
 
 	//string filepath = userIOmanagement.get_parameter<string>(userIO_ID,0);
@@ -73,6 +73,23 @@ void ultrasound_importer::read_file(string filepath){
 					us_scan *scan = new us_scan(name, linesize, nr_of_lines);
 
 					int olle = myfile.tellg();
+					myfile.seekg(olle-100);
+					myfile.read( (char *)(&val), sizeof(val) );
+					nr_of_lines = val;
+					cout << "lines for " << name << ": " << nr_of_lines << endl;
+					/*myfile.seekg(olle-108);
+					for(int i = 0; i < 100; i+=2){
+						myfile.read( (char *)(&val), sizeof(val) );
+						//if(i == 8){
+						//	cout << "8 = "<< val << " ";
+						//}else if(i == 38){
+						//	cout << "38 = " << val << " ";
+						//}
+						//if(val == 16){
+						//	cout << i << " ";
+						//}
+					}
+					cout << endl;*/
 
 					myfile.seekg(olle+line_offset);
 					for(int j = 0; j<nr_of_lines; j++){
@@ -88,13 +105,109 @@ void ultrasound_importer::read_file(string filepath){
 					}
 					scan->mean_vector->config_x_axis(0.04,0);
 					all_scans.push_back(scan);
+
 				}
 			}
 			pos_ = myfile.tellg();
 		}
 		cout << "bytes read: " << pos_  << "/" << f_length << endl;
 		myfile.close();
-		loaded = true;
+		if(all_scans.empty()){
+			cout << "reading old file" << endl;
+			read_old_file(filepath);
+		}else{
+			loaded = true;
+		}
+	}
+}
+
+void ultrasound_importer::read_old_file(string filepath){
+	string line = "";
+	int header_size = 0; //To be determined or ignored ;)
+	int linesize = 82*2;//176/2;
+	int nr_of_lines = 128;//Verifyed but is determined by a setting on the scanner...
+	int line_offset = 102; //verifyed
+
+	//string filepath = userIOmanagement.get_parameter<string>(userIO_ID,0);
+	if(filepath.empty()){
+		return;
+	}
+	long pos_ = 0;
+	unsigned long f_length, begin, end;
+	ifstream myfile(filepath.c_str(),ios::in | ios::binary); //BINARY SOLVED EVERYTHING!!!
+
+
+
+	if(myfile.is_open()){
+
+		//Get length of file
+		begin = myfile.tellg();
+		myfile.seekg (0, ios::end);
+		end = myfile.tellg();
+		f_length = end-begin;
+		myfile.seekg (0, ios::beg);
+
+		unsigned short val;
+		char input;
+		char buff[7];
+		int id = 0;
+		while(pos_ < f_length){// && (pos_ > -1)){
+			input = myfile.get();
+			//myfile.read( (char *)(&val), sizeof(val) );
+			if(input == '.'){
+				myfile.read(buff,7);
+				string line(buff);
+				if(line.find(".19",0)!=string::npos){ //Supports from 20:th century. Not 21:st
+					string name = "OldScan ";
+					myfile.read(buff, 1);
+					myfile.read(buff,2);
+					string t(buff);
+					name.append(t, 0, 2);
+					us_scan *scan = new us_scan(name, linesize, nr_of_lines);
+
+					int olle = myfile.tellg();
+					//myfile.seekg(olle-100);
+					//myfile.read( (char *)(&val), sizeof(val) );
+					//nr_of_lines = val;
+					//cout << "lines for " << name << ": " << nr_of_lines << endl;
+					/*myfile.seekg(olle-108);
+					for(int i = 0; i < 100; i+=2){
+						myfile.read( (char *)(&val), sizeof(val) );
+						//if(i == 8){
+						//	cout << "8 = "<< val << " ";
+						//}else if(i == 38){
+						//	cout << "38 = " << val << " ";
+						//}
+						//if(val == 16){
+						//	cout << i << " ";
+						//}
+					}
+					cout << endl;*/
+
+					myfile.seekg(olle+line_offset);
+					for(int j = 0; j<nr_of_lines; j++){
+						pts_vector<unsigned short>* row = new pts_vector<unsigned short>(0);
+						for(int i = 0; i < linesize; i++){
+							myfile.read( (char *)(&val), sizeof(val) );
+							unsigned short sum = numeric_limits<unsigned short>::max() - val;
+							scan->mean_vector->at(i)+= ((sum - scan->mean_vector->at(i))/(j+1));
+							row->push_back(sum);
+						}
+						row->config_x_axis(0.07,0);
+						scan->rows.push_back(row);
+					}
+					scan->mean_vector->config_x_axis(0.07,0);
+					all_scans.push_back(scan);
+
+				}
+			}
+			pos_ = myfile.tellg();
+		}
+		cout << "bytes read: " << pos_  << "/" << f_length << endl;
+		myfile.close();
+		if(!all_scans.empty()){
+			loaded = true;
+		}
 	}
 }
 

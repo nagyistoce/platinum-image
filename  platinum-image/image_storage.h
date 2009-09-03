@@ -30,7 +30,8 @@
 #include <typeinfo>
 
 #include "image_base.h"
-#include "histogram.h"
+#include "histogram.hxx"
+//#include "histogram.h"
 #include "transfer.h"
 
 #define IMGLABELTYPE unsigned char

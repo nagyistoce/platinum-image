@@ -350,7 +350,9 @@ class FLTK_Pt_MPR_pane : public FLTK_Pt_pane
 	    Fl_Pack			*button_pack2;		//group containing per-viewport widgets such as the image menu
 		Fl_Menu_Button	*directionmenu_button;
 	    Fl_Menu_Button	*blendmenu_button;
+		Fl_Menu_Button *geom_button;
 		void create_MPR_menu(int W);
+		void create_geom_menu(int W);
 //		Fl_Button *b;	//	Fl_Button *b = new Fl_Button(0,buttonheight,100,100-buttonheight, "FLTK_Pt_MPR_pane()_button");	 //JK //RN test
 
    
@@ -365,12 +367,14 @@ class FLTK_Pt_MPR_pane : public FLTK_Pt_pane
 
 		static void set_direction_callback(Fl_Widget *callingwidget, void *params);
 	    static void set_blendmode_callback(Fl_Widget *callingwidget, void *params);
+		static void set_geom_callback(Fl_Widget *callingwidget, void *params);
 
   //      static const std::string typekey () //JK2 - Used in the listedfactory to set GUI-list-names
     //        {return "undef";}
 
 		void set_direction_button_label(preset_direction direction);
 		void set_renderer_direction( preset_direction direction );
+		void change_geom(int vp_id);
 	    void rebuild_blendmode_menu();//update checkmark for current blend mode
 		virtual void refresh_menus();
 };
@@ -385,7 +389,9 @@ class FLTK_Pt_Curve_pane : public FLTK_Pt_pane
 	    Fl_Pack			*button_pack2;		//group containing per-viewport widgets such as the image menu
 		Fl_Menu_Button	*colormenu_button;
 	    Fl_Menu_Button	*bgmenu_button;
+		Fl_Menu_Button *geom_button;
 		void create_curve_menu(int W);
+		void create_geom_menu(int W);
    
 	protected:
 
@@ -398,8 +404,10 @@ class FLTK_Pt_Curve_pane : public FLTK_Pt_pane
 
 		static void set_color_callback(Fl_Widget *callingwidget, void *params);
 		static void set_line_callback(Fl_Widget *callingwidget, void *params);
+		static void set_geom_callback(Fl_Widget *callingwidget, void *params);
 		void change_color(colors color);
 		void change_line(char a);
+		void change_geom(int vp_id);
 	    //static void set_blendmode_callback(Fl_Widget *callingwidget, void *params);
 
   //      static const std::string typekey () //JK2 - Used in the listedfactory to set GUI-list-names

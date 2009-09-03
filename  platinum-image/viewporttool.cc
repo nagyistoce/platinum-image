@@ -305,6 +305,9 @@ void nav_tool::handle(viewport_event &event)
                     myRenderer->move_view(pms[0],(last_local_x-event.mouse_pos_local()[0]),(last_local_y-event.mouse_pos_local()[1]));	//JK6
 //                    ((FLTK_Pt_pane*)fp->parent())->needs_rerendering();
                     fp->needs_rerendering();
+
+					//RN This is added because all viewports that use this edited rg should be updated
+					viewmanagement.refresh_viewports_from_geometry(myRenderer->geometry_id());
 					last_local_x = event.mouse_pos_local()[0];
 					last_local_y = event.mouse_pos_local()[1];
 				}
@@ -334,6 +337,9 @@ void nav_tool::handle(viewport_event &event)
                     
 //                    ((FLTK_Pt_pane*)fp->parent())->needs_rerendering();
 					fp->needs_rerendering();
+
+					//RN This is added because all viewports that use this edited rg should be updated
+					viewmanagement.refresh_viewports_from_geometry(myRenderer->geometry_id());
 				}					
 			break;
                 
@@ -345,7 +351,12 @@ void nav_tool::handle(viewport_event &event)
 					float dx = (mouse[0]-last_global_x);
 					float dy = (mouse[1]-last_global_y);
 					myRenderer->rotate_dir(dx, dy);
+					
 					fp->needs_rerendering();
+
+					//RN This is added because all viewports that use this edited rg should be updated
+					viewmanagement.refresh_viewports_from_geometry(myRenderer->geometry_id());
+
 					viewmanagement.update_overlays();
 				}
 			break;
@@ -356,7 +367,13 @@ void nav_tool::handle(viewport_event &event)
                     event.grab();
 //                    myRenderer->move_view(viewSize,0,0,event.scroll_delta()*wheel_factor);
                     myRenderer->move_view(pms[0],0,0,event.scroll_delta()*wheel_factor); //JK6
-                    fp->needs_rerendering();
+					
+                    
+					fp->needs_rerendering();
+
+					//RN This is added because all viewports that use this edited rg should be updated
+					viewmanagement.refresh_viewports_from_geometry(myRenderer->geometry_id());
+
 					viewmanagement.update_overlays();
 				}
 			//NOTE: no break, update hovering also
@@ -452,7 +469,7 @@ void nav_tool::handle(viewport_event &event)
 void nav_tool::refresh_by_image_and_direction()
 {
 	// get geometries that holds at least one of the images in the input combination and have a different
-	// direction than the input geometry (i.e. not the same nor the opposite direction)					
+	// direction than the input geometry (i.e. not the same nor the opposite direction)	
 	std::vector<int> geometryIDs = rendermanagement.geometryIDs_by_image_and_direction( myRenderer->combination_id() );
 
 	for ( std::vector<int>::const_iterator itr = geometryIDs.begin(); itr != geometryIDs.end(); itr++ )

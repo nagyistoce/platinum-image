@@ -90,6 +90,7 @@ class rendermanager
         int get_geometry_id(int rendererIndex);                 //get id of geometry object associated with renderer rendererIndex
 		rendergeometry_base* get_geometry(int rendererID);			// get rendergeometry from renderer id
 		rendergeometry_base* get_geometry_from_its_id(int geomID);
+		std::vector<rendergeometry_base*> get_geometries(){return geometries;}; //RN fix
 
 		image_base* get_top_image_from_renderer(int r_id);
 

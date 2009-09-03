@@ -152,6 +152,12 @@ void viewport::change_color( colors color )
 void viewport::change_line_type(char line){
 	((FLTK_Pt_Curve_pane*)the_widget->pane_widget)->change_line(line); 
 }
+void viewport::change_geom_type(int vp_id, VIEWPORT_TYPE type){
+	if(type == PT_CURVE)
+		((FLTK_Pt_Curve_pane*)the_widget->pane_widget)->change_geom(vp_id);
+	else if(type == PT_MPR)
+		((FLTK_Pt_MPR_pane*)the_widget->pane_widget)->change_geom(vp_id);
+}
 
 
 void viewport::set_vp_type_from_factoryIdType(string type)

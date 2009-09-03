@@ -50,6 +50,7 @@ protected:
     int id;
     int rc_id;	// rendercombination id
     int rg_id;	// rendergeometry_base id
+	int original_rg_id;
 	static int maxrendererID;
     
 public:
@@ -64,7 +65,11 @@ public:
     int combination_id();    
 
     rendergeometry_base *the_rg;                 //lookat and direction vectors for rendering
+	rendergeometry_base *original_rg;
     void connect_geometry(rendergeometry_base *rg);       //attach a certain geometry to this renderer
+
+	void use_other_geometry(rendergeometry_base *geom){ the_rg = geom; rg_id = geom->get_id();};
+
 	int geometry_id() const;
 	virtual RENDERER_TYPE type() const = 0;
 
