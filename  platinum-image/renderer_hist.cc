@@ -23,8 +23,8 @@
 //    along with the Platinum library; if not, write to the Free Software
 //    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-#define _renderer_curve_cc_
-#include "renderer_curve.h"
+#define _renderer_hist_cc_
+#include "renderer_hist.h"
 #include "viewmanager.h"
 #include "rendermanager.h"
 
@@ -44,19 +44,19 @@ T signed_ceil(T & x){   //ceil that returns rounded absolute upwards
     return (x < 0 ? floor (x) : ceil (x));
     }
 
-renderer_curve::renderer_curve():renderer_curve_base()
+renderer_hist::renderer_hist():renderer_curve_base()
 {
-	cout << "curve renderer created" << endl;
-	the_rg = new rendergeom_curve();
+	cout << "hist renderer created" << endl;
+	//the_rg = new rendergeom_hist();
 }
 
-void renderer_curve::connect_data(int dataID)
+void renderer_hist::connect_data(int dataID)
     {
     //TEST: wrapper, this should be done directly by rendermanagement
     the_rc->add_data(dataID);
 	}
 
-Vector3D renderer_curve::view_to_world(int vx, int vy, int sx, int sy) const
+Vector3D renderer_hist::view_to_world(int vx, int vy, int sx, int sy) const
 {
   
     Vector3D v;
@@ -73,7 +73,7 @@ Vector3D renderer_curve::view_to_world(int vx, int vy, int sx, int sy) const
     }
 }
 
-Vector3D renderer_curve::view_to_voxel(int vx, int vy,int sx,int sy,int imageID) const
+Vector3D renderer_hist::view_to_voxel(int vx, int vy,int sx,int sy,int imageID) const
 {
   
     Vector3D v;
@@ -91,7 +91,7 @@ Vector3D renderer_curve::view_to_voxel(int vx, int vy,int sx,int sy,int imageID)
     //return Vector3D();
 }
 
-bool renderer_curve::supports_mode (int m)
+bool renderer_hist::supports_mode (int m)
 { 
    /* switch (m)
         {
@@ -106,7 +106,7 @@ bool renderer_curve::supports_mode (int m)
 	return m == BLEND_OVERWRITE;
 }
 
-void renderer_curve::render_thumbnail (unsigned char *rgb, int rgb_sx, int rgb_sy, int image_ID)
+void renderer_hist::render_thumbnail (unsigned char *rgb, int rgb_sx, int rgb_sy, int image_ID)
 {
     rendercombination rc = rendercombination(image_ID);
     rendergeom_curve rg = rendergeom_curve();
@@ -114,7 +114,7 @@ void renderer_curve::render_thumbnail (unsigned char *rgb, int rgb_sx, int rgb_s
     render_( rgb, rgb_sx, rgb_sy,&rg,&rc);
 }
 
-void renderer_curve::render_position(unsigned char *rgb, int rgb_sx, int rgb_sy)
+void renderer_hist::render_position(unsigned char *rgb, int rgb_sx, int rgb_sy)
 {
     render_( rgb, rgb_sx, rgb_sy,(rendergeom_curve*)the_rg,the_rc);
 }
@@ -123,7 +123,7 @@ void renderer_curve::render_position(unsigned char *rgb, int rgb_sx, int rgb_sy)
 
 
 //render orthogonal slices using memory-order scanline
-void renderer_curve::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_curve *rg, rendercombination *rc)
+void renderer_hist::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_curve *rg, rendercombination *rc)
 {
 
     if(rc->empty()){       //*** no images: exit ***
@@ -201,54 +201,8 @@ void renderer_curve::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_c
 						}
 					}
 					break;
-				case '-':
-					if(size < 2){
-						break;
-					}else{
-						double data2;
-						Vector3D start, stop;
-						data = the_curve_pointer->get_data(0);
-
-						vector<int> color;
-						color.push_back(curve_color->r());
-						color.push_back(curve_color->g());
-						color.push_back(curve_color->b());
-
-
-						for(int j = min_bound+1; j < max_bound; j++){
-							data2 = the_curve_pointer->get_data(j);
-							start = rg->curve_to_view(j-1, data, rgb_sx, rgb_sy);
-							stop = rg->curve_to_view(j,data2, rgb_sx, rgb_sy);
-							draw_line(pixels, rgb_sx, rgb_sy, start[0], start[1], stop[0], stop[1], color);
-							data = data2;
-						}
-					}
-					break;
 				case '|':
-					//int center = rg->curve_to_view(min_bound, 0, rgb_sx, rgb_sy)[0];
-					//int height = rg->curve_to_view(min_bound, the_curve_pointer->get_data(min_bound), rgb_sx, rgb_sy)[1];
-					int height;
-					int center = round(rg->curve_to_view(min_bound, 0, rgb_sx, rgb_sy)[0]);
-					int width = rg->curve_to_view(min_bound+1, 0, rgb_sx, rgb_sy)[0] - center;
-
-					int bottom = rg->curve_to_view(0,rg->curve->get_min(), rgb_sx, rgb_sy)[1];
-					Vector2D pos = rg->mouse_location;
-					int other_color = round(rg->view_to_curve(pos[0]-(width/2), pos[1], rgb_sx, rgb_sy)[0]);
-					RGBvalue *o_c = new RGBvalue(255-curve_color->r(), 255-curve_color->g(), 255-curve_color->b());
-					//TODO RN the values update in center. This is not correct...
-					
-					//(uchar *pixels, int center, int width, int height, int bottom, RGBvalue *curve_color)
-					for(int j = min_bound; j < max_bound; j++){
-						height = rg->curve_to_view(j,the_curve_pointer->get_data(j), rgb_sx, rgb_sy)[1];
-						center = round(rg->curve_to_view(j, 0, rgb_sx, rgb_sy)[0]) + (width/2);
-						//center += width;
-						if(j != other_color){
-							draw_bucket(pixels,center, width, height, bottom, curve_color, rgb_sx, rgb_sy);
-						}else{
-							draw_bucket(pixels,center, width, height, bottom, o_c, rgb_sx, rgb_sy);
-						}
-					}
-					/*	vector<int> color;
+						vector<int> color;
 						color.push_back(curve_color->r());
 						color.push_back(curve_color->g());
 						color.push_back(curve_color->b());
@@ -259,22 +213,19 @@ void renderer_curve::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_c
 							data = the_curve_pointer->get_data(j);
 							start = rg->curve_to_view(j,data, rgb_sx, rgb_sy);
 							draw_line(pixels, rgb_sx, rgb_sy, start[0], start[1], start[0], y_min, color);
-						}*/
+						}
 					break;
 			}
+			Vector2D pos = rg->mouse_location;
 			vector<int> col;
 			col.push_back(255 - curve_color->r());
 			col.push_back(255 - curve_color->g());
 			col.push_back(255 - curve_color->b());
-			if(type != '|'){
-				Vector2D pos = rg->mouse_location;
-				
-				draw_line(pixels, rgb_sx, rgb_sy, pos[0], 0, pos[0], rgb_sy, col);
+			draw_line(pixels, rgb_sx, rgb_sy, pos[0], 0, pos[0], rgb_sy, col);
 
-				Vector2D measure = rg->measure_location;
-				if(measure[0] != -1){
-					draw_line(pixels, rgb_sx, rgb_sy, measure[0], 0, measure[0], rgb_sy, col);
-				}
+			Vector2D measure = rg->measure_location;
+			if(measure[0] != -1){
+				draw_line(pixels, rgb_sx, rgb_sy, measure[0], 0, measure[0], rgb_sy, col);
 			}
 			if(the_curve_pointer->draw_additional_data){
 				render_additional_data(pixels,the_curve_pointer, rg, rgb_sx, rgb_sy, col);
@@ -287,28 +238,35 @@ void renderer_curve::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_c
 	}
 }//render_ function
 
-void renderer_curve::draw_bucket(uchar *pixels, int center, int width, int height, int bottom, RGBvalue *curve_color, int rgb_sx, int rgb_sy){
-	int start_row, end_row;
+void renderer_hist::draw_bucket(uchar *pixels, curve_base *the_curve_pointer, rendergeom_curve *rg, int rgb_sx, int rgb_sy, RGBvalue *curve_color, int bucket){
+	int start_row, end_row, width;
+	
+	double d = the_curve_pointer->get_data(bucket);
+	Vector3D center = rg->curve_to_view(bucket, d, rgb_sx, rgb_sy);
 
-	start_row = std::max(center - (width/2), 0);
-	end_row = std::min(center + (width/2), rgb_sx);
-	height = std::max(height, 0);
-	bottom = std::min(bottom, rgb_sy);
-	//cout << "start: " << start_row << "  end: " << end_row << endl;
-	//cout << "bottom: " << bottom << "  top: " << round<int>(center[1]) << endl;
+	int bottom = rg->curve_to_view(bucket, 0, rgb_sx, rgb_sy)[1];
+
+	if(bucket >0 )
+		width = center[0] - rg->curve_to_view(bucket-1, d, rgb_sx, rgb_sy)[0];
+	else
+		width = rg->curve_to_view(bucket+1, d, rgb_sx, rgb_sy)[0] - center[0];
+
+	start_row = center[0] - width/2;
+	end_row = center[0] - width/2;
+
+	start_row = std::max(start_row, rgb_sx);
+	end_row = std::max(end_row, rgb_sx);
 	int pix_addr;
 	for(int i = start_row; i < end_row; i++){
-		for(int j = bottom; j > height; j--){
+		for(int j = bottom; j > center[1]; j--){
 			pix_addr = (j*rgb_sx + i)*RGB_pixmap_bpp;
 			pixels[pix_addr] = curve_color->r();
 			pixels[pix_addr+1] = curve_color->g();
 			pixels[pix_addr+2] = curve_color->b();
 		}
 	}
-//	cout <<"width: " << end_row - start_row << "   height: " <<  bottom - height << endl;
 }
-
-void renderer_curve::render_additional_data(uchar *pixels, curve_base *the_curve_pointer, rendergeom_curve *rg, int rgb_sx, int rgb_sy, vector<int> col){
+void renderer_hist::render_additional_data(uchar *pixels, curve_base *the_curve_pointer, rendergeom_curve *rg, int rgb_sx, int rgb_sy, vector<int> col){
 	for(int i = 0; i < the_curve_pointer->helper_data->data.size(); i++){
 
 
@@ -361,7 +319,7 @@ void renderer_curve::render_additional_data(uchar *pixels, curve_base *the_curve
 		}
 	}
 }
-void renderer_curve::draw_axes(uchar *pixels, curve_base *curve, rendergeom_curve *rg, int width, int height){
+void renderer_hist::draw_axes(uchar *pixels, curve_base *curve, rendergeom_curve *rg, int width, int height){
 	double max = curve->get_max();
 	double min = curve->get_min();
 	
@@ -401,7 +359,7 @@ void renderer_curve::draw_axes(uchar *pixels, curve_base *curve, rendergeom_curv
 	}
 }
 
-int renderer_curve::sgn ( long a )
+int renderer_hist::sgn ( long a )
 {
 	if (a > 0)
 		{ return +1; }
@@ -411,7 +369,7 @@ int renderer_curve::sgn ( long a )
 		{ return 0; }
 }
 	
-void renderer_curve::draw_line(uchar *pixels, int sx, int sy, int a, int b, int c, int d,  std::vector<int> color)
+void renderer_hist::draw_line(uchar *pixels, int sx, int sy, int a, int b, int c, int d,  std::vector<int> color)
 {
 	// Line algorithm
 	//http://www.cprogramming.com/tutorial/tut3.html

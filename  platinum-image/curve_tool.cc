@@ -95,6 +95,8 @@ void curve_tool::handle(viewport_event &event)
 
 				event.grab();
 				fp->needs_rerendering();
+				//RN This is added because all viewports that use this edited rg should be updated
+				viewmanagement.refresh_viewports_from_geometry(myRenderer->geometry_id());
 				break;
 			}
 
@@ -113,6 +115,8 @@ void curve_tool::handle(viewport_event &event)
 			numbers << "Curve at config position: " << curve_name;
 			userIOmanagement.interactive_message(numbers.str());
 			fp->needs_rerendering();
+			//RN This is added because all viewports that use this edited rg should be updated
+			viewmanagement.refresh_viewports_from_geometry(myRenderer->geometry_id());
 			}
 			break;
 
@@ -133,7 +137,9 @@ void curve_tool::handle(viewport_event &event)
 					numbers << "width: " << std::fixed << std::setprecision(2) << dx*((rendergeom_curve *)myRenderer->the_rg)->x_scale;
 					userIOmanagement.interactive_message(numbers.str());
 
-                    fp->needs_rerendering();				
+                    fp->needs_rerendering();
+					//RN This is added because all viewports that use this edited rg should be updated
+					viewmanagement.refresh_viewports_from_geometry(myRenderer->geometry_id());
 			}
 			break;
 
@@ -145,7 +151,9 @@ void curve_tool::handle(viewport_event &event)
 					((rendergeom_curve *)myRenderer->the_rg)->cy-=last_local_y-event.mouse_pos_local()[1];
 					last_local_x = event.mouse_pos_local()[0];
 					last_local_y = event.mouse_pos_local()[1];
-                    fp->needs_rerendering();				
+                    fp->needs_rerendering();
+					//RN This is added because all viewports that use this edited rg should be updated
+					viewmanagement.refresh_viewports_from_geometry(myRenderer->geometry_id());
 			}
 			break;
 		case pt_event::adjust:
@@ -171,6 +179,8 @@ void curve_tool::handle(viewport_event &event)
 					((rendergeom_curve *)myRenderer->the_rg)->cy-=dy;
 
 					fp->needs_rerendering();
+					//RN This is added because all viewports that use this edited rg should be updated
+					viewmanagement.refresh_viewports_from_geometry(myRenderer->geometry_id());
 			}
 			break;
 		case pt_event::hover:
@@ -190,6 +200,8 @@ void curve_tool::handle(viewport_event &event)
 							userIOmanagement.interactive_message(numbers.str());
 							event.grab();
 							fp->needs_rerendering();
+							//RN This is added because all viewports that use this edited rg should be updated
+							viewmanagement.refresh_viewports_from_geometry(myRenderer->geometry_id());
 					}
 					break;
 				default:

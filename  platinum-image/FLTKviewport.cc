@@ -1066,6 +1066,7 @@ void FLTK_Pt_MPR_pane::create_geom_menu(int W){
 	//std::vector<rendergeometry_base*> geo = rendermanagement.get_geometries();
 	Fl_Menu_Item *geom_menu_items = (Fl_Menu_Item*)malloc((nr_view+1)*sizeof(Fl_Menu_Item));
 	int preset_vp = 0;
+	char *def = "Own geom";
 
 	//int id = rendermanagement.get_geometry(get_viewport_parent()->get_renderer_id())->get_id();
 	for(m = 0; m<nr_view; m++){    
@@ -1081,12 +1082,24 @@ void FLTK_Pt_MPR_pane::create_geom_menu(int W){
 		geom_menu_items[m].flags= FL_MENU_RADIO;
 		if(cbp->vp_id == get_viewport_parent()->get_id()){
 			preset_vp = m;
+			geom_menu_items[m].label(def);
 		}
 	}
     geom_menu_items[m].label(NULL);	//terminate menu
     geom_menu_items[preset_vp].setonly();	//DEFAULT_DIR is pre-set, set checkmark accordingly
+
+
+	Fl_Menu_Item dummy[1];
+	dummy[0].label(NULL);
+	char *l = (char*)malloc((11)*sizeof(char));
+	sprintf(l,"Geom: %d",preset_vp);
+	info = new Fl_Menu_Button(0,0,buttonwidth,buttonheight,l);
+    info->copy(dummy);
+	info->box(FL_THIN_UP_BOX);
+	info->labelsize(FLTK_SMALL_LABEL);
+
 	
-    geom_button = new Fl_Menu_Button(0,0,buttonwidth,buttonheight,"Geometry");
+	geom_button = new Fl_Menu_Button(0,0,buttonwidth,buttonheight,"Geometry");
     geom_button->copy(geom_menu_items);
 	geom_button->box(FL_THIN_UP_BOX);
 	geom_button->labelsize(FLTK_SMALL_LABEL);
@@ -1130,12 +1143,13 @@ void FLTK_Pt_MPR_pane::set_direction_button_label(preset_direction direction)
 
 void FLTK_Pt_MPR_pane::change_geom(int vp_id){
 
-	rendergeometry_base *geom = rendermanagement.get_renderer(viewmanagement.get_renderer_id(vp_id))->the_rg;//   get_geometry(viewmanagement.get_renderer_id(vp_id));
+	rendergeometry_base *geom;// = rendermanagement.get_renderer(viewmanagement.get_renderer_id(vp_id))->the_rg;//   get_geometry(viewmanagement.get_renderer_id(vp_id));
 
-	//rendergeometry_base *base;
-	//base = rendermanagement.get_geometry(this->get_renderer_id());
-	
-	//curve_base *curve = ((renderer_curve *)rendermanagement.get_renderer(this->get_renderer_id))->get_top();
+	if(vp_id == this->get_viewport_parent()->get_id()){
+		geom = rendermanagement.get_renderer(viewmanagement.get_renderer_id(vp_id))->original_rg;
+	}else{
+		geom = rendermanagement.get_renderer(viewmanagement.get_renderer_id(vp_id))->the_rg;//   get_geometry(viewmanagement.get_renderer_id(vp_id));
+	}
 	if(geom == NULL){
 		return;
 	}
@@ -1312,37 +1326,53 @@ Here the code for the menu was before
 }
 void FLTK_Pt_Curve_pane::create_geom_menu(int W){
 
-	/*int buttonleft=0;
+	int buttonleft=0;
 	int buttonheight=20;
 	int buttonwidth=70;
-
 	int m = 0;
-	std::vector<rendergeometry_base*> geo = rendermanagement.get_geometries();
-	Fl_Menu_Item *geom_menu_items = (Fl_Menu_Item*)malloc(geo.size()*sizeof(Fl_Menu_Item));
-	int preset_geom;
-	int id = rendermanagement.get_geometry(get_viewport_parent()->get_renderer_id())->get_id();
-	for(m = 0; m<geo.size(); m++){    
+
+	int nr_view = viewmanagement.get_nr_viewports();
+	cout << "nr  of viewports: " << nr_view << endl;
+	//std::vector<rendergeometry_base*> geo = rendermanagement.get_geometries();
+	Fl_Menu_Item *geom_menu_items = (Fl_Menu_Item*)malloc((nr_view+1)*sizeof(Fl_Menu_Item));
+	int preset_vp = 0;
+	char *def = "Own geom";
+	//int id = rendermanagement.get_geometry(get_viewport_parent()->get_renderer_id())->get_id();
+	for(m = 0; m<nr_view; m++){    
 		menu_callback_params * cbp=new menu_callback_params;
 		cbp->vport=get_viewport_parent();
-		cbp->geom = geo.at(m);
-		char *label = (char*)malloc(3*sizeof(char));
+		cbp->vp_id = viewmanagement.get_viewport_id_from_index(m);
+		char *label = (char*)malloc(3*sizeof(char));// = itoa(m);
 		sprintf(label,"%d",m);
 		init_fl_menu_item(geom_menu_items[m]);
 		geom_menu_items[m].label(label);
 		geom_menu_items[m].callback(&set_geom_callback);
 		geom_menu_items[m].user_data(cbp);
 		geom_menu_items[m].flags= FL_MENU_RADIO;
-		if(geo.at(m)->get_id() == id){
-			preset_geom = m;
+		if(cbp->vp_id == get_viewport_parent()->get_id()){
+			preset_vp = m;
+			geom_menu_items[m].label(def);
 		}
 	}
     geom_menu_items[m].label(NULL);	//terminate menu
-    geom_menu_items[preset_geom].setonly();	//DEFAULT_DIR is pre-set, set checkmark accordingly
+    geom_menu_items[preset_vp].setonly();	//DEFAULT_DIR is pre-set, set checkmark accordingly
 	
-    geom_button = new Fl_Menu_Button(0,0,buttonwidth,buttonheight,"Geometry");
+	
+
+	Fl_Menu_Item dummy[1];
+	dummy[0].label(NULL);
+	char *l = (char*)malloc((11)*sizeof(char));
+	sprintf(l,"Geom: %d",preset_vp);
+	info = new Fl_Menu_Button(0,0,buttonwidth,buttonheight,l);
+    info->copy(dummy);
+	info->box(FL_THIN_UP_BOX);
+	info->labelsize(FLTK_SMALL_LABEL);
+
+	geom_button = new Fl_Menu_Button(0,0,buttonwidth,buttonheight,"Geometry");
     geom_button->copy(geom_menu_items);
 	geom_button->box(FL_THIN_UP_BOX);
-	geom_button->labelsize(FLTK_SMALL_LABEL);*/
+	geom_button->labelsize(FLTK_SMALL_LABEL);
+
 }
 void FLTK_Pt_Curve_pane::create_curve_menu(int W){
 	int buttonleft=0;
@@ -1453,10 +1483,10 @@ void FLTK_Pt_Curve_pane::set_line_callback(Fl_Widget *callingwidget, void * p )
 }
 void FLTK_Pt_Curve_pane::set_geom_callback(Fl_Widget *callingwidget, void * p )
 {
- /*   menu_callback_params * params = (menu_callback_params *) p;
-	params->vport->change_geom_type( params->geom, PT_CURVE);
+    menu_callback_params * params = (menu_callback_params *) p;
+	params->vport->change_geom_type( params->vp_id, PT_CURVE);
 	params->vport->refresh();
-	viewmanagement.update_overlays();*/
+	viewmanagement.update_overlays();
 }
 
 void FLTK_Pt_Curve_pane::set_color_button_label(colors c)
@@ -1513,14 +1543,21 @@ void FLTK_Pt_Curve_pane::change_color(colors color){
 	}
 }
 void FLTK_Pt_Curve_pane::change_geom(int vp_id){
-/*	rendergeometry_base *base;
-	base = rendermanagement.get_geometry(this->get_renderer_id());
+	rendergeometry_base *geom;
+	if(vp_id == this->get_viewport_parent()->get_id()){
+		geom = rendermanagement.get_renderer(viewmanagement.get_renderer_id(vp_id))->original_rg;
+	}else{
+		geom = rendermanagement.get_renderer(viewmanagement.get_renderer_id(vp_id))->the_rg;//   get_geometry(viewmanagement.get_renderer_id(vp_id));
+	}
+	//rendergeometry_base *base;
+	//base = rendermanagement.get_geometry(this->get_renderer_id());
 	
 	//curve_base *curve = ((renderer_curve *)rendermanagement.get_renderer(this->get_renderer_id))->get_top();
-	if(base == NULL){
+	if(geom == NULL){
 		return;
 	}
-	base = geom;*/
+	rendermanagement.get_renderer(this->get_renderer_id())->use_other_geometry(geom);
+	((rendergeom_image*)geom)->refresh_viewports(); //Safe because it can oly be an image in other viewport
 }
 //--------------------------------------------------------
 

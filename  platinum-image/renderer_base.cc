@@ -67,6 +67,8 @@ void renderer_base::connect_geometry(rendergeometry_base *rg)
 {
     the_rg=rg;
     rg_id=rg->get_id();
+	original_rg = rg;
+	original_rg_id = rg_id;
 }
 
 int renderer_base::geometry_id() const

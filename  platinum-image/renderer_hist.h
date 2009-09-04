@@ -25,8 +25,8 @@
 //    along with the Platinum library; if not, write to the Free Software
 //    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef __renderer_curve__
-#define __renderer_curve__
+#ifndef __renderer_hist__
+#define __renderer_hist__
 
 #include "cursor3D.h"
 #include "renderer_base.h"
@@ -38,22 +38,22 @@
 //Vector3D mult_elems(const Vector3D &one, const Vector3D &other);
 //Vector3D div_elems(const Vector3D &numer, const Vector3D &denom);
 
-class renderer_curve : public renderer_curve_base
+class renderer_hist : public renderer_curve_base
     {
     private:
 
         static void render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_curve *rg, rendercombination *rc);
 		static int sgn(long a);
-		static void draw_bucket(uchar *pixels, int center, int width, int height, int bottom, RGBvalue *curve_color, int rgb_sx, int rgb_sy);
+		static void draw_bucket(uchar *pixels, curve_base *the_curve_pointer, rendergeom_curve *rg, int rgb_sx, int rgb_sy, RGBvalue *curve_color, int bucket);
 		static void render_additional_data(uchar *pixels, curve_base *the_curve_pointer, rendergeom_curve *rg, int rgb_sx, int rgb_sy, vector<int> col);
 		static void draw_line(uchar *pixels, int sx, int sy, int a, int b, int c, int d, std::vector<int> color);
 		static void draw_axes(uchar *pixels, curve_base *curve, rendergeom_curve *rg, int width, int height);
 	
 
     public:
-		renderer_curve();
+		renderer_hist();
         void connect_data(int dataID);	//add image to rendering combination
-		static RENDERER_TYPE renderer_type(){return RENDERER_CURVE;} //return RENDERER_CURVE
+		static RENDERER_TYPE renderer_type(){return RENDERER_HIST;} //return RENDERER_CURVE
 
         static void render_thumbnail(unsigned char *rgb, int rgb_sx, int rgb_sy, int image_ID); //Here for future support
 		void render_threshold (unsigned char *rgba, int rgb_sx, int rgb_sy, thresholdparvalue * threshold){}
@@ -65,7 +65,7 @@ class renderer_curve : public renderer_curve_base
         virtual bool supports_mode (int m);
         
         static const std::string typekey ()
-            {return "Curve renderer";}
+            {return "Histogram renderer";}
 
 		RENDERER_TYPE type() const{
 			return renderer_type();
