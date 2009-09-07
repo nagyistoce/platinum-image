@@ -351,7 +351,8 @@ class FLTK_Pt_MPR_pane : public FLTK_Pt_pane
 		Fl_Menu_Button	*directionmenu_button;
 	    Fl_Menu_Button	*blendmenu_button;
 		Fl_Menu_Button *geom_button;
-		Fl_Menu_Button *info;
+		//Fl_Menu_Button *info;
+		Fl_Output *text_box;
 		void create_MPR_menu(int W);
 		void create_geom_menu(int W);
 //		Fl_Button *b;	//	Fl_Button *b = new Fl_Button(0,buttonheight,100,100-buttonheight, "FLTK_Pt_MPR_pane()_button");	 //JK //RN test

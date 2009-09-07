@@ -28,6 +28,7 @@
 
 #include "ptmath.h"
 #include "pt_vector.h"
+#include "curve.hxx"
 #include "threshold.h"
 #include "global.h"
 #include <vnl/vnl_cost_function.h>
@@ -83,6 +84,7 @@ class histogram_base
 		//do variance, max, choose number of buckets and the like... omitting the num_buckets parameter uses current stored resolution 
 		virtual void calculate_from_image_data(int number_of_buckets=0) {}      
 		virtual void data_has_changed(){}; //Updates statistics from the *buckets data
+		curve_scalar<unsigned long>* get_curve_for_rendering();
 
 		virtual void render_threshold (unsigned char * image, unsigned int w,unsigned int h) {}; 
 

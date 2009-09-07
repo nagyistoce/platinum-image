@@ -70,6 +70,11 @@ histogram_base::~histogram_base ()
 		}
     }
 
+curve_scalar<unsigned long>* histogram_base::get_curve_for_rendering(){
+	curve_scalar<unsigned long>* c = new curve_scalar<unsigned long>(0,"histogram curve",0,1);
+	c->my_data = bucket_vector;
+	return c;
+}
 int histogram_base::image_ID (int axis)
     {
     return threshold.get_id (axis);

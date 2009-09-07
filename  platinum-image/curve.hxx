@@ -161,7 +161,7 @@ void curve_scalar<ELEMTYPE>::increase_resolution(){
 	int i;
 	for(i = 0; i < my_data->size()-1; i++){
 		temp->push_back(my_data->at(i));
-		temp->push_back(abs(my_data->at(i) + my_data->at(i+1))/2);
+		temp->push_back(abs<ELEMTYPE>(my_data->at(i) + my_data->at(i+1))/2);
 	}
 	temp->push_back(my_data->at(i));
 	

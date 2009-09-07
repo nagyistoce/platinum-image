@@ -1089,14 +1089,17 @@ void FLTK_Pt_MPR_pane::create_geom_menu(int W){
     geom_menu_items[preset_vp].setonly();	//DEFAULT_DIR is pre-set, set checkmark accordingly
 
 
-	Fl_Menu_Item dummy[1];
-	dummy[0].label(NULL);
+	//Fl_Menu_Item dummy[1];
+	//dummy[0].label(NULL);
 	char *l = (char*)malloc((11)*sizeof(char));
 	sprintf(l,"Geom: %d",preset_vp);
-	info = new Fl_Menu_Button(0,0,buttonwidth,buttonheight,l);
+	/*info = new Fl_Menu_Button(0,0,buttonwidth,buttonheight,l);
     info->copy(dummy);
 	info->box(FL_THIN_UP_BOX);
-	info->labelsize(FLTK_SMALL_LABEL);
+	info->labelsize(FLTK_SMALL_LABEL);*/
+
+	text_box = new Fl_Output(0,0,buttonwidth,buttonheight,'\0');//Does not feel completely right. Isn't there any Fl_label or something?
+	text_box->value(l);
 
 	
 	geom_button = new Fl_Menu_Button(0,0,buttonwidth,buttonheight,"Geometry");
