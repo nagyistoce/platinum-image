@@ -38,6 +38,12 @@
 
 using namespace std;
 
+template <class ELEMTYPE>
+class fit_gaussians_to_curve_cost_function;
+
+template<class ELEMTYPE>
+class fit_rayleighian_to_histogram_1D_cost_function;
+
 /* Base starts here */
 template<class ELEMTYPE>
 class pt_vector : public vector<ELEMTYPE>{
@@ -295,7 +301,7 @@ double pt_vector<ELEMTYPE>::from_x_to_val(int x){
 template <class ELEMTYPE>
 float pt_vector<ELEMTYPE>::get_variance_in_range(int from, int to)
 {
-	float mean = get_mean_x_in_range(from,to); //TITTA på mean
+	float mean = get_mean_x_in_range(from,to); //TITTA pÃ‚ mean
 	float sum = 0;
 	float num_values = 0;
 	float diff=0;
@@ -403,18 +409,18 @@ void pts_vector<ELEMTYPE>::fit_gaussian_to_intensity_range(float &amp, float &ce
 	cout<<"to_int="<<to_int<<endl;
 	cout<<"this->get_max_value_in_range(0,3)="<<this->get_max_value_in_range(0,3)<<endl;
 
-	int from_bucket = std::max(0, from_val_to_x(from_int));
-	int to_bucket = std::min(int(this->size()-1), from_val_to_x(to_int));
+	int from_bucket = std::max(0, this->from_val_to_x(from_int));
+	int to_bucket = std::min(int(this->size()-1), this->from_val_to_x(to_int));
 //	cout<<"from_bucket="<<from_bucket<<endl;
 //	cout<<"to_bucket="<<to_bucket<<endl;
 
 	gaussian g(amp,center,sigma);
 	g.amplitude = float(this->get_max_value_in_range(from_bucket,to_bucket));
-	g.center = get_mean_x_in_range(from_bucket,to_bucket); //detta är inte så logiskt för kurvor.....
+	g.center = this->get_mean_x_in_range(from_bucket,to_bucket); //detta â€°r inte sÃ‚ logiskt fË†r kurvor.....
 //	g.center = this->get_max_value_in_range(from_bucket,to_bucket);
 	g.sigma = sqrt(this->get_variance_in_range(from_bucket,to_bucket)); //intensity variance...
-	int dyn_from_bucket = std::max(from_bucket, from_val_to_x(g.center-1.5*g.sigma));
-	int dyn_to_bucket = std::min(to_bucket, from_val_to_x(g.center+1.5*g.sigma));
+	int dyn_from_bucket = std::max(from_bucket, this->from_val_to_x(g.center-1.5*g.sigma));
+	int dyn_to_bucket = std::min(to_bucket, this->from_val_to_x(g.center+1.5*g.sigma));
 
 //	cout<<"***INIT***"<<endl;
 //	cout<<"amp="<<g.amplitude<<endl;
@@ -443,8 +449,8 @@ void pts_vector<ELEMTYPE>::fit_gaussian_to_intensity_range(float &amp, float &ce
 		
 		//consider shape of gaussian but dont go outside given limits...
 		tmp = std::max(float(from_int),float(g.center-1.1*g.sigma)); //limits intensity range...
-		dyn_from_bucket = std::max(from_bucket, from_val_to_x(tmp)); //limits bucket range...
-		dyn_to_bucket = std::min(to_bucket, from_val_to_x(g.center+1.1*g.sigma));
+		dyn_from_bucket = std::max(from_bucket, this->from_val_to_x(tmp)); //limits bucket range...
+		dyn_to_bucket = std::min(to_bucket, this->from_val_to_x(g.center+1.1*g.sigma));
 
 		if(print_info){
 			cout<<"**************"<<endl;
@@ -586,7 +592,7 @@ double pts_vector<ELEMTYPE>::get_gaussian_area(gaussian g, int from_bucket, int 
 {
 	double area=0;
 	for(int i=from_bucket;i<=to_bucket;i++){
-		area += g.evaluate_at(from_x_to_val(i));
+		area += g.evaluate_at(this->from_x_to_val(i));
 	}
 	return area;
 }
@@ -614,7 +620,7 @@ double pts_vector<ELEMTYPE>::get_sum_square_gaussian_overlap(vector<gaussian> v,
 	double min_val=10000;
 	for(int i=from_bucket;i<=to_bucket;i++){
 		for(int j=0;j<v.size();j++){
-			min_val = std::min( min_val, double(v[j].evaluate_at(from_x_to_val(i))) );
+			min_val = std::min( min_val, double(v[j].evaluate_at(this->from_x_to_val(i))) );
 		}
 		sum += min_val*min_val;
 		min_val=10000;
@@ -642,12 +648,12 @@ vector<double> pts_vector<ELEMTYPE>::get_overlaps_in_percent(vector<gaussian> v)
 	for(int j=0;j<v.size();j++){
 		sum_overlap=0;
 		for(int i=0;i<this->size();i++){
-			my_val = v[j].evaluate_at(from_x_to_val(i));
+			my_val = v[j].evaluate_at(this->from_x_to_val(i));
 			moa_val=0;
 			for(int k=0;k<v.size();k++){
 				//cout<<"j,i,k-"<<j<<","<<i<<","<<k<<endl;
 				if(k != j){
-					moa_val = std::max( moa_val, double(v[k].evaluate_at(from_x_to_val(i))) );
+					moa_val = std::max( moa_val, double(v[k].evaluate_at(this->from_x_to_val(i))) );
 				}
 			}
 
@@ -803,7 +809,7 @@ template <class ELEMTYPE>
 double pts_vector<ELEMTYPE>::get_sum_square_diff_from_buckets(rayleighian r, int from_bucket, int to_bucket, bool ignore_zeros){
 	double error = 0;
 	float val=0;
-	int zero_intensity_bucket = from_val_to_x(0);
+	int zero_intensity_bucket = this->from_val_to_x(0);
 
 	for(int j=from_bucket;j<=to_bucket;j++){
 		//it is very important to use the intensity, and not the bucket position...
@@ -811,7 +817,7 @@ double pts_vector<ELEMTYPE>::get_sum_square_diff_from_buckets(rayleighian r, int
 		if(this->at(j)>0 || !ignore_zeros){
 			if(j != zero_intensity_bucket){ //dont include the commonly seen peak at zero intensity
 
-				ELEMTYPE intensity = from_x_to_val(j);
+				ELEMTYPE intensity = this->from_x_to_val(j);
 				val = r.evaluate_at(intensity);	
 				error += pow(val - float(this->at(j)), 2);
 			}
@@ -925,7 +931,7 @@ double fit_gaussians_to_curve_cost_function<ELEMTYPE>::f(vnl_vector<double> cons
 
 
 	if(punish_overlap){
-		vector<double> overlaps = the_hist->get_overlaps_in_percent(v);
+		std::vector<double> overlaps = the_hist->get_overlaps_in_percent(v);
 		double mean_ = mean<double>(overlaps);
 //		cout<<"mean_="<<mean_<<endl;
 		res = res*(1+mean_);

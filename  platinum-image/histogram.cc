@@ -400,7 +400,7 @@ void histogram_2D::calculate_from_image_data(int new_num_buckets)
                     hist_pos_y=slope_y*y;
 
                     hist_index=((unsigned short) hist_pos_x)+((unsigned short) hist_pos_y)*num_buckets;
-                    intensity_value=std::min((float)bucket_vector->at(hist_index)*(float)intensity_scale, (float)255.0);
+                    intensity_value=std::min((float)this->bucket_vector->at(hist_index)*(float)intensity_scale, (float)255.0);
 
                     image[(x+(h-y)*w)*RGB_pixmap_bpp]=(highlight_data [hist_index] ? intensity_value/2 : intensity_value);
                     image[(x+(h-y)*w)*RGB_pixmap_bpp+1]=(highlight_data [hist_index] ? intensity_value/2 + 127 : intensity_value);

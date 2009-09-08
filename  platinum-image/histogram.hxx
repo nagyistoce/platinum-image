@@ -19,10 +19,8 @@
 
 
 // *** histogram_typed ***
-#include "histogram.h"
+//#include "histogram.h"
 #include "pt_vector.h"
-
-
 
 template <class ELEMTYPE>
 histogram_typed<ELEMTYPE>::histogram_typed()
@@ -381,7 +379,7 @@ void histogram_1D<ELEMTYPE>::recalc_min_max_data()
         this->max_value = std::numeric_limits<ELEMTYPE>::max(); 
         this->min_value = std::numeric_limits<ELEMTYPE>::min();
     }
-	bucket_vector->config_x_axis(get_scalefactor(), this->min()); //XXX testing
+	(this->bucket_vector)->config_x_axis(get_scalefactor(), this->min()); //XXX testing
 }
 
 template <class ELEMTYPE>
@@ -1065,7 +1063,7 @@ template <class ELEMTYPE>
 int histogram_1D<ELEMTYPE>::get_bucket_pos_with_largest_value_in_bucket_range(int from, int to)
 {
 	int pos=0;
-	bucket_vector->get_max_value_in_range(from, to, pos);
+	(this->bucket_vector)->get_max_value_in_range(from, to, pos);
 	return pos;
 }
 
@@ -1074,7 +1072,7 @@ template <class ELEMTYPE>
 int histogram_1D<ELEMTYPE>::get_bucket_pos_with_largest_value_in_intensity_range(ELEMTYPE from, ELEMTYPE to)
 {
 	int pos=0;
-	bucket_vector->get_maximum_in_range(intensity_to_bucketpos(from), intensity_to_bucketpos(to), pos);
+	(this->bucket_vector)->get_maximum_in_range(intensity_to_bucketpos(from), intensity_to_bucketpos(to), pos);
 	return pos;
 }
 

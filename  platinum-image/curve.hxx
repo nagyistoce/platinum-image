@@ -154,22 +154,22 @@ char curve_scalar<ELEMTYPE>::get_line() const{
 
 template<class ELEMTYPE>
 void curve_scalar<ELEMTYPE>::increase_resolution(){
-	pt_vector<ELEMTYPE> *temp = new pt_vector<ELEMTYPE>(my_data->size()*2-1);
-	temp->assign(0, my_data->size()*2-1);
-	temp->config_x_axis(my_data->x_res, my_data->x_axis_start);
-
-	int i;
-	for(i = 0; i < my_data->size()-1; i++){
-		temp->push_back(my_data->at(i));
-		temp->push_back(abs<ELEMTYPE>(my_data->at(i) + my_data->at(i+1))/2);
-	}
-	temp->push_back(my_data->at(i));
-	
-	temp->config_x_axis(temp->x_res/2,temp->x_axis_start);
-
-	modified = true;
-	my_data->clear();
-	my_data = temp;
+	//pt_vector<ELEMTYPE> *temp = new pt_vector<ELEMTYPE>(my_data->size()*2-1);
+//	temp->assign(0, my_data->size()*2-1);
+//	temp->config_x_axis(my_data->x_res, my_data->x_axis_start);
+//
+//	int i;
+//	for(i = 0; i < my_data->size()-1; i++){
+//		temp->push_back(my_data->at(i));
+//		temp->push_back(abs<ELEMTYPE>(my_data->at(i) + my_data->at(i+1))/2);
+//	}
+//	temp->push_back(my_data->at(i));
+//	
+//	temp->config_x_axis(temp->x_res/2,temp->x_axis_start);
+//
+//	modified = true;
+//	my_data->clear();
+//	my_data = temp;
 }
 
 
