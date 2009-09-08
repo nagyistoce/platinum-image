@@ -193,7 +193,7 @@ void renderer_spectrum::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeo
 			char line_type = the_curve_pointer->get_line();
 			//char x_type = the_curve_pointer->get_x_type();
 			vector<double> x_vector;
-			vector<vector<double>> y_vector;
+			vector<vector<double> > y_vector;
 			for(int i = 0; i < the_curve_pointer->get_data_size(); i++){
 				cout << " " << the_curve_pointer->get_data(i);
 			}

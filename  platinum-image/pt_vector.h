@@ -294,7 +294,7 @@ double pts_vector<ELEMTYPE>::get_mean_in_range_for_vector(int from, int to, vect
 template<class ELEMTYPE>
 double pts_vector<ELEMTYPE>::distance_between_points(int x1, int x2){
 	
-	return abs(x1-x2)*x_res;
+	return abs(x1-x2)*this->x_res;
 }
 
 template<class ELEMTYPE>
@@ -302,7 +302,7 @@ double pts_vector<ELEMTYPE>::area_between_points(int x1, int x2){
 	double area_approx;
 	area_approx = 0;
 	for(int i = x1; i < x2; i++){
-		area_approx += abs(this->at(i))*(x_res);//h*b
+		area_approx += abs(this->at(i))*(this->x_res);//h*b
 	}
 	return area_approx; //same unit as x_res is given in
 }
@@ -330,13 +330,13 @@ void pts_vector<ELEMTYPE>::normalize_to_maximum(){
 template<class ELEMTYPE>
 int pts_vector<ELEMTYPE>::from_val_to_x(double val){
 	
-	return round((val - x_axis_start)/x_res);
+	return round((val - this->x_axis_start)/this->x_res);
 }
 
 template<class ELEMTYPE>
 double pts_vector<ELEMTYPE>::from_x_to_val(int x){
 	
-	return x*x_res + x_axis_start;
+	return x*this->x_res + this->x_axis_start;
 }
 
 template <class ELEMTYPE>
@@ -862,7 +862,7 @@ double pts_vector<ELEMTYPE>::get_sum_square_diff_from_buckets(rayleighian r, int
 /* Scalar ends here */
 /* Complex starts here */
 template<class ELEMTYPE>
-class ptc_vector : public pt_vector<complex<ELEMTYPE>>{
+class ptc_vector : public pt_vector<complex<ELEMTYPE> >{
 public:
 	ptc_vector(int);
 	~ptc_vector(void){};
@@ -871,7 +871,7 @@ public:
 
 
 template<class ELEMTYPE>
-ptc_vector<ELEMTYPE>::ptc_vector(int start_size) : pt_vector<complex<ELEMTYPE>>(start_size){
+ptc_vector<ELEMTYPE>::ptc_vector(int start_size) : pt_vector<complex<ELEMTYPE> >(start_size){
 }
 /* Complex ends here */
 
