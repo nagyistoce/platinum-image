@@ -35,6 +35,7 @@
 #include "global.h"
 #include "listedfactory.h"
 #include "rendercombination.h"
+#include "renderer_spectrum.h"
 
 
 class threshold_overlay;
@@ -51,6 +52,7 @@ class viewport
     friend class FLTK_Pt_pane;	//allow access to for example "set_renderer_direction"...
     friend class FLTK_Pt_MPR_pane;	//allow access to for example "set_renderer_direction"...
 	friend class FLTK_Pt_Curve_pane;
+	friend class FLTK_Pt_Spectrum_pane;
     friend class FLTK_Event_pane;	//TMP
     friend class viewporttool;
 
@@ -77,9 +79,11 @@ private:
 	void set_renderer_direction(const Matrix3D &dir);
 	void set_renderer_direction(preset_direction direction); 
 
-	void change_color( colors color ); //Used in curve
-	void change_line_type(char type); //Used in curve
+	void change_color( colors color, VIEWPORT_TYPE type); //Used in curve
+	void change_line_type(char line, VIEWPORT_TYPE type); //Used in curve
 	void change_geom_type(int vp_id, VIEWPORT_TYPE type);
+	void change_x(char x);
+	void change_y(char y);
 
 	bool paint_rendergeometry;
 

@@ -120,7 +120,7 @@ rawimporter.h
 rendercombination.h 
 renderer_base.h 
 renderer_curve.h
-renderer_hist.h
+renderer_spectrum.h
 rendererMIP.h 
 rendererMPR.h 
 rendererVTK.h 
@@ -196,7 +196,7 @@ pt_vector.cc
 rawimporter.cc 
 renderer_base.cc 
 renderer_curve.cc
-renderer_hist.cc
+renderer_spectrum.cc
 rendererMIP.cc 
 rendererMPR.cc 
 rendererVTK.cc 
@@ -379,7 +379,7 @@ FLTKviewport.h
 viewmanager.h 
 renderer_base.h 
 renderer_curve.h
-renderer_hist.h
+renderer_spectrum.h
 rendererVTK.h 
 rendererMIP.h 
 rendererMPR.h 
@@ -393,7 +393,7 @@ mainwindow.cc
 viewmanager.cc 
 renderer_base.cc 
 renderer_curve.cc
-renderer_hist.cc
+renderer_spectrum.cc
 rendererVTK.cc 
 rendererMIP.cc 
 rendererMPR.cc 

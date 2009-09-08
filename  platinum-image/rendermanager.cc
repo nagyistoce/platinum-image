@@ -25,6 +25,7 @@
 #include "rendererMPR.h"
 #include "rendererMIP.h"
 #include "renderer_curve.h"
+#include "renderer_spectrum.h"
 #include "viewmanager.h"
 #include "datamanager.h"
 
@@ -43,6 +44,7 @@ rendermanager::rendermanager()
     pane_factory.Register<FLTK_VTK_Cone_pane>("VTK-Cone");	//JK2
     pane_factory.Register<FLTK_VTK_MIP_pane>("VTK-MIP");	//JK2
 	pane_factory.Register<FLTK_Pt_Curve_pane>("Curve");	//Hmm...
+	pane_factory.Register<FLTK_Pt_Spectrum_pane>("Spectrum");
 
 	//---- Old version ---
 //    renderer_factory.Register<rendererMPR>();	//JK2
@@ -380,6 +382,10 @@ int rendermanager::create_renderer(RENDERER_TYPE rendertype)
 		case RENDERER_CURVE:
 			arenderer = new renderer_curve();
 			geometries.push_back(new rendergeom_curve());
+			break;
+		case RENDERER_SPECTRUM:
+			arenderer = new renderer_spectrum();
+			geometries.push_back(new rendergeom_curve()); //RN add_geom_here
 			break;
         default:
             arenderer=NULL;

@@ -439,6 +439,8 @@ void nav_tool::handle(viewport_event &event)
                 if (event.handled())
 				{
                     fp->needs_rerendering();
+					//RN This is added because all viewports that use this edited rg should be updated
+					viewmanagement.refresh_viewports_from_geometry(myRenderer->geometry_id());
 				}
 				
 				if ( event.key_combo( pt_event::space_key + pt_event::shift_key ) )

@@ -31,6 +31,7 @@ curve_base::curve_base(string name) : data_base(get_supported_renderers())
 vector<RENDERER_TYPE> curve_base::get_supported_renderers(){
 	vector<RENDERER_TYPE> vec;
 	vec.push_back(RENDERER_CURVE);
+	vec.push_back(RENDERER_SPECTRUM);
 	return vec;
 }
 

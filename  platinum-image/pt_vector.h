@@ -53,6 +53,37 @@ public:
 	pt_vector(int);
 	virtual ~pt_vector(void){};
 	void config_x_axis(double resolution, double start);
+	
+	double x_res, x_axis_start;
+
+private:
+	
+	
+};
+
+/* BEGIN PT_VECTOR FUNCTIONS */
+template<class ELEMTYPE>
+pt_vector<ELEMTYPE>::pt_vector(int start_size) : vector<ELEMTYPE>(start_size){
+	x_res = 1.0;
+	x_axis_start = 0;
+}
+
+/* Sets the scaling of the x axis */
+template<class ELEMTYPE>
+void pt_vector<ELEMTYPE>::config_x_axis(double resolution, double start){
+	
+	x_res = resolution;
+	x_axis_start = start;
+}
+/* END PT_VECTOR FUNCTIONS */
+
+template<class ELEMTYPE>
+class pts_vector : public pt_vector<ELEMTYPE>{
+public: 
+	pts_vector(int);
+	~pts_vector(void){};
+
+	//Moved from pt vector
 	ELEMTYPE get_maximum_in_range(int from, int to, int &max_val_index_pos);
 	ELEMTYPE get_minimum_in_range(int from, int to, int &min_val_index_pos);
 
@@ -68,35 +99,45 @@ public:
 	double area_between_points(int x1, int x2);
 	double from_x_to_val(int x);
 	int from_val_to_x(double val);
+	void normalize_to_maximum();
 
 	ELEMTYPE get_x_at_lower_percentile(float percentile, bool ignore_zero_intensity);
 
-	void normalize_to_maximum();
+//------ Fitting of gaussian functions ------
+	void fit_gaussian_to_intensity_range(float &amp, float &center, float &sigma, double from, double to, bool print_info=false);
 
-	double x_res, x_axis_start;
+	float find_better_amplitude(gaussian g, int from_bucket, int to_bucket, float factor1=0.8, float factor2=1.2, int nr_steps=10);
+	float find_better_center(gaussian g, int from_bucket, int to_bucket, float factor1=0.8, float factor2=1.2, int nr_steps=10);
+	float find_better_sigma(gaussian g, int from_bucket, int to_bucket, float factor1=0.8, float factor2=1.2, int nr_steps=10);
+	double get_sum_square_diff_between_buckets(vector<gaussian> v, int from_bucket, int to_bucket, bool ignore_zeros=true);
+	double get_sum_square_diff_between_buckets(gaussian g, int from_bucket, int to_bucket, bool ignore_zeros=true);
+	double get_sum_square_diff(vector<gaussian> v, bool ignore_zeros=true);
+	double get_sum_square_diff(gaussian g, bool ignore_zeros=true);
+	double get_gaussian_area(gaussian g, int from_bucket, int to_bucket);
+	double get_gaussian_area(gaussian g);
+	vector<double> get_gaussian_areas(vector<gaussian> v);
+	double get_sum_square_gaussian_overlap(vector<gaussian> v, int from_bucket, int to_bucket);
+	double get_sum_square_gaussian_overlap(vector<gaussian> v);
+	vector<double> get_overlaps_in_percent(vector<gaussian> v);
+	vnl_vector<double> get_vnl_vector_with_start_guess_of_num_gaussians(int num_gaussians);
+	ELEMTYPE fit_two_gaussians_to_histogram_and_return_threshold(string save_histogram_file_path = "");
 
-private:
-	
-	
+	gaussian fit_gaussian_with_amoeba(int from, int to);
+
+
+	//------ Fitting of rayleigh functions ------
+	void fit_rayleigh_distr_to_intensity_range(float &amp, float &M, ELEMTYPE from_int, ELEMTYPE to_int, bool print_info=false);
+	double get_sum_square_diff(rayleighian r, bool ignore_zeros=true);
+	double get_sum_square_diff_from_buckets(rayleighian r, int from_bucket, int to_bucket, bool ignore_zeros=true);
+
 };
-
 template<class ELEMTYPE>
-pt_vector<ELEMTYPE>::pt_vector(int start_size) : vector<ELEMTYPE>(start_size){
-	x_res = 1.0;
-	x_axis_start = 0;
-}
-
-/* Sets the scaling of the x axis */
-template<class ELEMTYPE>
-void pt_vector<ELEMTYPE>::config_x_axis(double resolution, double start){
+pts_vector<ELEMTYPE>::pts_vector(int start_size) : pt_vector<ELEMTYPE>(start_size){
 	
-	x_res = resolution;
-	x_axis_start = start;
 }
-
 /* Looks in a specified range and returns the maximum value found */
 template<class ELEMTYPE>
-ELEMTYPE pt_vector<ELEMTYPE>::get_maximum_in_range(int from, int to, int &max_val_index_pos){
+ELEMTYPE pts_vector<ELEMTYPE>::get_maximum_in_range(int from, int to, int &max_val_index_pos){
 	ELEMTYPE maximum = numeric_limits<ELEMTYPE>::min();
 	if(this->size() < from)
 		return NULL;
@@ -113,7 +154,7 @@ ELEMTYPE pt_vector<ELEMTYPE>::get_maximum_in_range(int from, int to, int &max_va
 
 /* Looks in a specified range and returns the minimum value found */
 template<class ELEMTYPE>
-ELEMTYPE pt_vector<ELEMTYPE>::get_minimum_in_range(int from, int to, int &min_val_index_pos){
+ELEMTYPE pts_vector<ELEMTYPE>::get_minimum_in_range(int from, int to, int &min_val_index_pos){
 	
 	ELEMTYPE minimum = numeric_limits<ELEMTYPE>::max();
 	if(this->size() < from)
@@ -132,7 +173,7 @@ ELEMTYPE pt_vector<ELEMTYPE>::get_minimum_in_range(int from, int to, int &min_va
 }
 
 template <class ELEMTYPE>
-ELEMTYPE pt_vector<ELEMTYPE>::get_max_value_in_range(int from, int to)
+ELEMTYPE pts_vector<ELEMTYPE>::get_max_value_in_range(int from, int to)
 {
 	ELEMTYPE max_value = std::numeric_limits<ELEMTYPE>::min();
 
@@ -146,7 +187,7 @@ ELEMTYPE pt_vector<ELEMTYPE>::get_max_value_in_range(int from, int to)
 }
 
 template <class ELEMTYPE>
-ELEMTYPE pt_vector<ELEMTYPE>::get_min_value_in_range(int from, int to)
+ELEMTYPE pts_vector<ELEMTYPE>::get_min_value_in_range(int from, int to)
 {
 	ELEMTYPE min_value = std::numeric_limits<ELEMTYPE>::max();
 
@@ -161,7 +202,7 @@ ELEMTYPE pt_vector<ELEMTYPE>::get_min_value_in_range(int from, int to)
 
 /* Returns the slope of the curve at a specified location */
 template<class ELEMTYPE>
-double pt_vector<ELEMTYPE>::get_slope_at_location(int location){
+double pts_vector<ELEMTYPE>::get_slope_at_location(int location){
 	
 	int start;
 
@@ -180,7 +221,7 @@ double pt_vector<ELEMTYPE>::get_slope_at_location(int location){
 
 /* Returns the slope of the curve at a specified location */
 template<class ELEMTYPE>
-void pt_vector<ELEMTYPE>::mean_value_smoothing(int filter_size){
+void pts_vector<ELEMTYPE>::mean_value_smoothing(int filter_size){
 	
 	vector<ELEMTYPE> queue;
 	typename vector<ELEMTYPE>::iterator first_element;
@@ -216,7 +257,7 @@ void pt_vector<ELEMTYPE>::mean_value_smoothing(int filter_size){
 }
 
 template<class ELEMTYPE>
-double pt_vector<ELEMTYPE>::get_mean_x_in_range(int from, int to){
+double pts_vector<ELEMTYPE>::get_mean_x_in_range(int from, int to){
 	
 	double mean;
 
@@ -228,7 +269,7 @@ double pt_vector<ELEMTYPE>::get_mean_x_in_range(int from, int to){
 }
 
 template<class ELEMTYPE>
-double pt_vector<ELEMTYPE>::get_mean_in_range(int from, int to){
+double pts_vector<ELEMTYPE>::get_mean_in_range(int from, int to){
 	
 	double mean;
 
@@ -239,7 +280,7 @@ double pt_vector<ELEMTYPE>::get_mean_in_range(int from, int to){
 	return mean;
 }
 template<class ELEMTYPE>
-double pt_vector<ELEMTYPE>::get_mean_in_range_for_vector(int from, int to, vector<ELEMTYPE> vec){
+double pts_vector<ELEMTYPE>::get_mean_in_range_for_vector(int from, int to, vector<ELEMTYPE> vec){
 	
 	double mean;
 
@@ -251,13 +292,13 @@ double pt_vector<ELEMTYPE>::get_mean_in_range_for_vector(int from, int to, vecto
 }
 
 template<class ELEMTYPE>
-double pt_vector<ELEMTYPE>::distance_between_points(int x1, int x2){
+double pts_vector<ELEMTYPE>::distance_between_points(int x1, int x2){
 	
 	return abs(x1-x2)*x_res;
 }
 
 template<class ELEMTYPE>
-double pt_vector<ELEMTYPE>::area_between_points(int x1, int x2){
+double pts_vector<ELEMTYPE>::area_between_points(int x1, int x2){
 	double area_approx;
 	area_approx = 0;
 	for(int i = x1; i < x2; i++){
@@ -268,7 +309,7 @@ double pt_vector<ELEMTYPE>::area_between_points(int x1, int x2){
 
 /* This does not work yet... */
 template<class ELEMTYPE>
-void pt_vector<ELEMTYPE>::normalize_to_maximum(){
+void pts_vector<ELEMTYPE>::normalize_to_maximum(){
 	int dummy;
 	ELEMTYPE min = get_minimum_in_range(0,this->size()-1,dummy);
 	ELEMTYPE max = get_maximum_in_range(0,this->size()-1,dummy);
@@ -287,21 +328,21 @@ void pt_vector<ELEMTYPE>::normalize_to_maximum(){
 }
 
 template<class ELEMTYPE>
-int pt_vector<ELEMTYPE>::from_val_to_x(double val){
+int pts_vector<ELEMTYPE>::from_val_to_x(double val){
 	
 	return round((val - x_axis_start)/x_res);
 }
 
 template<class ELEMTYPE>
-double pt_vector<ELEMTYPE>::from_x_to_val(int x){
+double pts_vector<ELEMTYPE>::from_x_to_val(int x){
 	
 	return x*x_res + x_axis_start;
 }
 
 template <class ELEMTYPE>
-float pt_vector<ELEMTYPE>::get_variance_in_range(int from, int to)
+float pts_vector<ELEMTYPE>::get_variance_in_range(int from, int to)
 {
-	float mean = get_mean_x_in_range(from,to); //TITTA pÃ‚ mean
+	float mean = get_mean_x_in_range(from,to); //TITTA pÂ mean
 	float sum = 0;
 	float num_values = 0;
 	float diff=0;
@@ -315,7 +356,7 @@ float pt_vector<ELEMTYPE>::get_variance_in_range(int from, int to)
 
 
 template <class ELEMTYPE>
-ELEMTYPE pt_vector<ELEMTYPE>::get_x_at_lower_percentile(float percentile, bool ignore_zero_intensity)
+ELEMTYPE pts_vector<ELEMTYPE>::get_x_at_lower_percentile(float percentile, bool ignore_zero_intensity)
 {
 //    cout<<"get_bucket_at_histogram_lower_percentile("<<percentile<<")"<<endl;
 	//if histogram comes from masked region... following line wont work....
@@ -360,44 +401,6 @@ ELEMTYPE pt_vector<ELEMTYPE>::get_x_at_lower_percentile(float percentile, bool i
 /* Base ends here */
 
 /* Scalar starts here */
-template<class ELEMTYPE>
-class pts_vector : public pt_vector<ELEMTYPE>{
-public: 
-	pts_vector(int);
-	~pts_vector(void){};
-
-//------ Fitting of gaussian functions ------
-	void fit_gaussian_to_intensity_range(float &amp, float &center, float &sigma, double from, double to, bool print_info=false);
-
-	float find_better_amplitude(gaussian g, int from_bucket, int to_bucket, float factor1=0.8, float factor2=1.2, int nr_steps=10);
-	float find_better_center(gaussian g, int from_bucket, int to_bucket, float factor1=0.8, float factor2=1.2, int nr_steps=10);
-	float find_better_sigma(gaussian g, int from_bucket, int to_bucket, float factor1=0.8, float factor2=1.2, int nr_steps=10);
-	double get_sum_square_diff_between_buckets(vector<gaussian> v, int from_bucket, int to_bucket, bool ignore_zeros=true);
-	double get_sum_square_diff_between_buckets(gaussian g, int from_bucket, int to_bucket, bool ignore_zeros=true);
-	double get_sum_square_diff(vector<gaussian> v, bool ignore_zeros=true);
-	double get_sum_square_diff(gaussian g, bool ignore_zeros=true);
-	double get_gaussian_area(gaussian g, int from_bucket, int to_bucket);
-	double get_gaussian_area(gaussian g);
-	vector<double> get_gaussian_areas(vector<gaussian> v);
-	double get_sum_square_gaussian_overlap(vector<gaussian> v, int from_bucket, int to_bucket);
-	double get_sum_square_gaussian_overlap(vector<gaussian> v);
-	vector<double> get_overlaps_in_percent(vector<gaussian> v);
-	vnl_vector<double> get_vnl_vector_with_start_guess_of_num_gaussians(int num_gaussians);
-	ELEMTYPE fit_two_gaussians_to_histogram_and_return_threshold(string save_histogram_file_path = "");
-
-	gaussian fit_gaussian_with_amoeba(int from, int to);
-
-	//------ Fitting of rayleigh functions ------
-	void fit_rayleigh_distr_to_intensity_range(float &amp, float &M, ELEMTYPE from_int, ELEMTYPE to_int, bool print_info=false);
-	double get_sum_square_diff(rayleighian r, bool ignore_zeros=true);
-	double get_sum_square_diff_from_buckets(rayleighian r, int from_bucket, int to_bucket, bool ignore_zeros=true);
-
-};
-template<class ELEMTYPE>
-pts_vector<ELEMTYPE>::pts_vector(int start_size) : pt_vector<ELEMTYPE>(start_size){
-	
-}
-
 template <class ELEMTYPE>
 void pts_vector<ELEMTYPE>::fit_gaussian_to_intensity_range(float &amp, float &center, float &sigma, double from_int, double to_int, bool print_info)
 {
@@ -416,7 +419,7 @@ void pts_vector<ELEMTYPE>::fit_gaussian_to_intensity_range(float &amp, float &ce
 
 	gaussian g(amp,center,sigma);
 	g.amplitude = float(this->get_max_value_in_range(from_bucket,to_bucket));
-	g.center = this->get_mean_x_in_range(from_bucket,to_bucket); //detta â€°r inte sÃ‚ logiskt fË†r kurvor.....
+	g.center = this->get_mean_x_in_range(from_bucket,to_bucket); //detta ‰r inte sÂ logiskt fˆr kurvor.....
 //	g.center = this->get_max_value_in_range(from_bucket,to_bucket);
 	g.sigma = sqrt(this->get_variance_in_range(from_bucket,to_bucket)); //intensity variance...
 	int dyn_from_bucket = std::max(from_bucket, this->from_val_to_x(g.center-1.5*g.sigma));
@@ -858,20 +861,18 @@ double pts_vector<ELEMTYPE>::get_sum_square_diff_from_buckets(rayleighian r, int
 
 /* Scalar ends here */
 /* Complex starts here */
-/*template<class ELEMTYPE>
-class ptc_vector : public pt_vector<ELEMTYPE>{
+template<class ELEMTYPE>
+class ptc_vector : public pt_vector<complex<ELEMTYPE>>{
 public:
 	ptc_vector(int);
-	~ptc_vector(void);
-
+	~ptc_vector(void){};
 };
 
 
 
 template<class ELEMTYPE>
-ptc_vector<ELEMTYPE>::ptc_vector(int start_size) : pt_vector<ELEMTYPE>(start_size){
-	
-}*/
+ptc_vector<ELEMTYPE>::ptc_vector(int start_size) : pt_vector<complex<ELEMTYPE>>(start_size){
+}
 /* Complex ends here */
 
 

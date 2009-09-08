@@ -1472,7 +1472,7 @@ viewport* FLTK_Pt_Curve_pane::get_viewport_parent()
 void FLTK_Pt_Curve_pane::set_color_callback(Fl_Widget *callingwidget, void * p )
 {
     menu_callback_params * params = (menu_callback_params *) p;
-	params->vport->change_color( params->color );
+	params->vport->change_color( params->color , PT_CURVE);
 	params->vport->refresh();
 	viewmanagement.update_overlays();
 }
@@ -1480,7 +1480,7 @@ void FLTK_Pt_Curve_pane::set_color_callback(Fl_Widget *callingwidget, void * p )
 void FLTK_Pt_Curve_pane::set_line_callback(Fl_Widget *callingwidget, void * p )
 {
     menu_callback_params * params = (menu_callback_params *) p;
-	params->vport->change_line_type( params->line );
+	params->vport->change_line_type( params->line , PT_CURVE);
 	params->vport->refresh();
 	viewmanagement.update_overlays();
 }
@@ -1563,6 +1563,384 @@ void FLTK_Pt_Curve_pane::change_geom(int vp_id){
 	((rendergeom_image*)geom)->refresh_viewports(); //Safe because it can oly be an image in other viewport
 }
 //--------------------------------------------------------
+
+
+
+
+//************************************************************************//
+FLTK_Pt_Spectrum_pane::FLTK_Pt_Spectrum_pane() : FLTK_Pt_pane(0,20,100,100)
+{
+	cout<<"FLTK_Pt_Curve_pane()"<<endl;
+    int buttonleft=0;
+	int buttonheight=20;
+	int buttonwidth=70;
+	create_curve_menu(100);
+	event_pane = new FLTK_Event_pane(0,buttonheight,100,100-buttonheight, this);
+
+	this->resizable(event_pane);			//Make sure thes is resized too...
+	this->end();
+	
+}
+
+//FLTK_Pt_pane::FLTK_Pt_pane(int X,int Y,int W,int H, viewport *vp_parent) : Fl_Overlay_Window(X,Y,W,H)
+FLTK_Pt_Spectrum_pane::FLTK_Pt_Spectrum_pane(int X,int Y,int W,int H) : FLTK_Pt_pane(X,Y,W,H)
+{
+	cout<<"FLTK_Pt_Curve_pane("<<X<<","<<Y<<","<<W<<","<<H<<")"<<endl;
+    int buttonleft=0;
+	int buttonheight=20;
+	int buttonwidth=70;
+/*
+Here the code for the menu was before
+*/
+	create_curve_menu(W);
+	event_pane = new FLTK_Event_pane(0,buttonheight,W,H-buttonheight,this);
+	this->resizable(event_pane);			//Make sure thes is resized too...
+	this->end();
+}
+void FLTK_Pt_Spectrum_pane::create_geom_menu(int W){
+
+	int buttonleft=0;
+	int buttonheight=20;
+	int buttonwidth=70;
+	int m = 0;
+
+	int nr_view = viewmanagement.get_nr_viewports();
+	cout << "nr  of viewports: " << nr_view << endl;
+	//std::vector<rendergeometry_base*> geo = rendermanagement.get_geometries();
+	Fl_Menu_Item *geom_menu_items = (Fl_Menu_Item*)malloc((nr_view+1)*sizeof(Fl_Menu_Item));
+	int preset_vp = 0;
+	char *def = "Own geom";
+	//int id = rendermanagement.get_geometry(get_viewport_parent()->get_renderer_id())->get_id();
+	for(m = 0; m<nr_view; m++){    
+		menu_callback_params * cbp=new menu_callback_params;
+		cbp->vport=get_viewport_parent();
+		cbp->vp_id = viewmanagement.get_viewport_id_from_index(m);
+		char *label = (char*)malloc(3*sizeof(char));// = itoa(m);
+		sprintf(label,"%d",m);
+		init_fl_menu_item(geom_menu_items[m]);
+		geom_menu_items[m].label(label);
+		geom_menu_items[m].callback(&set_geom_callback);
+		geom_menu_items[m].user_data(cbp);
+		geom_menu_items[m].flags= FL_MENU_RADIO;
+		if(cbp->vp_id == get_viewport_parent()->get_id()){
+			preset_vp = m;
+			geom_menu_items[m].label(def);
+		}
+	}
+    geom_menu_items[m].label(NULL);	//terminate menu
+    geom_menu_items[preset_vp].setonly();	//DEFAULT_DIR is pre-set, set checkmark accordingly
+	
+	
+
+	Fl_Menu_Item dummy[1];
+	dummy[0].label(NULL);
+	char *l = (char*)malloc((11)*sizeof(char));
+	sprintf(l,"Geom: %d",preset_vp);
+	info = new Fl_Menu_Button(0,0,buttonwidth,buttonheight,l);
+    info->copy(dummy);
+	info->box(FL_THIN_UP_BOX);
+	info->labelsize(FLTK_SMALL_LABEL);
+
+	geom_button = new Fl_Menu_Button(0,0,buttonwidth,buttonheight,"Geometry");
+    geom_button->copy(geom_menu_items);
+	geom_button->box(FL_THIN_UP_BOX);
+	geom_button->labelsize(FLTK_SMALL_LABEL);
+
+}
+
+void FLTK_Pt_Spectrum_pane::create_x_menu(int W){
+
+	int buttonleft=0;
+	int buttonheight=20;
+	int buttonwidth=70;
+	int m = 0;
+
+	const char * names[] = {"freq", "time"};
+	//std::vector<rendergeometry_base*> geo = rendermanagement.get_geometries();
+	Fl_Menu_Item x_menu_items[3];
+	//int id = rendermanagement.get_geometry(get_viewport_parent()->get_renderer_id())->get_id();
+	for(m = 0; m<2; m++){    
+		menu_callback_params * cbp=new menu_callback_params;
+		cbp->vport=get_viewport_parent();
+		cbp->line = names[m][0];
+		init_fl_menu_item(x_menu_items[m]);
+		x_menu_items[m].label(names[m]);
+		x_menu_items[m].callback(&set_x_callback);
+		x_menu_items[m].user_data(cbp);
+		x_menu_items[m].flags= FL_MENU_RADIO;
+	}
+    x_menu_items[m].label(NULL);	//terminate menu
+    x_menu_items[0].setonly();	//DEFAULT_DIR is pre-set, set checkmark accordingly
+
+	x_button = new Fl_Menu_Button(0,0,buttonwidth,buttonheight,"x axis");
+    x_button->copy(x_menu_items);
+	x_button->box(FL_THIN_UP_BOX);
+	x_button->labelsize(FLTK_SMALL_LABEL);
+
+}
+void FLTK_Pt_Spectrum_pane::create_y_menu(int W){
+
+	int buttonleft=0;
+	int buttonheight=20;
+	int buttonwidth=70;
+	int m = 0;
+
+	const char * names[] = {"real", "complex", "magnitude", "phase"};
+	//std::vector<rendergeometry_base*> geo = rendermanagement.get_geometries();
+	Fl_Menu_Item y_menu_items[5];
+	//int id = rendermanagement.get_geometry(get_viewport_parent()->get_renderer_id())->get_id();
+	for(m = 0; m<4; m++){    
+		menu_callback_params * cbp=new menu_callback_params;
+		cbp->vport=get_viewport_parent();
+		cbp->line = names[m][0];
+		init_fl_menu_item(y_menu_items[m]);
+		y_menu_items[m].label(names[m]);
+		y_menu_items[m].callback(&set_y_callback);
+		y_menu_items[m].user_data(cbp);
+		y_menu_items[m].flags= FL_MENU_TOGGLE;
+	}
+    y_menu_items[m].label(NULL);	//terminate menu
+    //y_menu_items[0].set();	//DEFAULT_DIR is pre-set, set checkmark accordingly
+
+	y_button = new Fl_Menu_Button(0,0,buttonwidth,buttonheight,"y axis");
+    y_button->copy(y_menu_items);
+	y_button->box(FL_THIN_UP_BOX);
+	y_button->labelsize(FLTK_SMALL_LABEL);
+
+}
+
+
+void FLTK_Pt_Spectrum_pane::create_curve_menu(int W){
+	int buttonleft=0;
+	int buttonheight=20;
+	int buttonwidth=70;
+
+	//Fl_Group::current(this);
+
+	//--------------------------------
+    button_pack2 = new Fl_Pack(0,0,W,buttonheight,"");
+    button_pack2->type(FL_HORIZONTAL);
+	Fl_Menu_Item col_menu_items[9];
+	//enum colors {WHITE, BLACK, RED, GREEN, BLUE, YELLOW, MAGENTA, CYAN};
+    
+    int m = 0;
+    
+	for(m = 0; m<8; m++){    
+		menu_callback_params * cbp=new menu_callback_params;
+		cbp->color=(colors)m;
+		cbp->vport=get_viewport_parent();
+		init_fl_menu_item(col_menu_items[m]);
+		col_menu_items[m].label(preset_color_labels[m]);
+		col_menu_items[m].callback(&set_color_callback);
+		col_menu_items[m].user_data(cbp);
+		col_menu_items[m].flags= FL_MENU_RADIO;
+	}
+
+    col_menu_items[m].label(NULL);	//terminate menu
+    col_menu_items[RED].setonly();	//DEFAULT_DIR is pre-set, set checkmark accordingly
+
+    colormenu_button = new Fl_Menu_Button(0,0,buttonwidth,buttonheight,"color");
+    colormenu_button->copy(col_menu_items);
+	colormenu_button->box(FL_THIN_UP_BOX);
+	colormenu_button->labelsize(FLTK_SMALL_LABEL);
+	//------------------------------------
+	Fl_Menu_Item bg_menu_items [4];
+	
+	menu_callback_params * cbp=new menu_callback_params;
+	cbp->line = '.';
+	cbp->vport=get_viewport_parent();
+    init_fl_menu_item(bg_menu_items[0]);
+        
+    bg_menu_items[0].label(".");
+    bg_menu_items[0].callback(&set_line_callback);
+    bg_menu_items[0].user_data(cbp);
+    bg_menu_items[0].flags= FL_MENU_RADIO;
+
+	menu_callback_params * cb=new menu_callback_params;
+	cb->line = '-';
+	cb->vport=get_viewport_parent();
+    init_fl_menu_item(bg_menu_items[1]);
+
+	bg_menu_items[1].label("-");
+    bg_menu_items[1].callback(&set_line_callback);
+    bg_menu_items[1].user_data(cb);
+    bg_menu_items[1].flags= FL_MENU_RADIO;
+
+
+	menu_callback_params * bp=new menu_callback_params;
+	bp->line = '|';
+	bp->vport=get_viewport_parent();
+    init_fl_menu_item(bg_menu_items[2]);
+
+	bg_menu_items[2].label("|");
+    bg_menu_items[2].callback(&set_line_callback);
+    bg_menu_items[2].user_data(bp);
+    bg_menu_items[2].flags= FL_MENU_RADIO;
+
+
+        
+    bg_menu_items[3].label(NULL);    //terminate menu
+	bg_menu_items[1].setonly(); //lines
+    
+    bgmenu_button = new Fl_Menu_Button(0+(buttonleft+=buttonwidth),0,buttonwidth,buttonheight, "line");
+    bgmenu_button->copy(bg_menu_items);
+    bgmenu_button->box(FL_THIN_UP_BOX);
+    bgmenu_button->labelsize(FLTK_SMALL_LABEL);
+	//---------------------------------------
+	create_geom_menu(W);
+	create_x_menu(W);
+	create_y_menu(W);
+	//---------------------------------------
+	button_pack2->end();
+	//--------------------------------
+}
+FLTK_Pt_Spectrum_pane::~FLTK_Pt_Spectrum_pane()
+{}
+
+viewport* FLTK_Pt_Spectrum_pane::get_viewport_parent()
+{
+	return ((FLTKviewport*)this->parent())->viewport_parent;
+}
+
+
+
+void FLTK_Pt_Spectrum_pane::set_color_callback(Fl_Widget *callingwidget, void * p )
+{
+    menu_callback_params * params = (menu_callback_params *) p;
+	params->vport->change_color( params->color , PT_SPECTRUM);
+	params->vport->refresh();
+	viewmanagement.update_overlays();
+}
+
+void FLTK_Pt_Spectrum_pane::set_line_callback(Fl_Widget *callingwidget, void * p )
+{
+    menu_callback_params * params = (menu_callback_params *) p;
+	params->vport->change_line_type( params->line , PT_SPECTRUM);
+	params->vport->refresh();
+	viewmanagement.update_overlays();
+}
+void FLTK_Pt_Spectrum_pane::set_geom_callback(Fl_Widget *callingwidget, void * p )
+{
+    menu_callback_params * params = (menu_callback_params *) p;
+	params->vport->change_geom_type( params->vp_id, PT_SPECTRUM);
+	params->vport->refresh();
+	viewmanagement.update_overlays();
+}
+
+void FLTK_Pt_Spectrum_pane::set_x_callback(Fl_Widget *callingwidget, void * p )
+{
+    menu_callback_params * params = (menu_callback_params *) p;
+	params->vport->change_x( params->line );
+	params->vport->refresh();
+	viewmanagement.update_overlays();
+}
+void FLTK_Pt_Spectrum_pane::set_y_callback(Fl_Widget *callingwidget, void * p )
+{
+    menu_callback_params * params = (menu_callback_params *) p;
+	params->vport->change_y( params->line );
+	params->vport->refresh();
+	viewmanagement.update_overlays();
+}
+
+
+
+
+void FLTK_Pt_Spectrum_pane::set_color_button_label(colors c)
+{
+	colormenu_button->label( preset_color_labels[c] );
+	( (Fl_Menu_Item*)colormenu_button->menu() )[c].setonly(); 	//also activate the right radio-button...
+}
+//--------------------------------------------------------
+
+
+void FLTK_Pt_Spectrum_pane::change_line(char line){
+	curve_base *curve = ((rendergeom_curve *)rendermanagement.get_geometry(this->get_renderer_id()))->curve;
+	//curve_base *curve = ((renderer_curve *)rendermanagement.get_renderer(this->get_renderer_id))->get_top();
+	if(curve == NULL){
+		return;
+	}
+	curve->set_line(line);
+}
+
+void FLTK_Pt_Spectrum_pane::change_color(colors color){
+	curve_base *curve = ((rendergeom_spectrum *)rendermanagement.get_geometry(this->get_renderer_id()))->curve;
+	//curve_base *curve = ((renderer_curve *)rendermanagement.get_renderer(this->get_renderer_id))->get_top();
+	if(curve == NULL){
+		return;
+	}
+	switch(color){
+		case BLACK:
+			curve->set_color(0,0,0);
+			break;
+		case WHITE:
+			curve->set_color(255,255,255);
+			break;
+		case RED:
+			curve->set_color(255,0,0);
+			break;
+		case GREEN:
+			curve->set_color(0,255,0);
+			break;
+		case BLUE:
+			curve->set_color(0,0,255);
+			break;
+		case YELLOW:
+			curve->set_color(255,255,0);
+			break;
+		case MAGENTA:
+			curve->set_color(255,0,255);
+			break;
+		case CYAN:
+			curve->set_color(0,255,255);
+			break;
+		default:
+			curve->set_color(0,0,0);
+			break;
+	}
+}
+void FLTK_Pt_Spectrum_pane::change_x(char x){
+	((renderer_spectrum *)rendermanagement.get_renderer(this->get_renderer_id()))->change_x_type(x); //RN add_geom_here
+	/*if(curve == NULL){
+		cout << "Nu ar den null???" << endl;
+		return;
+	}
+	cout << "Nu ska jag ändra"<<endl;
+	curve->change_x_type(x);*/
+}
+void FLTK_Pt_Spectrum_pane::change_y(char y){
+	((renderer_spectrum*)rendermanagement.get_renderer(this->get_renderer_id()))->toggle_y_type(y);
+	//curve_base *curve = ((rendergeom_spectrum *)rendermanagement.get_geometry(this->get_renderer_id()))->curve; //RN add_geom_here
+	/*if(curve == NULL){
+		return;
+	}
+	curve->toggle_y_type(y);*/
+}
+void FLTK_Pt_Spectrum_pane::change_geom(int vp_id){
+	rendergeometry_base *geom;
+	if(vp_id == this->get_viewport_parent()->get_id()){
+		geom = rendermanagement.get_renderer(viewmanagement.get_renderer_id(vp_id))->original_rg;
+	}else{
+		geom = rendermanagement.get_renderer(viewmanagement.get_renderer_id(vp_id))->the_rg;//   get_geometry(viewmanagement.get_renderer_id(vp_id));
+	}
+	//rendergeometry_base *base;
+	//base = rendermanagement.get_geometry(this->get_renderer_id());
+	
+	//curve_base *curve = ((renderer_curve *)rendermanagement.get_renderer(this->get_renderer_id))->get_top();
+	if(geom == NULL){
+		return;
+	}
+	rendermanagement.get_renderer(this->get_renderer_id())->use_other_geometry(geom);
+	((rendergeom_image*)geom)->refresh_viewports(); //Safe because it can oly be an image in other viewport
+}
+//**************************************************************************************************
+
+
+
+
+
+
+
+
 
 FLTKviewport::FLTKviewport(int xpos,int ypos,int width,int height, viewport *vp_parent, int buttonheight, int buttonwidth):Fl_Window(xpos,ypos,width,height)
 {
@@ -2098,6 +2476,8 @@ void FLTKviewport::switch_pane(factoryIdType type)
 			tmp_rendID = rendermanagement.create_renderer(RENDERER_MIP);
 		}else if(viewport_parent->vp_type == PT_CURVE){
 			tmp_rendID = rendermanagement.create_renderer(RENDERER_CURVE);
+		}else if(viewport_parent->vp_type == PT_SPECTRUM){
+			tmp_rendID = rendermanagement.create_renderer(RENDERER_SPECTRUM);
 		}
 		viewmanagement.connect_renderer_to_viewport(viewport_parent->ID,tmp_rendID);     //attach MPR renderer - so that all viewports can be populated for additional views
 

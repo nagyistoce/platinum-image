@@ -122,4 +122,30 @@ class rendergeom_curve : public rendergeometry_base
 		
 };
 
+class rendergeom_spectrum: public rendergeometry_base
+{
+	public:
+        rendergeom_spectrum();
+		void set_borders(curve_base *the_curve_pointer, bool* y_type, int width, int height); //
+		void set_curve(curve_base *the_curve_pointer);
+		//int transform(int x, double y, int row_length, int col_length);
+		Vector3D view_to_curve(int x_hat, int y_hat, int width, int height);
+		Vector3D curve_to_view(int x_hat, double y_hat, int width, int height);
+		void get_value(int mouse_x, double* val);
+		Vector2D mouse_location;
+		Vector2D measure_location;
+		float cx, cy;
+		float start_y;
+		float qx, qy;
+		float zoom;
+		float x_scale;
+		float x_offset;
+		curve_base *curve;
+		RGBvalue *color;
+		RGBvalue *bg;
+		Matrix3D view_to_world_matrix(int viewminsize) const; //Dummy function. Needed for interface compatibility
+		Vector3D get_lookat() const; //Dummy function. Needed for interface compatibility
+		
+};
+
 #endif

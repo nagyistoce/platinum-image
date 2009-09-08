@@ -23,8 +23,8 @@
 //    along with the Platinum library; if not, write to the Free Software
 //    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-#define _renderer_hist_cc_
-#include "renderer_hist.h"
+#define _renderer_spectrum_cc_
+#include "renderer_spectrum.h"
 #include "viewmanager.h"
 #include "rendermanager.h"
 
@@ -44,25 +44,55 @@ T signed_ceil(T & x){   //ceil that returns rounded absolute upwards
     return (x < 0 ? floor (x) : ceil (x));
     }
 
-renderer_hist::renderer_hist():renderer_curve_base()
+renderer_spectrum::renderer_spectrum():renderer_curve_base()
 {
-	cout << "hist renderer created" << endl;
+	cout << "spectrum renderer created" << endl;
 	//the_rg = new rendergeom_hist();
+	y_type[0] = false;
+	y_type[1] = false;
+	y_type[2] = false;
+	y_type[3] = false;
+	x_type = 'f';
 }
 
-void renderer_hist::connect_data(int dataID)
+void renderer_spectrum::connect_data(int dataID)
     {
     //TEST: wrapper, this should be done directly by rendermanagement
     the_rc->add_data(dataID);
 	}
+void renderer_spectrum::change_x_type(char t){
+	x_type = t;
+	cout << "x_type is now: " << x_type << endl;
+}
 
-Vector3D renderer_hist::view_to_world(int vx, int vy, int sx, int sy) const
+void renderer_spectrum::toggle_y_type(char t){
+	//{"real", "complex", "magnitude", "phase"}
+	switch(t){
+		case 'r':
+			y_type[0] = !y_type[0];
+			break;
+		case 'c':
+			y_type[1] = !y_type[1];
+			break;
+		case 'm':
+			y_type[2] = !y_type[2];
+			break;
+		case 'p':
+			y_type[3] = !y_type[3];
+			break;
+		default:
+			break;
+	}
+	cout << "y is now set to: " << y_type[0] << " " <<y_type[1] << " " <<y_type[2] << " " <<y_type[3] << endl;
+}
+
+Vector3D renderer_spectrum::view_to_world(int vx, int vy, int sx, int sy) const
 {
   
     Vector3D v;
         
-	if (((rendergeom_curve*)the_rg)->curve !=NULL){
-		v = ((rendergeom_curve*)the_rg)->view_to_curve(vx, vy, sx, sy);
+	if (((rendergeom_spectrum*)the_rg)->curve !=NULL){
+		v = ((rendergeom_spectrum*)the_rg)->view_to_curve(vx, vy, sx, sy);
 		return v;
     }else{
         //no image there
@@ -73,13 +103,13 @@ Vector3D renderer_hist::view_to_world(int vx, int vy, int sx, int sy) const
     }
 }
 
-Vector3D renderer_hist::view_to_voxel(int vx, int vy,int sx,int sy,int imageID) const
+Vector3D renderer_spectrum::view_to_voxel(int vx, int vy,int sx,int sy,int imageID) const
 {
   
     Vector3D v;
         
-    if (((rendergeom_curve*)the_rg)->curve !=NULL){
-		v = ((rendergeom_curve*)the_rg)->view_to_curve(vx, vy, sx,sy);
+    if (((rendergeom_spectrum*)the_rg)->curve !=NULL){
+		v = ((rendergeom_spectrum*)the_rg)->view_to_curve(vx, vy, sx,sy);
 		return v;
     }else{
         //no image there
@@ -91,7 +121,7 @@ Vector3D renderer_hist::view_to_voxel(int vx, int vy,int sx,int sy,int imageID) 
     //return Vector3D();
 }
 
-bool renderer_hist::supports_mode (int m)
+bool renderer_spectrum::supports_mode (int m)
 { 
    /* switch (m)
         {
@@ -106,77 +136,126 @@ bool renderer_hist::supports_mode (int m)
 	return m == BLEND_OVERWRITE;
 }
 
-void renderer_hist::render_thumbnail (unsigned char *rgb, int rgb_sx, int rgb_sy, int image_ID)
+void renderer_spectrum::render_thumbnail (unsigned char *rgb, int rgb_sx, int rgb_sy, int image_ID)
 {
     rendercombination rc = rendercombination(image_ID);
-    rendergeom_curve rg = rendergeom_curve();
+    rendergeom_spectrum rg = rendergeom_spectrum();
     
     render_( rgb, rgb_sx, rgb_sy,&rg,&rc);
 }
 
-void renderer_hist::render_position(unsigned char *rgb, int rgb_sx, int rgb_sy)
+void renderer_spectrum::render_position(unsigned char *rgb, int rgb_sx, int rgb_sy)
 {
-    render_( rgb, rgb_sx, rgb_sy,(rendergeom_curve*)the_rg,the_rc);
+    render_( rgb, rgb_sx, rgb_sy,(rendergeom_spectrum*)the_rg,the_rc);
 }
 
 
 
 
 //render orthogonal slices using memory-order scanline
-void renderer_hist::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_curve *rg, rendercombination *rc)
+void renderer_spectrum::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_spectrum *rg, rendercombination *rc)
 {
-
+	cout << "Here we go!"  << endl;
     if(rc->empty()){       //*** no images: exit ***
         return;
 	}
-    
-   // Vector3D screen_center = create_Vector3D(rgb_sx, rgb_sy, 0);
-   // screen_center/=2;
-    
+
     blendmode blend_mode = rc->blend_mode();
 
 	//S‰tter bakgrunden till vit tror jag. RGB_pixmap_bpp betyder rgb utan alphav‰rde (alltsÂ 3 bytes per pixel)
 	for(long p=0; p < rgb_sx*rgb_sy*RGB_pixmap_bpp; p +=RGB_pixmap_bpp){
 		pixels[p] = pixels[p + 1] = pixels[p + 2]=255;
 	}
-    //TODO s‰tt parametrar i rg frÂn den sista kurvan  i paiarItr 
     #pragma mark *** Per-image render loop ***
 
-	/*rendercombination::iterator pairItr = rc->begin();
-	if(rc->begin() != rc->end()){
-		pairItr = rc->end();
-		pairItr --;
-		curve_base *the_curve_pointer;
-		pt_error::error_if_null(pairItr->pointer,"Rendered data object is NULL");//Crash here when closing an image
-        the_curve_pointer = dynamic_cast<curve_base *> (pairItr->pointer);
-		if(the_curve_pointer != NULL)
-			rg->set_borders(the_curve_pointer, rgb_sx, rgb_sy);
-	}*/
-	bool first = true;
 
+	bool first = true;
+	cout << "going in!"  << endl;
 	for(rendercombination::iterator pairItr = rc->begin();pairItr != rc->end();pairItr++){//den sista klammern ska flyttas lÂngt ner 
         curve_base *the_curve_pointer = NULL;
 		pt_error::error_if_null(pairItr->pointer,"Rendered data object is NULL");//Crash here when closing an image
         the_curve_pointer = dynamic_cast<curve_base *> (pairItr->pointer);
 		bool OKrender = the_curve_pointer != NULL && the_curve_pointer->is_supported(renderer_type());
-
+		cout << "inside"  << endl;
         if(OKrender){
-			
+			cout << "Rendering!"  << endl;
 			RGBvalue *curve_color = the_curve_pointer->get_color();
+			char x_type = ((renderer_spectrum*)rendermanagement.get_renderer(rendermanagement.renderer_from_combination(rc->get_id())))->x_type;
+			bool *y_type = ((renderer_spectrum*)rendermanagement.get_renderer(rendermanagement.renderer_from_combination(rc->get_id())))->y_type;
 
 			//Måste finnas nåt bättre anrop än detta man kan göra
 			bool my_own_geom = rendermanagement.get_renderer(rendermanagement.renderer_from_combination(rc->get_id()))->is_my_geom(rg->get_id());
 			if(first && my_own_geom){ //Det ska vara min egna geom för att göra detta!
-				rg->set_borders(the_curve_pointer, rgb_sx, rgb_sy);
+				rg->set_borders(the_curve_pointer, y_type, rgb_sx, rgb_sy);
 				first = false;
 			}
-			char type = the_curve_pointer->get_line();
+			rg->set_curve(the_curve_pointer);
+			char line_type = the_curve_pointer->get_line();
+			//char x_type = the_curve_pointer->get_x_type();
+			vector<double> x_vector;
+			vector<vector<double>> y_vector;
+			for(int i = 0; i < the_curve_pointer->get_data_size(); i++){
+				cout << " " << the_curve_pointer->get_data(i);
+			}
+			cout << endl;
+
+			if(x_type = 'f'){
+				//Fill x_vec with frequency stuff
+				for(int i = 0; i < the_curve_pointer->get_data_size(); i++){
+					x_vector.push_back(rg->curve_to_view(i, 0, rgb_sx, rgb_sy)[0]);
+				}
+				cout << "filling freq!"  << endl;
+			}else if(x_type == 't'){
+				//fill with time stuff
+				for(int i = 0; i < the_curve_pointer->get_data_size(); i++){
+					x_vector.push_back(rg->curve_to_view(i, 0, rgb_sx, rgb_sy)[0]);
+				}
+				cout << "filling time!"  << endl;
+			}else{
+				for(int i = 0; i < the_curve_pointer->get_data_size(); i++){
+					x_vector.push_back(rg->curve_to_view(i, 0, rgb_sx, rgb_sy)[0]);
+				}
+			}
+
+			if(y_type[0]){
+				//Draw real curve
+				vector<double> y_val;
+				for(int i = 0; i < the_curve_pointer->get_data_size(); i++){
+					y_val.push_back(rg->curve_to_view(2,the_curve_pointer->get_data(i), rgb_sx, rgb_sy)[1]); //remains to do curve_to_view
+				}
+				cout << "filling real!"  << endl;
+				y_vector.push_back(y_val);
+			}
+			if(y_type[1]){
+				//Draw complex
+				vector<double> y_val;
+				for(int i = 0; i < the_curve_pointer->get_data_size(); i++){
+					y_val.push_back(rg->curve_to_view(2,the_curve_pointer->get_complex(i), rgb_sx, rgb_sy)[1]); //remains to do curve_to_view
+				}
+				y_vector.push_back(y_val);
+			}
+			if(y_type[2]){
+				//Draw magnitude
+				vector<double> y_val;
+				for(int i = 0; i < the_curve_pointer->get_data_size(); i++){
+					y_val.push_back(rg->curve_to_view(2,the_curve_pointer->get_magnitude(i), rgb_sx, rgb_sy)[1]); //remains to do curve_to_view
+				}
+				y_vector.push_back(y_val);
+			}
+			if(y_type[3]){
+				//Draw phase
+				vector<double> y_val;
+				for(int i = 0; i < the_curve_pointer->get_data_size(); i++){
+					y_val.push_back(rg->curve_to_view(2,the_curve_pointer->get_phase(i), rgb_sx, rgb_sy)[1]); //remains to do curve_to_view
+				}
+				y_vector.push_back(y_val);
+			}
 
 			//Kolla om curve_pointer ‰r uppdaterad h‰r
 		   /* Om uppdaterad
 			*
 			*/
-			rg->set_curve(the_curve_pointer);
+			
 			
 			int pix_addr = 0;
 			double data  = 0.0;
@@ -185,35 +264,43 @@ void renderer_hist::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_cu
 			int min_bound, max_bound;
 			min_bound = std::max((int)rg->view_to_curve(0,0,rgb_sx, rgb_sy)[0],0);
 			max_bound = std::min((int)rg->view_to_curve(rgb_sx,0,rgb_sx, rgb_sy)[0], size);
+			
+			vector<int> color;
+			color.push_back(curve_color->r());
+			color.push_back(curve_color->g());
+			color.push_back(curve_color->b());
 
-			switch(type){
+			switch(line_type){
 				case '.':
-					for(int i = min_bound; i<max_bound; i++){
-						data = the_curve_pointer->get_data(i);
-						Vector3D point = rg->curve_to_view(i, data, rgb_sx, rgb_sy);
-						if(point[0] <= rgb_sx && point[0] >= 0 && point[1] <= rgb_sy && point[1] >= 0 ){
-							point[0] = round(point[0]);
-							point[1] = round(point[1]);
-							pix_addr = (point[1]*rgb_sx + point[0])*RGB_pixmap_bpp;
-							pixels[pix_addr] = curve_color->r();
-							pixels[pix_addr+1] = curve_color->g();
-							pixels[pix_addr+2] = curve_color->b();
+					for(int j = 0; j < y_vector.size() && j < x_vector.size(); j++ ){
+						for(int i = min_bound; i<max_bound; i++){
+							int y = round(y_vector.at(j).at(i));
+							int x = round(x_vector.at(i));
+							if(x <= rgb_sx && x >= 0 && y <= rgb_sy && y >= 0 ){
+								pix_addr = (y*rgb_sx + x)*RGB_pixmap_bpp;
+								pixels[pix_addr] = curve_color->r();
+								pixels[pix_addr+1] = curve_color->g();
+								pixels[pix_addr+2] = curve_color->b();
+							}
+						}
+					}
+					break;
+				case '-':
+					for(int j = 0; j < y_vector.size(); j++ ){
+						int x1, y1, x2, y2;
+						x1 = round(x_vector.at(min_bound));
+						y1 = round(y_vector.at(j).at(min_bound));
+						for(int i = min_bound+1; i<max_bound; i++){
+							y2 = round(y_vector.at(j).at(i));
+							x2 = round(x_vector.at(i));
+							draw_line(pixels, rgb_sx, rgb_sy, x1, y1, x2, y2, color);
+							x1 = x2;
+							y1 = y2;
 						}
 					}
 					break;
 				case '|':
-						vector<int> color;
-						color.push_back(curve_color->r());
-						color.push_back(curve_color->g());
-						color.push_back(curve_color->b());
-						Vector3D start;
-						double y_min = rg->curve_to_view(0,rg->curve->get_min(), rgb_sx, rgb_sy)[1];
-
-						for(int j = min_bound; j < max_bound; j++){
-							data = the_curve_pointer->get_data(j);
-							start = rg->curve_to_view(j,data, rgb_sx, rgb_sy);
-							draw_line(pixels, rgb_sx, rgb_sy, start[0], start[1], start[0], y_min, color);
-						}
+						cout << "This linetype is not implemented for spectrums!" << endl;
 					break;
 			}
 			Vector2D pos = rg->mouse_location;
@@ -223,10 +310,6 @@ void renderer_hist::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_cu
 			col.push_back(255 - curve_color->b());
 			draw_line(pixels, rgb_sx, rgb_sy, pos[0], 0, pos[0], rgb_sy, col);
 
-			Vector2D measure = rg->measure_location;
-			if(measure[0] != -1){
-				draw_line(pixels, rgb_sx, rgb_sy, measure[0], 0, measure[0], rgb_sy, col);
-			}
 			if(the_curve_pointer->draw_additional_data){
 				render_additional_data(pixels,the_curve_pointer, rg, rgb_sx, rgb_sy, col);
 			}
@@ -237,36 +320,7 @@ void renderer_hist::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_cu
 		}
 	}
 }//render_ function
-
-void renderer_hist::draw_bucket(uchar *pixels, curve_base *the_curve_pointer, rendergeom_curve *rg, int rgb_sx, int rgb_sy, RGBvalue *curve_color, int bucket){
-	int start_row, end_row, width;
-	
-	double d = the_curve_pointer->get_data(bucket);
-	Vector3D center = rg->curve_to_view(bucket, d, rgb_sx, rgb_sy);
-
-	int bottom = rg->curve_to_view(bucket, 0, rgb_sx, rgb_sy)[1];
-
-	if(bucket >0 )
-		width = center[0] - rg->curve_to_view(bucket-1, d, rgb_sx, rgb_sy)[0];
-	else
-		width = rg->curve_to_view(bucket+1, d, rgb_sx, rgb_sy)[0] - center[0];
-
-	start_row = center[0] - width/2;
-	end_row = center[0] - width/2;
-
-	start_row = std::max(start_row, rgb_sx);
-	end_row = std::max(end_row, rgb_sx);
-	int pix_addr;
-	for(int i = start_row; i < end_row; i++){
-		for(int j = bottom; j > center[1]; j--){
-			pix_addr = (j*rgb_sx + i)*RGB_pixmap_bpp;
-			pixels[pix_addr] = curve_color->r();
-			pixels[pix_addr+1] = curve_color->g();
-			pixels[pix_addr+2] = curve_color->b();
-		}
-	}
-}
-void renderer_hist::render_additional_data(uchar *pixels, curve_base *the_curve_pointer, rendergeom_curve *rg, int rgb_sx, int rgb_sy, vector<int> col){
+void renderer_spectrum::render_additional_data(uchar *pixels, curve_base *the_curve_pointer, rendergeom_spectrum *rg, int rgb_sx, int rgb_sy, vector<int> col){
 	for(int i = 0; i < the_curve_pointer->helper_data->data.size(); i++){
 
 
@@ -319,7 +373,7 @@ void renderer_hist::render_additional_data(uchar *pixels, curve_base *the_curve_
 		}
 	}
 }
-void renderer_hist::draw_axes(uchar *pixels, curve_base *curve, rendergeom_curve *rg, int width, int height){
+void renderer_spectrum::draw_axes(uchar *pixels, curve_base *curve, rendergeom_spectrum *rg, int width, int height){
 	double max = curve->get_max();
 	double min = curve->get_min();
 	
@@ -359,7 +413,7 @@ void renderer_hist::draw_axes(uchar *pixels, curve_base *curve, rendergeom_curve
 	}
 }
 
-int renderer_hist::sgn ( long a )
+int renderer_spectrum::sgn ( long a )
 {
 	if (a > 0)
 		{ return +1; }
@@ -369,7 +423,7 @@ int renderer_hist::sgn ( long a )
 		{ return 0; }
 }
 	
-void renderer_hist::draw_line(uchar *pixels, int sx, int sy, int a, int b, int c, int d,  std::vector<int> color)
+void renderer_spectrum::draw_line(uchar *pixels, int sx, int sy, int a, int b, int c, int d,  std::vector<int> color)
 {
 	// Line algorithm
 	//http://www.cprogramming.com/tutorial/tut3.html

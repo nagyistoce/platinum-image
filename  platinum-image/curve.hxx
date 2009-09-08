@@ -48,8 +48,8 @@ public:
 	curve_scalar(int start_size, string name, double offset, double scale);
 	curve_scalar<ELEMTYPE>* copy_curve();
 	double get_data(int i) const;
-	double get_max() const;
-	double get_min() const;
+	double get_max(SPECTRUM_TYPE t = SP_REAL);
+	double get_min(SPECTRUM_TYPE t = SP_REAL);
 	double get_scale() const;
 	double get_offset() const;
 	void set_scale(double scale);
@@ -59,6 +59,8 @@ public:
 	void set_color(int r, int g, int b);
 	char get_line() const;
 	void set_line(char type);
+	//char get_x_type() const {return 'ö';}; //Dummy function
+	//bool get_y_type(int i) const {return false;}; //Dummy function
 	Vector2D find_closest_maxima(int location, int direction) const;
 	Vector2D find_closest_minima(int location, int direction) const;
 	vector<Vector2D> find_maximas_in_intervall(int from, int to) const;
@@ -72,7 +74,7 @@ public:
 	void increase_resolution();
 	void save_curve_to_file(std::string s) const;
 	void read_curve_from_file(std::string s);
-	pt_vector<ELEMTYPE> *my_data;
+	pts_vector<ELEMTYPE> *my_data;
 
 private:
 	RGBvalue *color;
@@ -81,7 +83,7 @@ private:
 
 template<class ELEMTYPE>
 curve_scalar<ELEMTYPE>::curve_scalar(int start_size, string name, double offset, double scale) : curve_base(name){
-	my_data = new pt_vector<ELEMTYPE>(start_size);
+	my_data = new pts_vector<ELEMTYPE>(start_size);
 	my_data->config_x_axis(scale, offset);
 	color = new RGBvalue();
 	color->set_rgb(255,0,0); //Default color = red
@@ -100,13 +102,13 @@ double curve_scalar<ELEMTYPE>::get_data(int i) const{
 }
 
 template<class ELEMTYPE>
-double curve_scalar<ELEMTYPE>::get_min() const{
+double curve_scalar<ELEMTYPE>::get_min(SPECTRUM_TYPE t) {
 	int dummy;
 	return static_cast<double>( my_data->get_minimum_in_range(0, my_data->size()-1,dummy));
 }
 
 template<class ELEMTYPE>
-double curve_scalar<ELEMTYPE>::get_max() const{
+double curve_scalar<ELEMTYPE>::get_max(SPECTRUM_TYPE t) {
 	int dummy;
 	return static_cast<double>( my_data->get_maximum_in_range(0, my_data->size()-1, dummy));
 }
@@ -394,19 +396,163 @@ void curve_scalar<ELEMTYPE>::read_curve_from_file(std::string s){
 
 /*Begin curve_integer*/
 
-/*template<class ELEMTYPE>
-class curve_integer : public curve_scalar<ELEMTYPE>{
+/*/*Begin curve_scalar*/
+template<class ELEMTYPE>
+class curve_complex : public curve_base{
 public:
-	curve_integer(int start_size, string name);
-	curve_integer(int start_size, int r, int g, int b);
+	curve_complex(int start_size, string name, double offset, double scale);
+//	curve_complex<ELEMTYPE>* copy_curve();
+
+//	void save_curve_to_file(std::string s) const;
+//	void read_curve_from_file(std::string s);
+	ptc_vector<ELEMTYPE> *my_data;
+	
+	double get_data(int i) const; //same as get_real only dynamic cast so exteranl use is possible
+	double get_complex(int i) const;
+	double get_max(SPECTRUM_TYPE t = SP_REAL);
+	double get_min(SPECTRUM_TYPE t = SP_REAL);
+	//complex<ELEMTYPE> get_data(int i);
+	double get_phase(int i) const;
+	double get_magnitude(int i) const;
+	void save_curve_to_file(std::string s) const;
+	void read_curve_from_file(std::string s);
+	double get_scale() const {return static_cast<double>( my_data->x_res);};//
+	double get_offset() const {return static_cast<double>( my_data->x_axis_start);};//
+	void set_scale(double scale){my_data->x_res = scale;};
+	void set_offset(double offset){my_data->x_axis_start = offset;};
+	int get_data_size() const {return my_data->size();};//
+	RGBvalue* get_color() const {return color;};//
+	void set_color(int r, int g, int b){color->r(r); color->g(g); color->b(b);};
+	char get_line() const {return line;};//
+	void set_line(char type){line = type;};
+
+private:
+	RGBvalue *color;
+	ELEMTYPE get_real(int i);
+	char line;
+	//SPECTRUM_TYPE y_type;
+	//SPECTRUM_TYPE x_type;
 };
 
 template<class ELEMTYPE>
-curve_integer<ELEMTYPE>::curve_integer(int start_size, string name) : curve_scalar<ELEMTYPE>(start_size, name){
-	//Empty contructor
+curve_complex<ELEMTYPE>::curve_complex(int start_size, string name, double offset, double scale) : curve_base(name){
+	my_data = new ptc_vector<ELEMTYPE>(start_size);
+	my_data->config_x_axis(scale, offset);
+	color = new RGBvalue();
+	color->set_rgb(255,0,0); //Default color = red
+	line = '-';
+	//x_type = SP_TIME;
+	//y_type = SP_REAL;
 }
 template<class ELEMTYPE>
-curve_integer<ELEMTYPE>::curve_integer(int start_size, int r, int g, int b) : curve_scalar<ELEMTYPE>(start_size, r, g, b){
-	//Empty contructor
-}*/
+ELEMTYPE curve_complex<ELEMTYPE>::get_real(int i){
+	return my_data->at(i).real();
+}
+template<class ELEMTYPE>
+double curve_complex<ELEMTYPE>::get_data(int i) const{
+	return static_cast<double>(my_data->at(i).real());
+}
+template<class ELEMTYPE>
+double curve_complex<ELEMTYPE>::get_max(SPECTRUM_TYPE t){
+	ELEMTYPE max = numeric_limits<ELEMTYPE>::max();
+	max = -max;
+	if(t == SP_REAL){
+		for(int i = 0; i < my_data->size(); i++){
+			if(get_real(i) > max)
+				max = get_data(i);
+		}
+	}else if(t == SP_COMPLEX){
+		for(int i = 0; i < my_data->size(); i++){
+			if(get_complex(i) > max)
+				max = get_complex(i);
+		}
+	}else if(t == SP_MAGNITUDE){
+		for(int i = 0; i < my_data->size(); i++){
+			if(get_magnitude(i) > max)
+				max = get_magnitude(i);
+		}
+	}else if(t == SP_PHASE){
+		for(int i = 0; i < my_data->size(); i++){
+			if(get_phase(i) > max)
+				max = get_phase(i);
+		}
+	}
+	return static_cast<double>(max);
+}
+template<class ELEMTYPE>
+double curve_complex<ELEMTYPE>::get_min(SPECTRUM_TYPE t) {
+	ELEMTYPE min = numeric_limits<ELEMTYPE>::max();
+	if(t == SP_REAL){
+		for(int i = 0; i < my_data->size(); i++){
+			if(get_real(i) < min)
+				min = get_data(i);
+		}
+	}else if(t == SP_COMPLEX){
+		for(int i = 0; i < my_data->size(); i++){
+			if(get_complex(i) < min)
+				min = get_complex(i);
+		}
+	}else if(t == SP_MAGNITUDE){
+		for(int i = 0; i < my_data->size(); i++){
+			if(get_magnitude(i) < min)
+				min = get_magnitude(i);
+		}
+	}else if(t == SP_PHASE){
+		for(int i = 0; i < my_data->size(); i++){
+			if(get_phase(i) < min)
+				min = get_phase(i);
+		}
+	}
+	return static_cast<double>(min);
+}
+
+
+template<class ELEMTYPE>
+double curve_complex<ELEMTYPE>::get_complex(int i) const{
+	return my_data->at(i).imag();
+}
+template<class ELEMTYPE>
+double curve_complex<ELEMTYPE>::get_phase(int i) const{
+	return arg(my_data->at(i));
+}
+template<class ELEMTYPE>
+double curve_complex<ELEMTYPE>::get_magnitude(int i) const{
+	double r = pow(get_data(i),2);
+	double c = pow(get_complex(i),2);
+	return sqrt(r + c);
+}
+template<class ELEMTYPE>
+void curve_complex<ELEMTYPE>::save_curve_to_file(std::string s) const{
+	ofstream myfile(s.c_str());
+	if(myfile.is_open()){
+		myfile << my_data->size() << "\n";
+		myfile << get_offset() << " " << get_scale() << "\n";
+		for(int i = 0; i < my_data->size(); i++){
+			myfile << get_real(i) <<  " " << get_complex(i) << "\n";
+		}
+		myfile.close();
+		
+	}
+}
+template<class ELEMTYPE>
+void curve_complex<ELEMTYPE>::read_curve_from_file(std::string s){
+	ifstream myfile(s.c_str(), ios::binary);
+	int size;
+	double offset, scale;
+	ELEMTYPE r, c;
+	if(myfile.is_open()){
+		myfile >> size;
+		myfile >> offset >> scale;
+		
+		my_data->config_x_axis(scale, offset);
+		for(int i = 0; i < size; i++){
+			myfile >> r >> c ;
+			my_data->push_back(complex<ELEMTYPE>(r,c));
+		}
+		myfile.close();
+	}
+	int index = s.find_last_of("/") + 1;
+	int stop = s.find_last_of(".");
+	this->name(s.substr(index,stop-index));
+}
 #endif

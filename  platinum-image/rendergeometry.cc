@@ -222,6 +222,128 @@ Vector3D rendergeom_curve::get_lookat() const {
 //-----------------------------------------------------
 //-----------------------------------------------------
 
+
+//-----------------------------------------------------
+//-----------------------------------------------------
+rendergeom_spectrum::rendergeom_spectrum():rendergeometry_base(){
+
+	cx = cy = 0;
+	start_y = 0;
+	qx = qy = 1.0;  //Just in case transform is executed before set_borders in some case
+	zoom = 1.0;
+	curve = NULL;
+
+	//These are for drawing the axis later
+	x_offset = 200;
+	x_scale = 0.1;
+	
+	//This is for drawing the vertical line at te mouse pointer location
+	mouse_location[0] = 0;
+	mouse_location[1] = 0;
+
+	//This is for measure line
+	measure_location[0] = -1;
+	measure_location[1] = -1;
+
+	color = new RGBvalue();
+	color->set_rgb(255,0,0);
+}
+void rendergeom_spectrum::set_borders(curve_base *the_curve_pointer, bool *y_type, int width, int height){
+	double t_max, t_min, max, min;
+	double dx, dy;
+	dx = (the_curve_pointer->get_data_size());
+
+	min = numeric_limits<double>::max();
+	max = -min;
+	//enum SPECTRUM_TYPE {SP_REAL, SP_COMPLEX, SP_MAGNITUDE, SP_PHASE, SP_FREQ, SP_TIME};
+	if(y_type[0]){
+		if((t_max = the_curve_pointer->get_max(SP_REAL)) > max)
+			max = t_max;
+		if((t_min = the_curve_pointer->get_min(SP_REAL)) < min)
+			min = t_min;
+	}
+	if(y_type[1]){
+		if((t_max = the_curve_pointer->get_max(SP_COMPLEX)) > max)
+			max = t_max;
+		if((t_min = the_curve_pointer->get_min(SP_COMPLEX)) < min)
+			min = t_min;
+	}
+	if(y_type[2]){
+		if((t_max = the_curve_pointer->get_max(SP_MAGNITUDE)) > max)
+			max = t_max;
+		if((t_min = the_curve_pointer->get_min(SP_MAGNITUDE)) < min)
+			min = t_min;
+	}
+	if(y_type[3]){
+		if((t_max = the_curve_pointer->get_max(SP_PHASE)) > max)
+			max = t_max;
+		if((t_min = the_curve_pointer->get_min(SP_PHASE)) < min)
+			min = t_min;
+	}
+
+
+	dy = (max - min + 1);
+	qx = (width/dx);//*zoom;
+	qy = (height/dy);//*zoom;
+	x_offset = the_curve_pointer->get_offset(); //Fixa denna som en variabel av x_type
+	x_scale = the_curve_pointer->get_scale();
+
+	start_y = the_curve_pointer->get_min();
+
+}
+void rendergeom_spectrum::set_curve(curve_base *the_curve_pointer){
+	curve = the_curve_pointer;
+}
+Vector3D rendergeom_spectrum::view_to_curve(int x_hat, int y_hat, int width, int height){
+	Vector3D val;
+	val[0] = round((x_hat - cx)/(qx*zoom));
+	val[1] = -((y_hat - cy - height + 1)/(qy*zoom)) + (start_y/qy);
+	val[2] = 0;
+	return val;
+}
+Vector3D rendergeom_spectrum::curve_to_view(int x, double y, int width, int height){
+	Vector3D val;
+	val[0] = round(qx*zoom*x) + cx;
+	val[1] = (height - round(qy*zoom*y) + cy - 1)  + (qy*start_y);
+	val[2] = 0;
+	return val;
+}
+
+void rendergeom_spectrum::get_value(int x_hat, double* val){
+
+	double y = 0.0;
+	int x;
+	if(curve == NULL){
+		val[0] = -1;
+		val[1] = -1;
+	}else{
+		x = round((x_hat - cx)/(qx*zoom));
+		val[1] = 0;
+		if(x < curve->get_data_size() && x >= 0){
+			val[1] = curve->get_data(x);
+		}
+		val[0] = x*x_scale + x_offset;
+	}
+}
+
+Matrix3D rendergeom_spectrum::view_to_world_matrix(int viewminsize) const
+{
+	Matrix3D dummy;
+	dummy.SetIdentity();
+    return dummy;
+}
+Vector3D rendergeom_spectrum::get_lookat() const {
+	Vector3D dummy;
+	dummy.Fill(1);
+	return dummy;
+}
+
+//-----------------------------------------------------
+//-----------------------------------------------------
+
+
+
+
 rendergeom_MIP::rendergeom_MIP():rendergeom_image()
 {
    use_perspective=false;

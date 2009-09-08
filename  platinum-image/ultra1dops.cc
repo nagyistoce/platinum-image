@@ -38,8 +38,9 @@ void ultra1dops::calc_intensity_histogram(pt_vector<unsigned short> *curve){
 	pts_vector<unsigned short> *intensity_distr = new pts_vector<unsigned short>(nr_buckets);
 
 	int b_pos;
-	unsigned short nr_vals;
 	intensity_distr->assign(nr_buckets,0);
+	intensity_distr->x_res = curve->x_res;
+	intensity_distr->x_axis_start = curve->x_axis_start;
 	double span = (numeric_limits<unsigned short>::max()+1) / nr_buckets;
 
 	for(int i = 0; i < curve->size(); i++){

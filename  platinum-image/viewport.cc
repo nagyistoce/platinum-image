@@ -145,18 +145,32 @@ void viewport::set_renderer_direction( preset_direction direction )
 {
 	the_widget->pane_widget->set_renderer_direction(direction); 
 }
-void viewport::change_color( colors color ) 
+void viewport::change_color( colors color ,VIEWPORT_TYPE type) 
 {
-	((FLTK_Pt_Curve_pane*)the_widget->pane_widget)->change_color(color); 
+	if(type == PT_CURVE)
+		((FLTK_Pt_Curve_pane*)the_widget->pane_widget)->change_color(color); 
+	else if(type == PT_SPECTRUM)
+		((FLTK_Pt_Spectrum_pane*)the_widget->pane_widget)->change_color(color);
 }
-void viewport::change_line_type(char line){
-	((FLTK_Pt_Curve_pane*)the_widget->pane_widget)->change_line(line); 
+void viewport::change_line_type(char line, VIEWPORT_TYPE type){
+	if(type == PT_CURVE)
+		((FLTK_Pt_Curve_pane*)the_widget->pane_widget)->change_line(line); 
+	else if(type == PT_SPECTRUM)
+		((FLTK_Pt_Spectrum_pane*)the_widget->pane_widget)->change_line(line); 
+}
+void viewport::change_x(char x){
+	((FLTK_Pt_Spectrum_pane*)the_widget->pane_widget)->change_x(x); 
+}
+void viewport::change_y(char y){
+	((FLTK_Pt_Spectrum_pane*)the_widget->pane_widget)->change_y(y); 
 }
 void viewport::change_geom_type(int vp_id, VIEWPORT_TYPE type){
 	if(type == PT_CURVE)
 		((FLTK_Pt_Curve_pane*)the_widget->pane_widget)->change_geom(vp_id);
 	else if(type == PT_MPR)
 		((FLTK_Pt_MPR_pane*)the_widget->pane_widget)->change_geom(vp_id);
+	else if(type == PT_SPECTRUM)
+		((FLTK_Pt_Spectrum_pane*)the_widget->pane_widget)->change_geom(vp_id);
 }
 
 
@@ -176,6 +190,8 @@ void viewport::set_vp_type_from_factoryIdType(string type)
 	}else if(type=="Curve"){
 		this->vp_type = PT_CURVE;
 
+	}else if(type == "Spectrum"){
+		this->vp_type = PT_SPECTRUM;
 	}else{
 		cout<<"oops. check set_vp_type_from_factoryIdType..."<<endl;
 	}
