@@ -581,7 +581,7 @@ void image_storage<ELEMTYPE >::combine(image_storage<ELEMTYPE> *const image2, CO
 			pt_error::error("image_storage<ELEMTYPE >::combine --> COMBINE_TYPE not recognized",pt_error::debug);
 			break;
 		}
-		cout<<"...DONE"<<endl;
+//		cout<<"...DONE"<<endl;
 	}else{
 		pt_error::error("image_storage<ELEMTYPE >::combine --> Not same size",pt_error::debug);
 	}

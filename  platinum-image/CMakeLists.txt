@@ -485,6 +485,7 @@ Utilities/vtkFl/vtkFlRenderWindowInteractor.cxx
 #add CMakelists for inclusion in version control
 SOURCE_GROUP(Scripts CMakeLists.txt)
 
+
 #Write PlatinumConfig.cmake so client programs can be built with Platinum
 
 #CMAKE_EXPORT_BUILD_SETTINGS(${Platinum_BINARY_DIR}/PlatinumBuildSettings.cmake)
@@ -498,9 +499,6 @@ CONFIGURE_FILE("${Platinum_SOURCE_DIR}/CMake/PlatinumConfig.cmake.in"
 #----------------------------------------------------------------------
 #          Reading file that sets up private applications
 #----------------------------------------------------------------------
-# IF(EXISTS... requires full path names....
-
-
 IF(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../PlatinumPrivateApps/CMakeLists_PrivateApps.txt")
 	INCLUDE("../PlatinumPrivateApps/CMakeLists_PrivateApps.txt")
 ENDIF(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../PlatinumPrivateApps/CMakeLists_PrivateApps.txt")

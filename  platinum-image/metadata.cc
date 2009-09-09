@@ -113,7 +113,8 @@ void metadata::read_metadata_from_dcm_file(string dcm_file)
 		//dcmIO->GetValueFromTag("0010"+"|"+"0010",string dcmdata);
 
 //	cout<<"load_private_tags="<<itk::GDCMImageIO::GetLoadPrivateTagsDefault()<<endl;
-//	itk::GDCMImageIO::SetLoadPrivateTagsDefault(true);
+
+//	itk::GDCMImageIO::SetLoadPrivateTagsDefault(true); 
 //	cout<<"load_private_tags="<<itk::GDCMImageIO::GetLoadPrivateTagsDefault()<<endl;
 
 	itk::GDCMImageIO::Pointer dcmIO = itk::GDCMImageIO::New();		//Allows simple dicom meta data import
@@ -121,7 +122,10 @@ void metadata::read_metadata_from_dcm_file(string dcm_file)
 	if( !dcmIO->CanReadFile(dcm_file.c_str()) ){
 		pt_error::error("metadata::read_metadata_from_dcm_file...",pt_error::debug);
 	}else{
-		dcmIO->ReadImageInformation();		//Needs to be called before accessing data...
+		dcmIO->SetLoadPrivateTagsDefault(true);	//to load private tags like b-value //2001:1003
+		dcmIO->GetMetaDataDictionary().Print(cout);
+//		dcmIO->GetMetaDataDictionary().Print(cout);
+		dcmIO->ReadImageInformation();			//Needs to be called before accessing data...
 
 		add_dcm_data_string(dcmIO,DCM_CREATION_DATE);
 		add_dcm_data_string(dcmIO,DCM_CREATION_TIME);
@@ -186,6 +190,8 @@ void metadata::read_metadata_from_dcm_file(string dcm_file)
 		add_dcm_data_float(dcmIO,DCM_SCALE_SLOPE2);
 
 		add_dcm_data_string(dcmIO,DCM_SLICE_ORIENTATION); // To make this work ollowing was commented from "itkGDCMImageIO.cxx" 
+		add_dcm_data_float(dcmIO,DCM_B_VALUE);				//diffusion b-value
+
 		//if( v->GetName() != gdcm::GDCM_UNKNOWN )	//JK removed this 2009-02-18
 		//{EncapsulateMetaData<std::string>(dico, v->GetKey(), v->GetValue() );}
 	}
@@ -277,6 +283,19 @@ std::string metadata::get_slice_orientation()
 	return "undefined";
 }
 
+float metadata::get_b_value()
+{
+//	string s = get_data_string(DCM_B_VALUE);
+//	return atof(s.c_str());
+	return get_data_float(DCM_B_VALUE);
+}
+
+void metadata::set_b_value(float b)
+{
+	set_data_float(DCM_B_VALUE,b);
+}
+
+
 metadata& metadata::operator=(const metadata& source)
 {
 //	cout<<"metadata - operator (=) ..."<<endl;
@@ -350,6 +369,7 @@ void metadata::print_all()
 	print_float(DCM_SCALE_SLOPE2); 
 
 	print_string(DCM_SLICE_ORIENTATION);
+	print_float(DCM_B_VALUE);
 }
 
 void metadata::add_dcm_data_int(itk::GDCMImageIO::Pointer dcmIO, string DCM_TAG)

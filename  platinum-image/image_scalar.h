@@ -289,6 +289,7 @@ public:
 
 	//Calculates TruePositive, FalsePositive values and "Udupa-index" for voxels larger than zero...
 	void calculate_TP_FP_Udupa_3D(float &tp, float &fp, float &udupa, image_scalar<ELEMTYPE, IMAGEDIM>* ground_truth, ELEMTYPE gt_obj_val=1, ELEMTYPE this_obj_val=1 ); 
+	void calculate_FP_FN_images(image_scalar<ELEMTYPE, IMAGEDIM>* ground_truth, image_binary<IMAGEDIM>* fp_im, image_binary<IMAGEDIM>* fn_im, ELEMTYPE gt_obj_val=1, ELEMTYPE this_obj_val=1 ); 
 
 	// return the voxel position of POINT_TYPE (i.e. max gradient magnitude, max value, ...) using voxel position and voxel radius
 	Vector3D get_pos_of_type_in_region_voxel ( Vector3D center, Vector3D radius, POINT_TYPE point_type );
@@ -368,7 +369,7 @@ public:
 	int appl_find_femur_y_level_from_wp_image(image_scalar<unsigned short, 3>* model_l, Vector3Dint guess_center_l, Vector3Dint d_xyz, image_scalar<unsigned short,3> *cost_image);
 	int appl_find_femur_y_level_from_body_masked_fp_image(int from_y, int to_y, Vector3Dint &femur_l, Vector3Dint &femur_r, float p2a_c=12.8,float p2a_sd=1.5, float area_c=230, float area_sd=50, int res_thresh=2500, string base="");
 
-	image_binary<3>* appl_wb_segment_VAT_mask_from_this_water_percent_abd_subvolume(image_binary<3> *bin_body, string base="");
+	image_binary<3>* appl_wb_segment_VAT_mask_from_this_water_percent_abd_subvolume(image_binary<3> *bin_body, string base="", int dir=1);
 	void appl_wb_normalize_features_slicewise_by_global_mean_on_this_float (image_scalar<float, 3>* second_feature, image_scalar<float, 3>* sum=NULL, image_binary<3>* body_lung_mask=NULL);
 	void appl_wb_SIM_bias_correction_on_this_float(image_scalar<float, 3>* second_feature, int num_iterations=1, float iteration_strength=0.02, float map_x_smoothing_std_dev=60, float map_y_smoothing_std_dev=15, float map_z_smoothing_std_dev=60, float feat1_smoothing_std_dev=30, float feat2_smoothing_std_dev=30, image_binary<3>* body_lung_mask=NULL, int num_buckets_feat1=200, int num_buckets_feat2=200, bool save_corrected_images_each_iteration=false, bool save_histogram_each_iteration=false, bool save_field_each_iteration=false);
 

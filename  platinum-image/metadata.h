@@ -135,6 +135,9 @@ public:
 
 	std::string get_name();
 	std::string get_slice_orientation();
+	float get_b_value();
+	void set_b_value(float b);
+
 
 private:
 	void add_dcm_data_int(itk::GDCMImageIO::Pointer dcmIO, string DCM_TAG);

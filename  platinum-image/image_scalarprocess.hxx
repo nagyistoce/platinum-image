@@ -761,14 +761,15 @@ int image_scalar<ELEMTYPE, IMAGEDIM>::appl_find_femur_y_level_from_body_masked_f
 }
 
 template <class ELEMTYPE, int IMAGEDIM>
-image_binary<3>* image_scalar<ELEMTYPE, IMAGEDIM>::appl_wb_segment_VAT_mask_from_this_water_percent_abd_subvolume(image_binary<3> *bin_body, string base)
+image_binary<3>* image_scalar<ELEMTYPE, IMAGEDIM>::appl_wb_segment_VAT_mask_from_this_water_percent_abd_subvolume(image_binary<3> *bin_body, string base, int dir)
 {
 	cout<<"Erode body_mini..."<<endl;
 	image_binary<> *body_mini = new image_binary<>(bin_body);
 	body_mini->name("body_mini");
-	body_mini->erode_3D_26Nbh();
-	body_mini->erode_3D_26Nbh();
-	body_mini->erode_3D_26Nbh();
+//	body_mini->erode_3D_26Nbh();
+//	body_mini->erode_3D_26Nbh();
+//	body_mini->erode_3D_26Nbh();
+	body_mini->erode_2D(9,dir); //used for the "Holger segm testing"
 	
 	cout<<"Mask body mini,	Threshold, largest object, Convex Hull..."<<endl;
 	image_scalar<ELEMTYPE, IMAGEDIM> *abd = new image_scalar<ELEMTYPE, IMAGEDIM>(this);
@@ -780,8 +781,18 @@ image_binary<3>* image_scalar<ELEMTYPE, IMAGEDIM>::appl_wb_segment_VAT_mask_from
 		vat_mask->save_to_VTK_file(base + "__f01a_vat_mask_thres.vtk");
 	}
 	vat_mask->largest_object_3D();
-	vat_mask->convex_hull_line_filling_3D(0);
-	vat_mask->convex_hull_line_filling_3D(2);
+	
+	if(dir==1){
+		vat_mask->convex_hull_line_filling_3D(0);
+		vat_mask->convex_hull_line_filling_3D(2);
+	}else if(dir==0){
+		vat_mask->convex_hull_line_filling_3D(1);
+		vat_mask->convex_hull_line_filling_3D(2);
+	}else if(dir==2){
+		vat_mask->convex_hull_line_filling_3D(0);
+		vat_mask->convex_hull_line_filling_3D(1);
+	}
+
 	if(base!=""){
 		vat_mask->save_to_VTK_file(base + "__f01b_convex_hull.vtk");
 	}
@@ -793,7 +804,8 @@ image_binary<3>* image_scalar<ELEMTYPE, IMAGEDIM>::appl_wb_segment_VAT_mask_from
 
 	image_binary<> *vat_mask_mini = new image_binary<>(vat_mask);
 	vat_mask_mini->name("vat_mask_mini");
-	vat_mask_mini->erode_2D(6,1);
+
+	vat_mask_mini->erode_2D(6,dir);
 
 
 	image_binary<> *sat = abd->threshold(0,500);

@@ -315,7 +315,7 @@ class image_general : public image_storage <ELEMTYPE >
 		void load_dataset_from_all_DICOM_files_in_dir(std::string dir_path);
 
         void save_to_file(const std::string file_path, const bool useCompression = true, const bool anonymize = true); //enterprits file name ending...
-        virtual void save_to_VTK_file(const std::string file_path, const bool useCompression = true);
+        virtual void save_to_VTK_file(const std::string file_path, const bool useCompression = false);
         virtual void save_to_DCM_file(const std::string file_path, const bool useCompression = false, const bool anonymize = true);
         void save_to_DCM_file_series(const std::string file_path, const bool useCompression = true, const bool anonymize = true);
 		void save_to_raw_file(const std::string file_path, bool save_image_info_txt_file=false);

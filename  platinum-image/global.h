@@ -151,6 +151,7 @@ enum SPECTRUM_TYPE {SP_REAL, SP_COMPLEX, SP_MAGNITUDE, SP_PHASE, SP_FREQ, SP_TIM
 
 #define DCM_SLICE_ORIENTATION "2001|100b"			//string (TRANSVERSAL/CORONAL/SAGITTAL)
 //#define DCM_SLICE_ORIENTATION "2001|100B"			//string (TRANSVERSAL/CORONAL/SAGITTAL)
+#define DCM_B_VALUE "2001|1003"						//float diffusion b-value (found in Philips Dicom file)
 
 
 #define DCM_MAGNITUDE_SUBSTRING "\\M\\"				//Part of the "DCM_IMAGE_TYPE" charateristic for magnitude data...

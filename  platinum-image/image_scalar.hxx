@@ -3275,6 +3275,29 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::calculate_TP_FP_Udupa_3D(float &tp, float
 }
 
 template <class ELEMTYPE, int IMAGEDIM>
+void image_scalar<ELEMTYPE, IMAGEDIM>::calculate_FP_FN_images(image_scalar<ELEMTYPE, IMAGEDIM>* ground_truth, image_binary<IMAGEDIM>* fp_im, image_binary<IMAGEDIM>* fn_im, ELEMTYPE gt_obj_val, ELEMTYPE this_obj_val)
+{
+	pt_error::error_if_false(this->same_size(ground_truth)&&this->same_size(fp_im)&&this->same_size(fn_im)," calculate_FP_FN_images-->NOT same size...",pt_error::debug);
+
+	bool val;
+	bool gt;
+
+	for(int z=0; z<this->datasize[2]; z++){
+		for(int y=0; y<this->datasize[1]; y++){
+			for(int x=0; x<this->datasize[0]; x++){
+				val = this->get_voxel(x,y,z)==gt_obj_val?true:false;
+				gt = ground_truth->get_voxel(x,y,z)==this_obj_val?true:false;
+				if( val&&(!gt) ){
+					fp_im->set_voxel(x,y,z,1);
+				}else if( (!val)&&gt ){
+					fn_im->set_voxel(x,y,z,1);
+				}
+			}
+		}
+	}
+}
+
+template <class ELEMTYPE, int IMAGEDIM>
 Vector3D image_scalar<ELEMTYPE, IMAGEDIM>::get_pos_of_max_grad_mag_in_region_voxel( Vector3D center, Vector3D radius, GRAD_MAG_TYPE type )
 {
 	if ( ! this->is_voxelpos_within_image_3D( center ) )

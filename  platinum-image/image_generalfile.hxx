@@ -451,7 +451,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::load_dataset_from_these_DICOM_files(vect
 
     this->from_file(true);
 	this->meta.read_metadata_from_dcm_file(fileNames[0].c_str());	//JK1 - Loads meta data from first dicom file in vector...
-//	this->meta.print_all();
+	this->meta.print_all();
 //	cout<<"..."<<endl;
 	this->name( this->meta.get_name() );
 	this->set_slice_orientation( this->meta.get_slice_orientation() );
@@ -579,6 +579,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::save_to_DCM_file(const std::string file_
 	typename itk::OrientedImage<ELEMTYPE, IMAGEDIM >::Pointer image = get_image_as_itk_output();
     writer->SetFileName( file_path.c_str() );
     writer->SetInput(image);
+	writer->UseCompressionOff();
 	if(useCompression){
 		writer->UseCompressionOn();
 	}

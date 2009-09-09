@@ -1121,7 +1121,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::copy_slice_from_3D(image_general<ELEMTYP
 	int f = from_slice_no;
 	int t = to_slice_no;
 	if(slice_dir==2){
-		if(f >=0 && f<src->datasize[2] && t>=0 && t<this->datasize[2] && same_size(src,0) && same_size(src,1)){
+		if(f >=0 && f<src->datasize[2] && t>=0 && t<this->datasize[2] && this->same_size(src,0) && this->same_size(src,1)){
 //			cout<<"slices OK"<<endl;
 			for (int y=0; y < datasize[1]; y++){
 				for (int x=0; x < datasize[0]; x++){
