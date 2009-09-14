@@ -170,7 +170,7 @@ void FLTK_VTK_pane::initialize_vtkRenderWindow()
 
 void FLTK_VTK_pane::draw_overlay()
 {
-//	((FLTKviewport*)this->parent())->viewport_parent->paint_overlay(); //öööö JK
+//	((FLTKviewport*)this->parent())->viewport_parent->paint_overlay(); //Ë†Ë†Ë†Ë† JK
 }
 
 int FLTK_VTK_pane::handle(int event)
@@ -253,12 +253,12 @@ int FLTK_VTK_pane::handle(int event)
 				//::::::::::::::::::::::::::::::::::::::::::::::::::
 				//Fill voxels around world position:
 				/*
-				leta upp bild -> position -> färglägg -> spara
+				leta upp bild -> position -> fâ€°rglâ€°gg -> spara
 				*/
 		
 //				image_scalar<signed short,3> *testImage = dynamic_cast<image_scalar<signed short,3>* >( rendermanagement.get_top_image_from_renderer(2) );
-				//sätt max_pos i bilden till lämplig intensistet
-				//max_pos är världskoord -> voxel!
+				//sâ€°tt max_pos i bilden till lâ€°mplig intensistet
+				//max_pos â€°r vâ€°rldskoord -> voxel!
 				//max_pos
 				Vector3Dint vox_coord = im2->get_voxelpos_integers_from_physical_pos_3D(max_pos);
 				
@@ -299,13 +299,13 @@ int FLTK_VTK_pane::handle(int event)
 				//for (int n=-5; n=5; n++)
 				//{
 				//vox_coord[1]=vox_coord[1]+n;
-				//testImage->set_voxel_in_physical_pos(max_pos, 500); //skriver utanför bilden...
+				//testImage->set_voxel_in_physical_pos(max_pos, 500); //skriver utanfË†r bilden...
 				//testImage->set_voxel(vox_coord, 500);
 				//}
 
 //				testImage->save_to_file("C:/Sandra/Data/testImage.vtk");
 
-				//liknande för vp = viewmanagement.get_viewport(4); -bilden
+				//liknande fË†r vp = viewmanagement.get_viewport(4); -bilden
 
 				//::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -424,7 +424,7 @@ FLTK_VTK_MIP_pane::~FLTK_VTK_MIP_pane()
 {}
 
 //--------------------------------------------------------
-//------------TILLFÄLLIG PLACERING-------------------/SO--
+//------------TILLFÆ’LLIG PLACERING-------------------/SO--
 //--------------------------------------------------------
 
 	PickPosCommand* PickPosCommand::New()
@@ -832,7 +832,7 @@ void FLTK_Event_pane::resize(int new_in_x,int new_in_y, int new_in_w,int new_in_
 
 void FLTK_Event_pane::draw()
 {
-//	cout << "Nu ska här ritas!!!" << endl;
+//	cout << "Nu ska hâ€°r ritas!!!" << endl;
     callback_event = viewport_event(pt_event::draw,this);
 	do_callback(CB_ACTION_DRAW); //JK2
 }
@@ -925,8 +925,8 @@ void FLTK_Pt_pane::resize_content(int w,int h)
 	if(event_pane == NULL)
 		cout << "NULL!!!" << endl;
 	else{
-//		event_pane->resize(0,0,w,h); //JK //RN --> se för fan till att det står 20 här!!!!
-		event_pane->resize(event_pane->x(),event_pane->y(),w,h); //JK //RN --> se för fan till att det står 20 här!!!!
+//		event_pane->resize(0,0,w,h); //JK //RN --> se fË†r fan till att det stÃ‚r 20 hâ€°r!!!!
+		event_pane->resize(event_pane->x(),event_pane->y(),w,h); //JK //RN --> se fË†r fan till att det stÃ‚r 20 hâ€°r!!!!
 	}
 }
 
@@ -1904,7 +1904,7 @@ void FLTK_Pt_Spectrum_pane::change_x(char x){
 		cout << "Nu ar den null???" << endl;
 		return;
 	}
-	cout << "Nu ska jag ändra"<<endl;
+	cout << "Nu ska jag â€°ndra"<<endl;
 	curve->change_x_type(x);*/
 }
 void FLTK_Pt_Spectrum_pane::change_y(char y){
@@ -2167,9 +2167,11 @@ void FLTKviewport::update_data_menu()
 	renderer_base * r = rendermanagement.get_renderer(viewport_parent->get_renderer_id());
 	bool *supported = new bool[baseMenuSize]; //RN
 	int size_of_support = 0;
+	
 	for(int i = 0; i < baseMenuSize; i++){
 		supported[i] = datamanagement.get_data(base_menu[i].argument())->is_supported(r->type());
-		size_of_support++;
+		if (supported[i])
+			size_of_support++;
 	} //RN stop
     //Fl_Menu_Item *new_menu = new Fl_Menu_Item[baseMenuSize+1];
 	 Fl_Menu_Item *new_menu = new Fl_Menu_Item[size_of_support+1];
@@ -2182,7 +2184,7 @@ void FLTKviewport::update_data_menu()
 	
     if(base_menu != NULL && viewport_parent->rendererIndex >= 0){
         do{
-			if(supported[m]){
+			if(supported[m] || m == baseMenuSize){
 				memcpy (&new_menu[counter],&base_menu[m],sizeof(Fl_Menu_Item));
 	                
 				if(new_menu[counter].label()!=NULL){
@@ -2208,7 +2210,9 @@ void FLTKviewport::update_data_menu()
 			}
 			m++;
 		}
-		while(new_menu[counter].label() !=NULL && m <= baseMenuSize);
+		while(m <= baseMenuSize);
+		//while(new_menu[counter].label() !=NULL && m <= baseMenuSize);
+		
         m = size_of_support;
         datamenu_button->copy(new_menu);
         delete new_menu;
@@ -2374,7 +2378,7 @@ void FLTKviewport::set_blendmode_callback(Fl_Widget *callingwidget, void * p )
 void FLTKviewport::toggle_data_callback(Fl_Widget *callingwidget, void * params )
 {
 
-	//Här kan man sätta rendrerare!!!!!!
+	//Hâ€°r kan man sâ€°tta rendrerare!!!!!!
     menu_callback_params * widget_user_data=(menu_callback_params *)params;
 
     rendermanagement.toggle_data(widget_user_data->rend_index,widget_user_data->vol_id);
@@ -2393,11 +2397,11 @@ void FLTKviewport::toggle_data_callback(Fl_Widget *callingwidget, void * params 
 		viewmanagement.refresh_viewports(); //complicated to remember old settings... slow but simple solution... 
 	}
 	
-	//JK-öööö update direction if needed (for example if "DEFAULT_DIR" is used...)
+	//JK-Ë†Ë†Ë†Ë† update direction if needed (for example if "DEFAULT_DIR" is used...)
 
 	// TODO: only refresh viewports that holds the addded/removed image
-	// hur kan det aktuella bild id:et erhållas? undersök om det verkligen är en bild (dvs exkludera tex en point_collection)
-	// möjlig lösning är att jämföra de bilder combination innehåller före och efter toggle_data() 
+	// hur kan det aktuella bild id:et erhÃ‚llas? undersË†k om det verkligen â€°r en bild (dvs exkludera tex en point_collection)
+	// mË†jlig lË†sning â€°r att jâ€°mfË†ra de bilder combination innehÃ‚ller fË†re och efter toggle_data() 
 
 //	cout<<"vport_id= "<<widget_user_data->vport->get_id()<<endl;
 //	viewmanagement.refresh_viewports(); //time consuming to update all....
@@ -2437,12 +2441,12 @@ void FLTKviewport::switch_pane(factoryIdType type)
 	int w = this->pane_widget->w();
 	int h = this->pane_widget->h();
 
-	this->pane_widget->parent()->remove(this->pane_widget); //länkar av...
+	this->pane_widget->parent()->remove(this->pane_widget); //lâ€°nkar av...
 	delete this->pane_widget;
 
-	Fl_Group::current(this); //TITTA HÄR!!! Dwenna körs då man byter rendrerare
+	Fl_Group::current(this); //TITTA HÆ’R!!! Dwenna kË†rs dÃ‚ man byter rendrerare
 	
-	this->pane_widget = rendermanager::pane_factory.Create(type); //Denna kör fel konstruktor!!! Använd nåt annat så övriga vitala saker skapas!
+	this->pane_widget = rendermanager::pane_factory.Create(type); //Denna kË†r fel konstruktor!!! Anvâ€°nd nÃ‚t annat sÃ‚ Ë†vriga vitala saker skapas!
 
 	this->pane_widget->x(x);
 	this->pane_widget->y(y);
@@ -2534,7 +2538,7 @@ void FLTKviewport::viewport_callback(Fl_Widget *callingwidget){
 		render_if_needed();
 		
 		fp->damage(FL_DAMAGE_ALL);
-		fp->draw(viewport_parent->rgbpixmap); //JK2-ööö, do this in FLTK_draw_vp???
+		fp->draw(viewport_parent->rgbpixmap); //JK2-Ë†Ë†Ë†, do this in FLTK_draw_vp???
 		fp->damage(0);
 	}
 

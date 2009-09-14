@@ -72,11 +72,11 @@ void viewporttool::init (int posX, int posY,statusarea * s)
 	viewporttool::Register<landmark_tool>();
 	viewporttool::Register<meta_tool>();
 	viewporttool::Register<curve_tool>();
-	//TODO_R Lägg till curve_tool här sen
+	//TODO_R Lâ€°gg till curve_tool hâ€°r sen
     
     selected = "Navigation";
 
-	//selected = "Curve manipulation tool"; //Ändra start
+	//selected = "Curve manipulation tool"; //Æ’ndra start
     
     //create toolbox widget
     const bool horizontal = true;
@@ -241,7 +241,7 @@ void nav_tool::init()
 void nav_tool::handle(viewport_event &event)
 {
 	FLTK_Event_pane *fp = event.get_FLTK_Event_pane();
-
+	
     if ( event.state() == pt_event::begin)
 	{
 //      cout<<"nav_tool.. begin..."<<endl;

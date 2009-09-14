@@ -213,7 +213,8 @@ void platinum_setup (Fl_Window & window, int num_viewports_h, int num_viewports_
     window.resizable(viewsNlists);
     window.end();
 
-
+	viewmanagement.refresh_viewports_after_toolswitch();
+		
 	//Initialize config file (.inp)... Try reading / create a new default if non-existing!
 	pt_config::initialize();
 
