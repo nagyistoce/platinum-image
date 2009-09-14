@@ -21,7 +21,7 @@
 #include "datawidget.h"
 #include "bruker.h"
 #include "image_label.hxx" //used in... analyze_objloader::read()
-#include "image_complex.hxx" //used in... analyze_objloader::read() //ööööööööööööööööö
+#include "image_complex.hxx" //used in... analyze_objloader::read() //????
 //#include "image_complex.hxx"
 //#include "itkVTKImageIO.h"
 //#include "fileutils.h"
@@ -826,7 +826,7 @@ image_base *dicomloader::read()
 		}
 
 //		files->clear(); //! if at least one file can be read, the rest are assumed to be part of the same series (or otherwise superfluos)
-		//ööö do not "clear"...
+		//???? do not "clear"...
 
 	}//for(file...)
 	

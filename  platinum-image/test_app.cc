@@ -97,7 +97,7 @@ void link_load_function(int userIO_ID,int par_num)
 {
     if(par_num == USERIO_CB_OK){
 
-		string path = "K:/Joel/Data/Vinstudien/3P-Linköping/DICOM/DICOM/";
+		string path = "K:/Joel/Data/Vinstudien/3P-Linkoping/DICOM/DICOM/";
 
 		image_scalar<float,3> *im = new image_scalar<float,3>(path + "IM_0001");
 		image_scalar<short,3> *im2 = new image_scalar<short,3>(im);

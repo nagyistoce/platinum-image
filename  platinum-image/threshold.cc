@@ -66,7 +66,7 @@ int thresholdparvalue::make_threshold_image ()
 
     for (int v=0;id[v] != NOT_FOUND_ID;v++)
         {
-        the_inputs [v] = datamanagement.get_image<image_base>(id[v]); //TODO_R HÄR!!!!!
+        the_inputs [v] = datamanagement.get_image<image_base>(id[v]); //TODO_R HaR!!!!!
         num_images = v+1;
         }
 
@@ -98,7 +98,7 @@ int thresholdparvalue::make_threshold_image ()
     //as blueprint for an empty one
 
     result_vol_ID= datamanagement.create_empty_image(the_inputs[0], VOLDATA_UCHAR);
-    the_result=(image_label<3> *)datamanagement.get_image<image_base>(result_vol_ID); //TODO_R HÄR!!!!!
+    the_result=(image_label<3> *)datamanagement.get_image<image_base>(result_vol_ID); //TODO_R HaR!!!!!
 
     for (short z = 0; z < size[2];z++)
         {

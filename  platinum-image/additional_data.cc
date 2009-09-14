@@ -113,14 +113,14 @@ void additional_data_base::draw_it(vector<Vector3D> points_to_draw, unsigned cha
 			point = geom->curve_to_view(points_to_draw.at(i)[0], points_to_draw.at(i)[1], width, height);	
 		}else if(type ==RENDERER_MPR){
 			rendergeom_image* g = dynamic_cast<rendergeom_image*>(rg);
-			//Fixa översättning här
+			//Fixa oversattning har
 			point[0] = 0;
 			point[1] = 0;
 			point[2] = 0;
 		}
 		point[0] = round(point[0]);
 		point[1] = round(point[1]);
-		//lägg till särfall här. Tror det bara är point som inte vill ritas med linjer
+		//lagg till sarfall har. Tror det bara ar point som inte vill ritas med linjer
 		if(point[0] < width && point[0] > 0 && point[1] < height && point[1] > 0 ){
 			
 			pix_addr = (point[1]*width + point[0])*RGB_pixmap_bpp;

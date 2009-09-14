@@ -864,7 +864,7 @@ vector<string>	get_first_dicom_files_corresponding_to_these_combos(string dir_pa
 
 vector<string>	get_first_dicom_files_corresponding_to_these_combos2(string dir_path, vector<string> dcm_tags, bool recursive_search, bool full_path)
 {
-	//jk öööööööööööö
+	//jk ????
 	vector<string> all_files = get_dir_entries(dir_path,true,true);
 	vector<vector<string> > found_combos;
 	vector<string> this_combo;

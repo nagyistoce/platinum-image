@@ -141,7 +141,7 @@ int ultra1dops::count_peaks(vector<Vector3D> c, curve_scalar<unsigned short> *cu
 
 vector<Vector3D> ultra1dops::simplify_the_curve(curve_scalar<unsigned short> *curve){
 	vector<Vector3D> p;
-	int step = pt_config::read<double>("simplCurveInterval",CURVE_CONF_PATH)/curve->get_scale(); //TODO detta läses från bin...
+	int step = pt_config::read<double>("simplCurveInterval",CURVE_CONF_PATH)/curve->get_scale(); //TODO detta lases fran bin...
 	for(int x = 0; x < curve->get_data_size(); x= x+step){
 		Vector3D m;
 		m[0] = x;
@@ -276,7 +276,7 @@ vector<gaussian> ultra1dops::fit_gaussian_curve_and_calculate(curve_scalar<unsig
 	in = v->fit_gaussian_with_amoeba(intima-search_area, intima+search_area);
 		//v->fit_gaussian_with_amoeba(amp, center, sigma, intima-search_area, intima+search_area);
 	//v->fit_gaussian_to_intensity_range(amp,center,sigma,intima-search_area, intima+search_area, false);
-	//Beräkna två mätpunkter här
+	//Berakna tva matpunkter har
 
 	adv = v->fit_gaussian_with_amoeba(adventitia-search_area, adventitia+search_area);
 	//v->fit_gaussian_with_amoeba(amp2, center2, sigma2, adventitia-search_area, adventitia+search_area);
@@ -300,7 +300,7 @@ vector<gaussian> ultra1dops::fit_gaussian_curve_and_calculate(curve_scalar<unsig
 
 	curve->helper_data->add_gauss(v->from_val_to_x(in.center) + (intima-search_area), sig1, in.amplitude);
 	curve->helper_data->add_gauss(v->from_val_to_x(adv.center) + (adventitia-search_area), sig2, adv.amplitude);
-	//TODO det ska inte vara ändrat sigma här!!!!!
+	//TODO det ska inte vara andrat sigma har!!!!!
 	in.center+=v->from_x_to_val(intima-search_area);
 	adv.center+=v->from_x_to_val(adventitia-search_area);
 	g.push_back(in);

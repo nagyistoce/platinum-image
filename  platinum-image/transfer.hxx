@@ -91,8 +91,8 @@ transfer_brightnesscontrast<ELEMTYPE >::transfer_brightnesscontrast (image_stora
 	frame->callback(transfer_scalar_base<ELEMTYPE >::redraw_image_cb);
 	frame->user_data( static_cast<REDRAWCALLBACKPTYPE>(this->source) );
 
-	min = this->source->get_min_float();//öööö
-	max = this->source->get_max_float();//öööö
+	min = this->source->get_min_float();//???
+	max = this->source->get_max_float();//???
     ELEMTYPE intrange = max-min;
 
 	//JK - GUI modification
@@ -290,8 +290,8 @@ transfer_threshold_illustrator<ELEMTYPE >::transfer_threshold_illustrator (image
 
 //	float min = this->source->get_min();
 //	float max = this->source->get_max();
-	float min = this->source->get_min_float(); //öööö
-	float max = this->source->get_max_float(); //öööö
+	float min = this->source->get_min_float(); //???
+	float max = this->source->get_max_float(); //???
     float intrange = max-min;
 
 	//JK - GUI modification
@@ -549,7 +549,7 @@ void transfer_default<ELEMTYPE >::update()
 
 
 template <class ELEMTYPE, int IMAGEDIM >
-transfer_complex<ELEMTYPE,IMAGEDIM>::transfer_complex(image_complex<ELEMTYPE,IMAGEDIM> *s) : transfer_base() //öööö
+transfer_complex<ELEMTYPE,IMAGEDIM>::transfer_complex(image_complex<ELEMTYPE,IMAGEDIM> *s) : transfer_base() //???
  {
 	 this->source = s; //since the "s" is not passed on to "_base"
 

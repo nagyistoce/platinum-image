@@ -87,7 +87,7 @@ Vector3D rendererMPR::view_to_voxel(int vx, int vy,int sx,int sy,int imageID) co
 {
     if (imageID != -1)
         {
-        return datamanagement.get_image<image_base>(imageID)->world_to_voxel (view_to_world(vx, vy,sx,sy)); //TODO_R HÄR!!!!!
+        return datamanagement.get_image<image_base>(imageID)->world_to_voxel (view_to_world(vx, vy,sx,sy)); //TODO_R HaR!!!!!
         }
     else
         {    
@@ -221,8 +221,8 @@ void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_imag
         bool OKrender = the_image_pointer != NULL && the_image_pointer->is_supported(renderer_type());
         
         if(blend_mode == RENDER_THRESHOLD){
-            the_image_pointer       = datamanagement.get_image<image_base>(threshold->id[0]); //TODO_R HÄR!!!!!
-            the_other_image_pointer = datamanagement.get_image<image_base>(threshold->id[1]); //TODO_R HÄR!!!!!
+            the_image_pointer       = datamanagement.get_image<image_base>(threshold->id[0]); //TODO_R HaR!!!!!
+            the_other_image_pointer = datamanagement.get_image<image_base>(threshold->id[1]); //TODO_R HaR!!!!!
             
             OKrender = the_image_pointer != NULL && the_other_image_pointer != NULL && the_image_pointer->is_supported(renderer_type());
         }
@@ -331,7 +331,7 @@ void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_imag
 
 
                         else{ 
-							the_image_pointer->get_display_voxel(value,vox[0],vox[1],vox[2]); //TODO kolla vad denna gör egentligen
+							the_image_pointer->get_display_voxel(value,vox[0],vox[1],vox[2]); //TODO kolla vad denna gor egentligen
 						}
                         
                         

@@ -186,7 +186,7 @@ template <class ELEMTYPE, int IMAGEDIM>
 image_scalar<ELEMTYPE, IMAGEDIM>::~image_scalar()
     {
     if (tfunction != NULL)
-	    delete tfunction; //öööö
+	    delete tfunction; //????
 
     if (stats != NULL)
         { delete stats; }
@@ -201,7 +201,7 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::set_scalar_parameters()
 	ELEMTYPE mi = stats->min();
 	ELEMTYPE ma = stats->max();
 //    stats->min(std::numeric_limits<ELEMTYPE>::min());
-//    stats->max(std::numeric_limits<ELEMTYPE>::max()); //JK öööööööööööööööö
+//    stats->max(std::numeric_limits<ELEMTYPE>::max()); //JK ????
 
     tfunction = NULL;
 
@@ -241,7 +241,7 @@ template <class ELEMTYPE, int IMAGEDIM>
 void image_scalar<ELEMTYPE, IMAGEDIM>::transfer_function(std::string functionName)
     {
 		transfer_scalar_base<ELEMTYPE > *t = transfer_manufactured::factory.Create<ELEMTYPE> (functionName,this);
-		this->transfer_function(t); //JK TODO ööööö quick fix...
+		this->transfer_function(t); //JK TODO ???? quick fix...
     }
 
 template <class ELEMTYPE, int IMAGEDIM>
@@ -1123,7 +1123,7 @@ image_scalar<ELEMTYPE, IMAGEDIM>* image_scalar<ELEMTYPE, IMAGEDIM>::crop_and_ret
 {
 	image_scalar<ELEMTYPE, IMAGEDIM>* res;
 	if(this->same_size(mask)){
-		//jk-ööö... implement here... //if a return value is given in a similar function... also implement in all image_classes...
+		//jk-????... implement here... //if a return value is given in a similar function... also implement in all image_classes...
 		res = this->get_subvolume_from_region_3D(mask);
 	}else{
 		pt_error::error("crop_and_return_3D(image_binary<3> *mask)--> NOT same size...",pt_error::debug);
@@ -1170,7 +1170,7 @@ template <class ELEMTYPE, int IMAGEDIM>
 void image_scalar<ELEMTYPE, IMAGEDIM>::crop_3D(image_binary<3> *mask)
 {
 	if(this->same_size(mask)){
-		//jk-ööö... implement here... if a return value is given in a similar function... also implement in all image_classes...
+		//jk-????... implement here... if a return value is given in a similar function... also implement in all image_classes...
 		image_scalar<ELEMTYPE, IMAGEDIM>* res = this->crop_and_return_3D(mask);
 	    this->initialize_dataset(res->nx(), res->ny(), res->nz(), NULL); //deallocate is done in initialize_dataset, if needed...
 		copy_data(res,this);
@@ -1561,7 +1561,7 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::mask_out(int low_x, int high_x, int low_y
 template <class ELEMTYPE, int IMAGEDIM>
 void image_scalar<ELEMTYPE, IMAGEDIM>::mask_out_from_planes_3D(vector<plane3D> planes, ELEMTYPE blank, bool outside_all_planes_needed, SPACE_TYPE st)
 {
-	//JK TODO //öööö make sure this function uses the SPACE_TYPE information
+	//JK TODO //???? make sure this function uses the SPACE_TYPE information
 	int num_planes=planes.size();
 	vector<float> d(num_planes);
 	for (int i=0; i<num_planes; i++) {
@@ -2924,7 +2924,7 @@ vector<Vector3D> image_scalar<ELEMTYPE, IMAGEDIM>::get_positions_of_voxels_with_
 				for(int x=0;x<this->nx();x++){
 					val = this->get_voxel(x,y,z);
 					if( val >= from_val && val <= to_val){
-						points.push_back(this->get_physical_pos_for_voxel(x,y,z)); //öööö
+						points.push_back(this->get_physical_pos_for_voxel(x,y,z)); //????
 					}
 				}
 			}
@@ -3603,7 +3603,7 @@ float image_scalar<ELEMTYPE, IMAGEDIM>::get_mean_from_slice_3d(int dir, int slic
 
 	for(int v=0; v<this->get_size_by_dim_and_dir(1,dir); v++){
 		for(int u=0; u<this->get_size_by_dim_and_dir(0,dir); u++){
-			if( mask==NULL || mask->get_voxel_by_dir(u,v,slice,dir) ) { //öööö
+			if( mask==NULL || mask->get_voxel_by_dir(u,v,slice,dir) ) { //????
 				sum += this->get_voxel_by_dir(u,v,slice,dir);
 				num_voxels++;
 			}

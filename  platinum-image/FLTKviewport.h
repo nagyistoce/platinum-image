@@ -27,7 +27,7 @@
 //
 //	* FLTK_VTK_pane / FLTK_VTK_pane need to enterpret update/refresh differently
 //	* FLTK_VTK_pane will need reformatting from data_base objects to VTK-pointers
-//	* Ev läs in all data, buffra vid "start"
+//	* Ev las in all data, buffra vid "start"
 //	* Transfer functions Pt <-- --> VTK
 //	* "Reason-argument" might be needed for data_has_changed()? --> save formatting time...
 
@@ -251,7 +251,7 @@ class FLTK_VTK_MIP_pane : public FLTK_VTK_pane
 };
 
 //--------------------------------------------------------
-//------------TILLFÄLLIG PLACERING-------------------/SO--
+//------------TILLFALLIG PLACERING-------------------/SO--
 //--------------------------------------------------------
 //vtkWorldPointPicker *w_picker;
 

@@ -232,7 +232,7 @@ filter_central_difference_plane::filter_central_difference_plane(int dir)
 	}
 
 	else if (dir==1) {
-		this->set_data_from_ints(w,1,3,1,0,1,0); //JK-ööö TODO, all "set_data" function overwrites the old data... --> "add_data_" needed
+		this->set_data_from_ints(w,1,3,1,0,1,0); //JK-??? TODO, all "set_data" function overwrites the old data... --> "add_data_" needed
 		this->set_data_from_ints(w,1,3,1,-1,1,-1);
 		this->set_data_from_ints(w,1,3,1,-1,1,+1);
 		this->set_data_from_ints(w,1,3,1,+1,1,-1);

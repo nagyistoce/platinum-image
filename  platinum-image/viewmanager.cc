@@ -283,7 +283,7 @@ void viewmanager::setup_views(int virtualview, int areawidth, int areaheight) //
             if (viewportmapping[v][h][virtualview] >= 0)
                 {
                 int VPind = find_viewport_index( viewportmapping[v][h][virtualview] );
-				VIEWPORT_TYPE vp_type = PT_MPR; //Ändra start
+				VIEWPORT_TYPE vp_type = PT_MPR; //andra start
 
                 //Create viewport widget and set position
 

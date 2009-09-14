@@ -165,8 +165,8 @@ class colornode:public RGBvalue
 		colornode(float pos, IMGELEMCOMPTYPE r, IMGELEMCOMPTYPE g, IMGELEMCOMPTYPE b);
         float position; // what voxel/pixel/... value this color corresponds to
 
-        // convert from HSV - behövs EFTER interpolation - kunde vara en fristående funktion men passar här
-        // dessa behöver "vector" så vi kan sortera arrayen
+        // convert from HSV - behovs EFTER interpolation - kunde vara en fristaende funktion men passar har
+        // dessa behover "vector" sa vi kan sortera arrayen
         // void operator=(const color &k) { }; // DEFAULT OPERATOR OK
         bool operator==(const colornode &k)
             { return position==k.position; }

@@ -390,7 +390,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::data_has_changed(bool stat_refresh)
         this->stats_refresh(true);
 
         //refresh transfer function
-//        this->tfunction->update(); //ööööö
+//        this->tfunction->update(); //????
         }
 
 //    cout<<"data_has_changed...clear_itk_porting()"<<endl;
@@ -2029,7 +2029,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::add_value_to_voxels(vector<Vector3D> coo
 template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::get_display_voxel(RGBvalue &val,int x, int y, int z) const
     {
-//    this->tfunction->get(get_voxel(x, y, z),val); //ööööö
+//    this->tfunction->get(get_voxel(x, y, z),val); //????
     //val.set_mono(255*(get_voxel (x, y, z)-minvalue)/(maxvalue-minvalue));
     }
 

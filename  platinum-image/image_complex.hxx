@@ -81,8 +81,8 @@ void image_complex<ELEMTYPE, IMAGEDIM>::set_complex_parameters()
     tfunction = NULL;
 	transfer_function();
 
-	min_complex = complex<ELEMTYPE>(0,1);	//JK öööööö
-	max_complex = complex<ELEMTYPE>(11,12); //JK öööööö
+	min_complex = complex<ELEMTYPE>(0,1);	//JK ????
+	max_complex = complex<ELEMTYPE>(11,12); //JK ????
     }
 
 template <class ELEMTYPE, int IMAGEDIM>
@@ -147,7 +147,7 @@ void image_complex<ELEMTYPE, IMAGEDIM>::set_parameters(itk::SmartPointer< itk::O
 //	this->print_geometry(); //JK
     this->calc_transforms();
 /*
-//	typename theComplexStatsFilterType::Pointer statsFilter = theComplexStatsFilterType::New(); //ööööööööööööööö
+//	typename theComplexStatsFilterType::Pointer statsFilter = theComplexStatsFilterType::New(); //????
 //	statsFilter->SetInput(i);
 //    statsFilter->Update();
 //    this->set_max(statsFilter->GetMaximum());

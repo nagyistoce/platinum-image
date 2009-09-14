@@ -158,7 +158,7 @@ public:
     viewport_event(int FL_event, FLTK_Event_pane *fp);
     viewport_event() : FLTK_event (NULL) {}
     
-    FLTK_Event_pane * get_FLTK_Event_pane(); //ööööööö
+    FLTK_Event_pane * get_FLTK_Event_pane(); //???
     void resize_point (int &x,int &y);
 };
 

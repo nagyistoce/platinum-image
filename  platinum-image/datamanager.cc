@@ -340,7 +340,7 @@ void datamanager::add(curve_base *curve){
     if(pt_error::error_if_null(curve,"Can't add curve to datamanager, pointer is NULL",pt_error::serious) != NULL){
         dataItems.push_back(curve);
         curve->activate();
-		//viewmanagement.show_in_empty_viewport(curve->get_id()); använder image_base specifika saker i nuläget...
+		//viewmanagement.show_in_empty_viewport(curve->get_id()); anvander image_base specifika saker i nulaget...
         
         data_vector_has_changed();
         data_has_changed(curve->get_id());
@@ -598,7 +598,7 @@ data_base * datamanager::get_data (int ID)
         }
 	return NULL;//Pretty important line...
 }
-//Denna är definierad i H filen pga template
+//Denna ar definierad i H filen pga template
 /*template<class T>
 T* datamanager::get_image (int ID)
     {
@@ -608,7 +608,7 @@ T* datamanager::get_image (int ID)
         {
         if (**itr == ID)
             {
-            T * i = dynamic_cast<T *>(*itr); //TODO_R Ändra denna rad och return tpe
+            T * i = dynamic_cast<T *>(*itr); //TODO_R andra denna rad och return tpe
             
             if (pt_error::error_if_null(i,"Trying to get_image when requested ID is not image type",pt_error::fatal) != NULL)
                 { return i; }
@@ -697,7 +697,7 @@ Fl_Menu_Item * datamanager::object_menu ()
     while (itr != dataItems.end())
         {
         OCLASS * ptr = dynamic_cast<OCLASS *>(*itr);
-		//Plan lägg till vilkor som hämtar om den stödjs av aktuell rendrerare
+		//Plan lagg till vilkor som hamtar om den stodjs av aktuell rendrerare
 		//dynamic_cast<data_base*>(ptr).is_supported(aktuell rendrerare);
         if (ptr != NULL)
             { objects.push_back(ptr); }

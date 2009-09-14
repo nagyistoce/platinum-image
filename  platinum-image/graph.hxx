@@ -80,7 +80,7 @@ public:
 		_nodes[node1]->add_arc( _nodes[node2] );
 		_nodes[node2]->add_arc( _nodes[node1] );
 	}
-	map<ELEMTYPE, vector<node<ELEMTYPE>* > > get_value_to_node_map() { // överflödig?
+	map<ELEMTYPE, vector<node<ELEMTYPE>* > > get_value_to_node_map() { // redundant??
 		map<ELEMTYPE, vector<node<ELEMTYPE>* > > value_map;
 		typename map<short, node<ELEMTYPE>* >::iterator i = _nodes.begin();
 		while (i!=_nodes.end()) {

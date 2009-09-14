@@ -163,7 +163,7 @@ image_storage<ELEMTYPE >::image_storage(const string filepath):image_base(filepa
 template <class ELEMTYPE >
 image_storage<ELEMTYPE >::~image_storage()
     {
-//    delete tfunction; //öööö
+//    delete tfunction; //????
 
 //    if (stats != NULL)
 //        { delete stats; }
@@ -190,7 +190,7 @@ float image_storage<std::complex<float> >::get_max_float()
     }
 */
 
-//JK - öööö - I have not managed to specialize this function for "complex<ELEMTYPE>" - I think the whole class needs to be rewritten for "complex<ELEMTYPE>"
+//JK - ???? - I have not managed to specialize this function for "complex<ELEMTYPE>" - I think the whole class needs to be rewritten for "complex<ELEMTYPE>"
 
 template <class ELEMTYPE >
 float image_storage<ELEMTYPE >::get_max_float() const

@@ -86,7 +86,7 @@ class transfer_scalar_base: public transfer_base
 
     public:
         virtual ~transfer_scalar_base();
-        virtual void get(const ELEMTYPE v, RGBvalue &p) = 0; //öööö
+        virtual void get(const ELEMTYPE v, RGBvalue &p) = 0; //????
     };
 
 
@@ -102,7 +102,7 @@ public:
 	transfer_default(image_storage <ELEMTYPE > *s);
 
 	void get(const ELEMTYPE v, RGBvalue &p);
-//	void get(const complex<ELEMTYPE> v, RGBvalue &p){} //öööö	
+//	void get(const complex<ELEMTYPE> v, RGBvalue &p){} //????	
 
 	virtual void update();
 };
@@ -126,7 +126,7 @@ protected:
 public:
 	transfer_brightnesscontrast (image_storage <ELEMTYPE > *);
 	void get (const ELEMTYPE v, RGBvalue &p);
-//	void get(const complex<ELEMTYPE> v, RGBvalue &p){} //öööö
+//	void get(const complex<ELEMTYPE> v, RGBvalue &p){} //????
 	void update(string slider_label);				//Updates intensity/contrast parameters from FLTK sliders ...
 	static void slider_cb(Fl_Widget *w, void *data);	//slider callback
 };
@@ -144,7 +144,7 @@ protected:
 public:
 	transfer_threshold_illustrator (image_storage <ELEMTYPE > *);
 	void get (const ELEMTYPE v, RGBvalue &p);
-//	void get(const complex<ELEMTYPE> v, RGBvalue &p){} //öööö	
+//	void get(const complex<ELEMTYPE> v, RGBvalue &p){} //????	
 //	void update(string slider_label);				//Updates intensity/contrast parameters from FLTK sliders ...
 	static void slider_cb(Fl_Widget *o, void *v); //slicer callback
 };
@@ -156,7 +156,7 @@ class transfer_mapcolor: public transfer_scalar_base <ELEMTYPE >
 public:
 	transfer_mapcolor (image_storage <ELEMTYPE > * s);
 	void get (const ELEMTYPE v, RGBvalue &p);
-//	void get(const complex<ELEMTYPE> v, RGBvalue &p){}; //öööö	
+//	void get(const complex<ELEMTYPE> v, RGBvalue &p){}; //????	
 };
 
 
@@ -198,7 +198,7 @@ protected:
 public:
 	virtual ~transfer_interpolated();
     void get(const ELEMTYPE v, RGBvalue &p);
-//	void get(const complex<ELEMTYPE> v, RGBvalue &p){} //öööö	
+//	void get(const complex<ELEMTYPE> v, RGBvalue &p){} //????
     virtual void update();
 };
 
@@ -243,7 +243,7 @@ protected:
 public:
 	transfer_scalar_to_RGB_linear(image_storage <ELEMTYPE > *);
 	void get(const ELEMTYPE v, RGBvalue &p);
-//	void get(const complex<ELEMTYPE> v, RGBvalue &p){} //öööö	
+//	void get(const complex<ELEMTYPE> v, RGBvalue &p){} //????	
 //	void update(string slider_label);				//Updates intensity/contrast parameters from FLTK sliders ...
 //	static void slider_cb(Fl_Widget *o, void *v); //slicer callback
 };
@@ -278,7 +278,7 @@ public:
 //			p.set_mono(res);
 		}
 //		p.set_rgb(0,0,100);
-	} //öööö	
+	} //????	
 	virtual void update();
 };
 

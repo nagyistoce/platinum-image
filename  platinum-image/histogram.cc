@@ -103,13 +103,13 @@ void histogram_2D_plot::images (int image_hor,int image_vert)
 
 bool histogram_2D_plot::ready ()
     {
-    return (datamanagement.get_image<image_base>(threshold.id[0]) != NULL && datamanagement.get_image<image_base>(threshold.id[1]) != NULL ); //TODO_R HÄR!!!!!
+    return (datamanagement.get_image<image_base>(threshold.id[0]) != NULL && datamanagement.get_image<image_base>(threshold.id[1]) != NULL ); //TODO_R HaR!!!!!
     }
 
 void histogram_2D_plot::calculate_from_image_data(int foo)
     {
-    image_base * vol_v= datamanagement.get_image<image_base>(threshold.id[1]); //TODO_R HÄR!!!!!
-    image_base * vol_h= datamanagement.get_image<image_base>(threshold.id[0]); //TODO_R HÄR!!!!!
+    image_base * vol_v= datamanagement.get_image<image_base>(threshold.id[1]); //TODO_R HaR!!!!!
+    image_base * vol_h= datamanagement.get_image<image_base>(threshold.id[0]); //TODO_R HaR!!!!!
 
     if (vol_v != NULL && vol_h != NULL)
         {
@@ -119,8 +119,8 @@ void histogram_2D_plot::calculate_from_image_data(int foo)
 
 void histogram_2D_plot::render_(uchar * image, unsigned int w,unsigned int h)
     {
-    image_base * vol_v= datamanagement.get_image<image_base>(threshold.id[1]); //TODO_R HÄR!!!!!
-    image_base * vol_h= datamanagement.get_image<image_base>(threshold.id[0]); //TODO_R HÄR!!!!!
+    image_base * vol_v= datamanagement.get_image<image_base>(threshold.id[1]); //TODO_R HaR!!!!!
+    image_base * vol_h= datamanagement.get_image<image_base>(threshold.id[0]); //TODO_R HaR!!!!!
 
     if (!imagesdifferinsize)
         {
@@ -185,8 +185,8 @@ thresholdparvalue histogram_2D::get_threshold (float h_min,float h_max, float v_
     {
     threshold.mode=mode;
 
-    image_base * vol_v= datamanagement.get_image<image_base>(threshold.id[1]); //TODO_R HÄR!!!!!
-    image_base * vol_h= datamanagement.get_image<image_base>(threshold.id[0]); //TODO_R HÄR!!!!!
+    image_base * vol_v= datamanagement.get_image<image_base>(threshold.id[1]); //TODO_R HaR!!!!!
+    image_base * vol_h= datamanagement.get_image<image_base>(threshold.id[0]); //TODO_R HaR!!!!!
 
     if (vol_h == NULL)
         {threshold.id[0]=NOT_FOUND_ID;}
@@ -237,8 +237,8 @@ void histogram_2D::calculate_from_image_data(int new_num_buckets)
 
     readytorender=false;
 
-    image_base * vol_v= datamanagement.get_image<image_base>(threshold.id[1]); //TODO_R HÄR!!!!!
-    image_base * vol_h= datamanagement.get_image<image_base>(threshold.id[0]); //TODO_R HÄR!!!!!
+    image_base * vol_v= datamanagement.get_image<image_base>(threshold.id[1]); //TODO_R HaR!!!!!
+    image_base * vol_h= datamanagement.get_image<image_base>(threshold.id[0]); //TODO_R HaR!!!!!
 
     if (vol_v != NULL && vol_h != NULL)
         {
@@ -315,8 +315,8 @@ void histogram_2D::calculate_from_image_data(int new_num_buckets)
 
     void histogram_2D::highlight (regionofinterest * region)
         {
-        image_base * vol_v= datamanagement.get_image<image_base>(threshold.id[1]); //TODO_R HÄR!!!!!
-        image_base * vol_h= datamanagement.get_image<image_base>(threshold.id[0]); //TODO_R HÄR!!!!!
+        image_base * vol_v= datamanagement.get_image<image_base>(threshold.id[1]); //TODO_R HaR!!!!!
+        image_base * vol_h= datamanagement.get_image<image_base>(threshold.id[0]); //TODO_R HaR!!!!!
 
         if (readytorender!=true)
             {calculate_from_image_data();}

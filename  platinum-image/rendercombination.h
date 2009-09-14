@@ -91,7 +91,7 @@ public:
 			return NULL;
 		}
 
-		string change_top_image(int i){ //Denna har R lagt till för at testa!!!
+		string change_top_image(int i){ //R added this for testing!!!
 			string s = "";
 			if(!renderdata.empty()){
 				if(i >0){

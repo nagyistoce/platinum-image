@@ -59,7 +59,7 @@ public:
 	void set_color(int r, int g, int b);
 	char get_line() const;
 	void set_line(char type);
-	//char get_x_type() const {return 'ö';}; //Dummy function
+	//char get_x_type() const {return 'tmp';}; //Dummy function
 	//bool get_y_type(int i) const {return false;}; //Dummy function
 	Vector2D find_closest_maxima(int location, int direction) const;
 	Vector2D find_closest_minima(int location, int direction) const;

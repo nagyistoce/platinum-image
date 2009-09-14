@@ -149,12 +149,12 @@ class datamanager
                                                                      //DEPRECATED: use image_base::alike instead
         int find_data_index(int uniqueID);
 		
-		template<class T> T* get_image (int ID){ //TODO_R kolla så det funkar med detta 
+		template<class T> T* get_image (int ID){ //TODO_R kolla sa det funkar med detta 
 			vector<data_base*>::iterator itr=dataItems.begin();
 
 			while (itr != dataItems.end()){
 				if (**itr == ID){
-					T * i = dynamic_cast<T *>(*itr); //TODO_R Ändra denna rad och return tpe
+					T * i = dynamic_cast<T *>(*itr); //TODO_R Andra denna rad och return tpe
             
 					 if (pt_error::error_if_null(i,"Trying to get_image when requested ID is not image type",pt_error::fatal) != NULL){
 						 return i; 

@@ -85,7 +85,7 @@ T* rendercombination::top_image () const
     for (std::list<renderpair>::const_iterator itr = renderdata.begin();itr != renderdata.end();itr++)
         {
         T* value = dynamic_cast<T* >(itr->pointer); //->getType kan man ha och sen en enumeration med typer
-        //TODO_R här måste man kolla om det är en curve eller en image och göra return type generisk
+        //TODO_R har maste man kolla om det ar en curve eller en image och gora return type generisk
         if (value != NULL)
             { return value;}
         }

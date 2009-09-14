@@ -164,9 +164,9 @@ void renderer_curve::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_c
 			
 			RGBvalue *curve_color = the_curve_pointer->get_color();
 
-			//Måste finnas nåt bättre anrop än detta man kan göra
+			//Maste finnas nat battre anrop an detta man kan gora
 			bool my_own_geom = rendermanagement.get_renderer(rendermanagement.renderer_from_combination(rc->get_id()))->is_my_geom(rg->get_id());
-			if(first && my_own_geom){ //Det ska vara min egna geom för att göra detta!
+			if(first && my_own_geom){ //Det ska vara min egna geom for att gora detta!
 				rg->set_borders(the_curve_pointer, rgb_sx, rgb_sy);
 				first = false;
 			}
@@ -318,7 +318,7 @@ void renderer_curve::render_additional_data(uchar *pixels, curve_base *the_curve
 			vals = the_curve_pointer->helper_data->data.at(i)->points_to_draw;
 		}
 
-		//Rita ut dom här istället...
+		//Rita ut dom har istallet...
 		ADDITIONAL_TYPE type = the_curve_pointer->helper_data->data.at(i)->type;
 		if(type == AT_STRING){
 			Vector3D point = rg->curve_to_view(vals.at(0)[0], vals.at(0)[1], rgb_sx, rgb_sy);

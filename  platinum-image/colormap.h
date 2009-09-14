@@ -35,7 +35,7 @@
 #include "global.h"
 
 ////
-// lagrar en samling färgnoder. Värden däremellan interpoleras fram.
+// lagrar en samling fargnoder. Varden daremellan interpoleras fram.
 //
 class colormap
     {
@@ -45,7 +45,7 @@ class colormap
 	public:
 		colormap();
 		colormap(std::vector<colornode> c);
-        void set_color(float position, IMGELEMCOMPTYPE r, IMGELEMCOMPTYPE g, IMGELEMCOMPTYPE b);    // glöm inte att sortera/stoppa in på rätt plats
+        void set_color(float position, IMGELEMCOMPTYPE r, IMGELEMCOMPTYPE g, IMGELEMCOMPTYPE b);    // glom inte att sortera/stoppa in pa ratt plats
         void get_color(float position, IMGELEMCOMPTYPE &r, IMGELEMCOMPTYPE &g, IMGELEMCOMPTYPE &b); //TODO: returns RGB at the interpolated position
                                                                     // - no use to return an instance of color
         void remove_color(float position);

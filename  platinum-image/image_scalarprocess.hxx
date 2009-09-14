@@ -1031,7 +1031,7 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::appl_wb_SIM_bias_correction_on_this_float
 		inh_map->mask_out(body_lung_mask);
 //		inh_map->save_to_file("tmp_inh_map_masked.vtk");
 		float sumvox = inh_map->get_sum_of_voxels(std::numeric_limits<ELEMTYPE>::min(), true, body_lung_mask);
-		inh_map->scale_by_factor(iteration_strength/(sumvox/bodysize)); // oklart varför
+		inh_map->scale_by_factor(iteration_strength/(sumvox/bodysize)); // unclear why
 //		inh_map->save_to_file("tmp_inh_map_scaled.vtk");
 //		field->save_to_file("tmp_field_before.vtk");
 		field->combine(inh_map, COMB_ADD);

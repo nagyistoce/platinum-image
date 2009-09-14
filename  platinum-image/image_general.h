@@ -81,7 +81,7 @@ class image_general : public image_storage <ELEMTYPE >
     {
 
 	friend void meta_load_function (int userIO_ID,int par_num); //so
-//	friend image_scalar<short,3> * create_whole_body(char *path, string s_protocol); //so //commented by JK 2009-04-15 ööööööööööööö
+//	friend image_scalar<short,3> * create_whole_body(char *path, string s_protocol); //so //commented by JK 2009-04-15 ????
 	
     protected:
         image_general<ELEMTYPE, IMAGEDIM>(int w, int h, int d, ELEMTYPE *ptr = NULL);

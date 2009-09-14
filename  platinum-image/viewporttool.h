@@ -63,7 +63,7 @@ private:
     template <class TOOL>
         static viewporttool *CreateObject(viewport_event &event);
 protected:
-    image_base *    image; //do dynamic_cast to whatever class that is needed //TITTA HÄR!!!
+    image_base *    image; //do dynamic_cast to whatever class that is needed //TITTA HaR!!!
     viewport *      myPort;
     renderer_base * myRenderer; 
 public:

@@ -249,7 +249,7 @@ void hist_function(int userIO_ID,int par_num)
 	if (par_num == USERIO_CB_OK)
 	{
 		image_scalar<unsigned short,3> *f1 = dynamic_cast<image_scalar<unsigned short,3>* >(datamanagement.get_image<image_base>(userIOmanagement.get_parameter<imageIDtype>(userIO_ID,0)));
-		f1->save_histogram_to_txt_file("C:/Joel/TMP/hist/hist01.txt", ";"); //Richard la till ett semikolon så att det gick att kompilera. Hoppas det inte sabbar till nåt
+		f1->save_histogram_to_txt_file("C:/Joel/TMP/hist/hist01.txt", ";"); //Richard la till ett semikolon sa att det gick att kompilera. Hoppas det inte sabbar till nat
 	}
 }
 

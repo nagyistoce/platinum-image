@@ -141,7 +141,7 @@ public:
 	void get_num_neighbours_distribution_3D_26Nbh(vector<int> &num_nb, vector<int> &num_vox, IMGBINARYTYPE object_value=TRUE); //Returns statistics on the number of object neighbours object voxels have.
 	float get_border_volume_ratio_3D_26Nbh(int num_nb_inside_limit=17, IMGBINARYTYPE object_value=TRUE); //Returns statistics on the number of object neighbours object voxels have.
 	float mutual_overlap_3D(image_binary<IMAGEDIM>* second_image);
-	vector<Vector3D> get_center_of_gravities_for_objects_3D(SPACE_TYPE type = VOXEL_SPACE); //öööö
+	vector<Vector3D> get_center_of_gravities_for_objects_3D(SPACE_TYPE type = VOXEL_SPACE); //oooo
 
 	void appl_crude_abdominal_artifact_removal();
 

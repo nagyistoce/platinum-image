@@ -40,7 +40,7 @@ using namespace std;
 
 rendermanager::rendermanager()
 {
-    pane_factory.Register<FLTK_Pt_MPR_pane>("MPR");			//JK2 //Bytte från PT_pane
+    pane_factory.Register<FLTK_Pt_MPR_pane>("MPR");			//JK2 //Bytte fran PT_pane
     pane_factory.Register<FLTK_VTK_Cone_pane>("VTK-Cone");	//JK2
     pane_factory.Register<FLTK_VTK_MIP_pane>("VTK-MIP");	//JK2
 	pane_factory.Register<FLTK_Pt_Curve_pane>("Curve");	//Hmm...
@@ -574,7 +574,7 @@ void rendermanager::set_blendmode(int renderer_index,blendmode mode)
 
 Vector3D rendermanager::center_of_image(const int imageID) const
 {
-	image_base * image = datamanagement.get_image<image_base>(imageID); //TODO_R HÄR!!!!!
+	image_base * image = datamanagement.get_image<image_base>(imageID); //TODO_R HaR!!!!!
 	return image->get_origin() + image->get_orientation() * (image->get_physical_size() / 2);
 }
 
@@ -591,7 +591,7 @@ void rendermanager::center2d(const int rendererID, const int imageID)
 
 void rendermanager::center3d_and_fit(const int rendererID, const int imageID)
 {
-	image_base * image = datamanagement.get_image<image_base>(imageID); //TODO_R HÄR!!!!!
+	image_base * image = datamanagement.get_image<image_base>(imageID); //TODO_R HaR!!!!!
 	int vp_ID = viewmanagement.viewport_from_renderer(rendererID);
 	viewport *vp = viewmanagement.get_viewport(vp_ID); //JK Warning rendererID and vp_ID might not be the same in the future....
 

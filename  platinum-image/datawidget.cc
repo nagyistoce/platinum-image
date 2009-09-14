@@ -669,9 +669,9 @@ FLTKgeom_image::FLTKgeom_image(int id, int x, int y, int w, int h):FLTKgeom_base
 
 	int h_coord = h*3/4;
 
-	orig = new FLTKVector3D(datamanagement.get_image<image_base>(data_id)->get_origin(), x, y, orig_w, h_coord, "x", "y", "z"); //TODO_R HÄR!!!!!
-	size = new FLTKVector3D(datamanagement.get_image<image_base>(data_id)->get_voxel_size(), x + orig_w, y, size_w, h_coord, "dx", "dy", "dz"); //TODO_R HÄR!!!!!
-	orient = new FLTKMatrix3D(datamanagement.get_image<image_base>(data_id)->get_orientation(), x + orig_w + size_w, y, orient_w, h_coord); //TODO_R HÄR!!!!!
+	orig = new FLTKVector3D(datamanagement.get_image<image_base>(data_id)->get_origin(), x, y, orig_w, h_coord, "x", "y", "z"); //TODO_R HaR!!!!!
+	size = new FLTKVector3D(datamanagement.get_image<image_base>(data_id)->get_voxel_size(), x + orig_w, y, size_w, h_coord, "dx", "dy", "dz"); //TODO_R HaR!!!!!
+	orient = new FLTKMatrix3D(datamanagement.get_image<image_base>(data_id)->get_orientation(), x + orig_w + size_w, y, orient_w, h_coord); //TODO_R HaR!!!!!
 	
 	//start = datamanagement.get_image(data_id)->get_orientation();
 	
@@ -679,7 +679,7 @@ FLTKgeom_image::FLTKgeom_image(int id, int x, int y, int w, int h):FLTKgeom_base
 	r.Fill(0);
 	rotation = new FLTKVector3D(r, x + orig_w + size_w + orient_w, y, rotation_w, h_coord, "x", "y", "z");
 	
-	slice = new FLTKslice_orientation_menu(datamanagement.get_image<image_base>(data_id)->get_slice_orientation(),x,h_coord,slice_w,h-h_coord-1); //TODO_R HÄR!!!!!
+	slice = new FLTKslice_orientation_menu(datamanagement.get_image<image_base>(data_id)->get_slice_orientation(),x,h_coord,slice_w,h-h_coord-1); //TODO_R HaR!!!!!
 
 	orig->callback(orig_update_cb);
 	size->callback(size_update_cb);
@@ -696,7 +696,7 @@ void FLTKgeom_image::orig_update_cb(Fl_Widget *w, void*)
 {
 	FLTKVector3D *v = (FLTKVector3D*)w;
 	FLTKgeom_image *g = (FLTKgeom_image*)v->parent();
-	datamanagement.get_image<image_base>(g->data_id)->set_origin(v->value()); //TODO_R HÄR!!!!!
+	datamanagement.get_image<image_base>(g->data_id)->set_origin(v->value()); //TODO_R HaR!!!!!
 	datamanagement.data_has_changed(g->data_id);
 }
 
@@ -704,7 +704,7 @@ void FLTKgeom_image::size_update_cb(Fl_Widget *w, void*)
 {
 	FLTKVector3D *v = (FLTKVector3D*)w;
 	FLTKgeom_image *g = (FLTKgeom_image*)v->parent();
-	datamanagement.get_image<image_base>(g->data_id)->set_voxel_size(v->value()); //TODO_R HÄR!!!!!
+	datamanagement.get_image<image_base>(g->data_id)->set_voxel_size(v->value()); //TODO_R HaR!!!!!
 	datamanagement.data_has_changed(g->data_id);
 }
 
@@ -712,7 +712,7 @@ void FLTKgeom_image::orient_update_cb(Fl_Widget *w, void*)
 {
 	FLTKMatrix3D *m = (FLTKMatrix3D*)w;
 	FLTKgeom_image *g = (FLTKgeom_image*)m->parent();
-	datamanagement.get_image<image_base>(g->data_id)->set_orientation(m->value()); //TODO_R HÄR!!!!!
+	datamanagement.get_image<image_base>(g->data_id)->set_orientation(m->value()); //TODO_R HaR!!!!!
 	datamanagement.data_has_changed(g->data_id);
 }
 
@@ -741,11 +741,11 @@ void FLTKgeom_image::rotation_update_cb ( Fl_Widget * w, void * )
 //	matrix_generator mg;
 //	m = mg.get_rot_matrix_3D ( angle[2], angle[1], angle[0] ) * datamanagement.get_image(g->data_id)->get_orientation();
 //	m = mg.get_rot_matrix_3D ( angle[2], angle[1], angle[0] ) * g->get_start();
-	m = create_rot_matrix_3D(angle[0], angle[1], angle[2]) * datamanagement.get_image<image_base>(g->data_id)->get_orientation(); //TODO_R HÄR!!!!!
+	m = create_rot_matrix_3D(angle[0], angle[1], angle[2]) * datamanagement.get_image<image_base>(g->data_id)->get_orientation(); //TODO_R HaR!!!!!
 
 	matrix3d->value(m);
 	
-	datamanagement.get_image<image_base>(g->data_id)->set_orientation(m); //TODO_R HÄR!!!!!
+	datamanagement.get_image<image_base>(g->data_id)->set_orientation(m); //TODO_R HaR!!!!!
 	datamanagement.data_has_changed(g->data_id);
 	
 	// rendermanagement.center3d_and_fit( g->data_id );	
@@ -756,7 +756,7 @@ void FLTKgeom_image::slice_orient_update_cb(Fl_Widget *w, void*)
 {
 	FLTKslice_orientation_menu *m = (FLTKslice_orientation_menu*)w;
 	FLTKgeom_image *g = (FLTKgeom_image*)m->parent();
-	datamanagement.get_image<image_base>(g->data_id)->set_slice_orientation(m->value()); //TODO_R HÄR!!!!!
+	datamanagement.get_image<image_base>(g->data_id)->set_slice_orientation(m->value()); //TODO_R HaR!!!!!
 	datamanagement.data_has_changed(g->data_id);
 }
 

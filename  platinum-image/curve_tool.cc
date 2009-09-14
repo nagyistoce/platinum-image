@@ -70,8 +70,8 @@ void curve_tool::handle(viewport_event &event)
 
 	if(event.state() == pt_event::end && myPort->ROI_rect_is_changing && event.type() != pt_event::hover){
 		//hover is excluded since this event.type is thown when mouse is first clicked
-		   //Knapp släpps upp
-		cout << "Knapp släpps upp" << endl;
+		   //Knapp slapps upp
+		cout << "Knapp slapps upp" << endl;
     }
 	if(event.state() == pt_event::begin){
 		zoom_start = ((rendergeom_curve *)myRenderer->the_rg)->view_to_curve(event.mouse_pos_local()[0], event.mouse_pos_local()[1], fp->w(), fp->h());	
