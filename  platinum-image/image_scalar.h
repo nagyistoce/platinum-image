@@ -300,6 +300,7 @@ public:
 	float scale_slice_average_to_3d(int dir, ELEMTYPE new_average, int slice); //returns slice_scale_factor
 
 	float get_mean_from_slice_3d(int dir, int slice, image_binary<IMAGEDIM>* mask=NULL);
+//	ELEMTYPE get_mean_from_5nbh(int x, int y, int z, int dir=2);
 
 	void logarithm_3d(int zero_handling=0);
 	void abs_3d();

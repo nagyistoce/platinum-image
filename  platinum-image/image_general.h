@@ -322,6 +322,7 @@ class image_general : public image_storage <ELEMTYPE >
         void save_to_NIFTI_file(const std::string file_path); //JK test
 //        void save_to_TIF_file_series_3D(const std::string file_path_base, int dir=2, int from_slice=-1, int to_slice=-1);
 //		void save_uchar2D_to_TIF_file(const std::string file_path_base, const std::string slice="0");
+        void save_regular_slices_to_VTK_file(const std::string file_path, int start_slc=1, int jump_num_slc=2, int dir=2, const bool useCompression = false);
 
 		void set_image_geometry(float ox,float oy,float oz,float dx,float dy,float dz,float fi_x,float fi_y,float fi_z);
         bool read_geometry_from_dicom_file(std::string dcm_file);

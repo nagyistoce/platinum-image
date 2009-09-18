@@ -3611,7 +3611,13 @@ float image_scalar<ELEMTYPE, IMAGEDIM>::get_mean_from_slice_3d(int dir, int slic
 	}
 	return sum/num_voxels;
 }
-
+/*
+template <class ELEMTYPE, int IMAGEDIM>
+ELEMTYPE image_scalar<ELEMTYPE, IMAGEDIM>::get_mean_from_5nbh(int x, int y, int z, int dir)
+{
+//this->get_voxel_by_dir(
+}
+*/
 template <class ELEMTYPE, int IMAGEDIM>
 void image_scalar<ELEMTYPE, IMAGEDIM>::logarithm_3d(int zero_handling)
 {

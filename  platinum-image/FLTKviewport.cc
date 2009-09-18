@@ -767,7 +767,7 @@ FLTKpane2::FLTKpane2(int X,int Y,int W,int H): FLTKpane(X,Y,W,H)
 
 FLTK_Event_pane::FLTK_Event_pane(int X,int Y,int W,int H, FLTK_Pt_pane *fpp) : Fl_Widget(X,Y,W,H)
 {
-	cout<<"FLTK_Event_pane("<<X<<","<<Y<<","<<W<<","<<H<<")"<<endl;
+	//cout<<"FLTK_Event_pane("<<X<<","<<Y<<","<<W<<","<<H<<")"<<endl;
 	my_base_pt_pane = fpp;
 }
 
@@ -942,7 +942,7 @@ viewport* FLTK_Pt_pane::get_viewport_parent()
 
 FLTK_Pt_MPR_pane::FLTK_Pt_MPR_pane() : FLTK_Pt_pane(0,0,100,100)
 {
-	cout<<"FLTK_Pt_MPR_pane()"<<endl;
+//	cout<<"FLTK_Pt_MPR_pane()"<<endl;
     int buttonleft=0;
 	int buttonheight=20;
 	int buttonwidth=70;
@@ -967,7 +967,7 @@ FLTK_Pt_MPR_pane::FLTK_Pt_MPR_pane() : FLTK_Pt_pane(0,0,100,100)
 //FLTK_Pt_pane::FLTK_Pt_pane(int X,int Y,int W,int H, viewport *vp_parent) : Fl_Overlay_Window(X,Y,W,H)
 FLTK_Pt_MPR_pane::FLTK_Pt_MPR_pane(int X,int Y,int W,int H) : FLTK_Pt_pane(X,Y,W,H)
 {
-	cout<<"FLTK_Pt_MPR_pane("<<X<<","<<Y<<","<<W<<","<<H<<")"<<endl;
+//	cout<<"FLTK_Pt_MPR_pane("<<X<<","<<Y<<","<<W<<","<<H<<")"<<endl;
 
 	int buttonleft=0;
 	int buttonheight=20;
@@ -1062,7 +1062,7 @@ void FLTK_Pt_MPR_pane::create_geom_menu(int W){
 	int buttonwidth=70;
 	int m = 0;
 	int nr_view = viewmanagement.get_nr_viewports();
-	cout << "nr  of viewports: " << nr_view << endl;
+//	cout << "nr  of viewports: " << nr_view << endl;
 	//std::vector<rendergeometry_base*> geo = rendermanagement.get_geometries();
 	Fl_Menu_Item *geom_menu_items = (Fl_Menu_Item*)malloc((nr_view+1)*sizeof(Fl_Menu_Item));
 	int preset_vp = 0;
@@ -1335,7 +1335,7 @@ void FLTK_Pt_Curve_pane::create_geom_menu(int W){
 	int m = 0;
 
 	int nr_view = viewmanagement.get_nr_viewports();
-	cout << "nr  of viewports: " << nr_view << endl;
+//	cout << "nr  of viewports: " << nr_view << endl;
 	//std::vector<rendergeometry_base*> geo = rendermanagement.get_geometries();
 	Fl_Menu_Item *geom_menu_items = (Fl_Menu_Item*)malloc((nr_view+1)*sizeof(Fl_Menu_Item));
 	int preset_vp = 0;
@@ -1605,7 +1605,7 @@ void FLTK_Pt_Spectrum_pane::create_geom_menu(int W){
 	int m = 0;
 
 	int nr_view = viewmanagement.get_nr_viewports();
-	cout << "nr  of viewports: " << nr_view << endl;
+//	cout << "nr  of viewports: " << nr_view << endl;
 	//std::vector<rendergeometry_base*> geo = rendermanagement.get_geometries();
 	Fl_Menu_Item *geom_menu_items = (Fl_Menu_Item*)malloc((nr_view+1)*sizeof(Fl_Menu_Item));
 	int preset_vp = 0;

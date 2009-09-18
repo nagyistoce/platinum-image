@@ -881,6 +881,26 @@ void image_general<ELEMTYPE, IMAGEDIM>::load_dataset_from_VTK_file(string file_p
 */
 
 template <class ELEMTYPE, int IMAGEDIM>
+void image_general<ELEMTYPE, IMAGEDIM>::save_regular_slices_to_VTK_file(const std::string file_path, int start_slc, int jump_num_slc, int dir, const bool useCompression)
+{
+	cout<<"save_regular_slices_to_VTK_file"<<dir<<endl;
+	cout<<"file_path="<<file_path<<endl;
+	cout<<"start="<<start_slc<<endl;
+	cout<<"every="<<jump_num_slc<<endl;
+	cout<<"dir="<<dir<<endl;
+	cout<<"useCompression="<<useCompression<<endl;
+
+	if(file_path != ""){
+		image_general<ELEMTYPE,IMAGEDIM> *im_tmp = this->get_subvolume_from_slices_3D(start_slc,jump_num_slc,dir);
+		im_tmp->name("im_tmp");
+		im_tmp->data_has_changed(true);
+		im_tmp->save_to_VTK_file(file_path,useCompression);
+		delete im_tmp;
+	}
+}
+
+
+template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::load_dataset_from_hdr_file(string file_path)
     {
 	if(file_exists(file_path)){

@@ -431,7 +431,7 @@ void image_storage<ELEMTYPE >::map_values(ELEMTYPE map_from, ELEMTYPE map_to, EL
 template <class ELEMTYPE >
 void image_storage<ELEMTYPE >::map_negative_values(ELEMTYPE to_value)
 	{
-	map_values(std::numeric_limits<ELEMTYPE>::min(), 0, to_value);
+	map_values(-std::numeric_limits<ELEMTYPE>::max(), 0, to_value);		//std::numeric_limits<ELEMTYPE>::min() returns the smallest "number"
 	}
 
 template <class ELEMTYPE >

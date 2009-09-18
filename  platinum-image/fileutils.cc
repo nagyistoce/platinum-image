@@ -836,6 +836,50 @@ vector<vector<string> >	get_header_combinations_from_these_dicom_files_sort_file
 }
 
 
+//-----------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------------
+/*
+
+//this is called in the recursion
+vector<vector<string> >	get_header_combinations_from_dicom_files_in_dir(string dir_path, vector<string> tag_combo, vector<vector<string> > res2, bool use_folder_recursion)
+{
+	vector<vector<string> > res = res2;
+
+	if(use_folder_recursion){
+		vector<string> dirs = subdirs(dir_path, true);
+		for(int i=0; i<dirs.size();i++){
+			res = get_header_combinations_from_dicom_files_in_dir(dirs[i], tag_combo, res, use_folder_recursion);
+		}
+	}
+
+	vector<string> dcm_files = get_dicom_files_in_dir(dir_path, true);
+	vector<vector<string> > new_combos = get_header_combinations_from_these_dicom_files(dcm_files, tag_combo);
+
+	bool add_this=true;
+	for(int i=0; i<new_combos.size();i++){
+		add_this=true;
+		for(int j=0; add_this&&(j<res.size()); j++){
+			if( combinations_equal(new_combos[i],res[j]) ){
+				add_this=false;
+			}
+		}
+		if(add_this){
+			res.push_back(new_combos[i]);
+		}
+	}
+
+	return res;
+}
+
+//this is called from "outside"
+vector<vector<string> >	get_header_combinations_from_dicom_files_in_dir(string dir_path, vector<string> tag_combo, bool use_folder_recursion=false)
+{
+	vector<vector<string> > tmp;
+	return get_header_combinations_from_dicom_files_in_dir(dir_path, tag_combo, tmp, use_folder_recursion); //this is called in the recursion...
+}
+*/
+
+
 vector<string>	get_first_dicom_files_corresponding_to_these_combos(string dir_path, vector<string> dcm_tags, vector<vector<string> > combos, bool recursive_search, bool full_path)
 {
 	vector<string> dcm_files = get_dicom_files_in_dir(dir_path, true, recursive_search);
