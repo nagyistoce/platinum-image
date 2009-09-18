@@ -2432,14 +2432,14 @@ image_integer<ELEMTYPE, IMAGEDIM>* image_integer<ELEMTYPE, IMAGEDIM>::get_subvol
 template <class ELEMTYPE, int IMAGEDIM>
 image_integer<ELEMTYPE, IMAGEDIM>* image_integer<ELEMTYPE, IMAGEDIM>::get_subvolume_from_region_3D(int x1, int y1, int z1, int x2, int y2, int z2)
 {
-	cout<<"image_integer-get_subvolume_from_region_3D..."<<endl;
+	//cout<<"image_integer-get_subvolume_from_region_3D..."<<endl;
 
 	int nx=this->nx();
 	int ny=this->ny();
 	int nz=this->nz();
-	x1 = max(x1,0);	x2 = min(x2,nx);
-	y1 = max(y1,0);	y2 = min(y2,ny);
-	z1 = max(z1,0);	z2 = min(z2,nz);
+	x1 = max(x1,0);	x2 = min(x2,nx-1);
+	y1 = max(y1,0);	y2 = min(y2,ny-1);
+	z1 = max(z1,0);	z2 = min(z2,nz-1);
 
 	image_integer<ELEMTYPE, IMAGEDIM>* res = new image_integer<ELEMTYPE, IMAGEDIM>(x2-x1+1, y2-y1+1, z2-z1+1);
 	res->set_parameters(this);
