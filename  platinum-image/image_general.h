@@ -313,6 +313,7 @@ class image_general : public image_storage <ELEMTYPE >
 //        virtual void load_dataset_from_these_DICOM_files(vector<string> filenames);
 		void load_dataset_from_these_DICOM_files(vector<string> filenames);
 		void load_dataset_from_all_DICOM_files_in_dir(std::string dir_path);
+		void load_dataset_from_regular_DICOM_files_in_dir(std::string dir_path, int jump_num_files = 2);
 
         void save_to_file(const std::string file_path, const bool useCompression = true, const bool anonymize = true); //enterprits file name ending...
         virtual void save_to_VTK_file(const std::string file_path, const bool useCompression = false);

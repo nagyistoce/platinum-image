@@ -406,11 +406,11 @@ void image_general<ELEMTYPE, IMAGEDIM>::load_dataset_from_DICOM_fileAF(std::stri
 
 	//********** remove multiple echoes *************
 	//JK - This is temporary excluded for speedup --> dual echo iamging sequenses will be loaded in the "same volume"
-//	vector<string> echotimes = list_dicom_tag_values_for_this_ref_tag_value(fileNames, DCM_SERIES_ID, seriesIdentifier, DCM_TE);
-//	std::cout<<"Number of TE:s..."<<echotimes.size()<<std::endl;
-//	if(echotimes.size()>1){//delelect all other echo times but the one int the file clicked...
-//		fileNames = get_dicom_files_with_dcm_tag_value(fileNames, DCM_TE, get_dicom_tag_value(file_path,DCM_TE));
-//	}
+	vector<string> echotimes = list_dicom_tag_values_for_this_ref_tag_value(fileNames, DCM_SERIES_ID, seriesIdentifier, DCM_TE);
+	std::cout<<"Number of TE:s..."<<echotimes.size()<<std::endl;
+	if(echotimes.size()>1){//delelect all other echo times but the one int the file clicked...
+		fileNames = get_dicom_files_with_dcm_tag_value(fileNames, DCM_TE, get_dicom_tag_value(file_path,DCM_TE));
+	}
 
 	fileNames = get_dicom_files_with_dcm_tag_value(fileNames, DCM_TEMP_POS_ID, get_dicom_tag_value(file_path,DCM_TEMP_POS_ID));
 	std::cout<<"Number of files in series (efter separation for TEMPORAL_POS_ID..."<<fileNames.size()<<std::endl;
@@ -518,6 +518,13 @@ void image_general<ELEMTYPE, IMAGEDIM>::load_dataset_from_all_DICOM_files_in_dir
 			this->meta.read_metadata_from_dcm_file(fileNames[0].c_str());	//JK1 - Loads meta data from first dicom file in vector...
 		}
 	}
+
+template <class ELEMTYPE, int IMAGEDIM>
+void image_general<ELEMTYPE, IMAGEDIM>::load_dataset_from_regular_DICOM_files_in_dir(std::string dir_path, int jump_num_files)
+{  
+	int a;
+}
+			
 
 
 template <class ELEMTYPE, int IMAGEDIM>

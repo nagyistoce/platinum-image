@@ -121,7 +121,8 @@ image_binary<IMAGEDIM>* image_binary<IMAGEDIM>::get_subvolume_from_region_3D(int
 	z1 = max(z1,0);	z2 = min(z2,nz);
 
 	image_binary<IMAGEDIM>* res = new image_binary<IMAGEDIM>(x2-x1+1, y2-y1+1, z2-z1+1);
-	image_general<IMGBINARYTYPE, IMAGEDIM>::set_parameters(this);
+//	image_general<IMGBINARYTYPE, IMAGEDIM>::set_parameters(this);
+	res->set_parameters(this);
 	res->set_origin(this->get_physical_pos_for_voxel(x1,y1,z1));
 
 	for (int z=z1, res_z=0; z<=z2; z++, res_z++){

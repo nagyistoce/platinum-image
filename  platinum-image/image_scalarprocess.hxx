@@ -424,8 +424,10 @@ image_binary<3>* image_scalar<ELEMTYPE, IMAGEDIM>::appl_wb_segment_both_lungs_fr
 	// ---- Create Common thorax mask -----
 	image_binary<3> *thorax_mask = new image_binary<3>(body_mask);
 	thorax_mask->name("thorax_mask");
-	thorax_mask->fill_region_3D(1,0,45,0);
-	thorax_mask->fill_region_3D(1,100,thorax_mask->get_size_by_dim(1)-1,0);
+//	thorax_mask->fill_region_3D(1,0,45,0);
+//	thorax_mask->fill_region_3D(1,100,thorax_mask->get_size_by_dim(1)-1,0);
+	thorax_mask->fill_region_3D(1,0,30,0);									//JK vanderbilt
+	thorax_mask->fill_region_3D(1,80,thorax_mask->get_size_by_dim(1)-1,0);	//JK vanderbilt
 
 	Vector3D cg = thorax_mask->get_center_of_gravity_binary_from_range(1);
 	cout<<"thorax_cg="<<cg<<endl;
