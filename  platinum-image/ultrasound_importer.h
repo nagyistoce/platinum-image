@@ -28,7 +28,6 @@
 
 #include "image_scalar.h"
 //#include "curve.hxx"
-#include <regex>
 //#include <iostream>
 #include <string>
 #include "pt_vector.h"
@@ -45,6 +44,7 @@ public:
 	ultrasound_importer(string);
 	~ultrasound_importer(void);
 	//void read_study(ifstream &myfile, long length);
+	bool match(string text);
 	void set_date(ifstream &myfile, long length);
 	void read_file(string name);
 	void read_old_file(string name);

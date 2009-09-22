@@ -48,9 +48,22 @@ ultrasound_importer::~ultrasound_importer(){
 	char* sub = &buff[i+1];
 	cout << "found study: " << sub << endl;
 }*/
+
+bool ultrasound_importer::match(string text){
+	const char *l;
+	l = text.c_str();
+	int high, low;
+	int dot = 46;
+	high = 57;
+	low = 48;
+	for(int i = 0; i < 10; i++){
+		if(l[i] > high || l[i] < dot)
+			return false;
+	}
+	return l[2] == dot && l[5] == dot;
+}
+
 void ultrasound_importer::set_date(ifstream &myfile, long length){
-	std::tr1::cmatch res;
-	std::tr1::regex rx("(\\d{2,2}).(\\d{2,2}).(\\d{4,4})");
 	char buff[11];
 	long pos_ = 0;
 	char input;
@@ -64,13 +77,14 @@ void ultrasound_importer::set_date(ifstream &myfile, long length){
 			myfile.read(buff,11);
 			string line(buff);
 			//cout << "line: " << line << endl;
-			if(std::tr1::regex_search(line.c_str(), res, rx)){ //Supports from 20:th century. Not 21:st
+			if(match(line)){ //Supports from 20:th century. Not 21:st
 				//cout << "date is: " << res[1] << "."<< res[2] << "." << res[3] << endl;
-				string day = res[1];
-				string month = res[2];
-				string year = res[3];
+				string day = line.substr(0,2);
+				string month = line.substr(3,2);
+				string year = line.substr(6,4);
 				
 				study_date = year +"-"+ month +"-"+ day;
+				cout << "study date: " << study_date << endl;
 				return;
 			}
 		}
