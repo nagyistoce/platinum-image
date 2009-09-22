@@ -79,6 +79,7 @@ int ultra1dops::mark_point(curve_scalar<unsigned short> *curve, int from, int to
 		}
 		y1 = y2;
 	}
+
 	return x;
 }
 
@@ -116,7 +117,7 @@ int ultra1dops::count_peaks(vector<Vector3D> c, curve_scalar<unsigned short> *cu
 		}
 	}
 	min_thresh = (sum/m_count)/2;
-	cout << "threshold: " << min_thresh << endl;
+	//cout << "threshold: " << min_thresh << endl;
 	double max_dist = pt_config::read<double>("max_dist_between_peaks",CURVE_CONF_PATH)/curve->get_scale();
 	int start = 0;
 	for(int i = c.size()-1; i>= 0; i --){
@@ -239,7 +240,7 @@ void ultra1dops::straighten_the_peaks(us_scan * scan, int intima, int adventitia
 	s_m->push_back(round(s->at(s->size()-2)));
 	s_m->push_back(round(s->at(s->size()-1)));
 
-	cout << endl;
+	//cout << endl;
 	/*curve_scalar<int> *diff = new curve_scalar<int>(0, "diff", 0, 1);
 	extern datamanager datamanagement;
 	datamanagement.add(diff);
@@ -274,11 +275,20 @@ vector<gaussian> ultra1dops::fit_gaussian_curve_and_calculate(curve_scalar<unsig
 	}
 
 	in = v->fit_gaussian_with_amoeba(intima-search_area, intima+search_area);
+	//cout << in.sigma << "  " << v->from_x_to_val(search_area) << endl;
+	if(in.sigma > v->from_x_to_val(search_area)){ //Detta kanske funkar så att anpassningen inte blir fel!
+		return g;
+	}
 		//v->fit_gaussian_with_amoeba(amp, center, sigma, intima-search_area, intima+search_area);
 	//v->fit_gaussian_to_intensity_range(amp,center,sigma,intima-search_area, intima+search_area, false);
 	//Berakna tva matpunkter har
 
 	adv = v->fit_gaussian_with_amoeba(adventitia-search_area, adventitia+search_area);
+	if(adv.sigma > v->from_x_to_val(search_area)){ //Detta kanske funkar så att anpassningen inte blir fel!
+		return g; //Ändra så de har samma coordinates kanske!!!!!!
+	}
+
+
 	//v->fit_gaussian_with_amoeba(amp2, center2, sigma2, adventitia-search_area, adventitia+search_area);
 
 	i_l = in.center + v->from_x_to_val(intima-search_area) + in.sigma; //everything in x_scale coords. NOT index coords!
@@ -294,9 +304,10 @@ vector<gaussian> ultra1dops::fit_gaussian_curve_and_calculate(curve_scalar<unsig
 	res[1] = i_m - m_a;//media
 	res[2] = i_l - s_a; //Total wall thickness
 
-	cout << "gaussian way" << endl;
-	cout << "intima: " << i_l - i_m << endl;
-	cout << "media: "  << i_m - m_a << endl;
+//	cout << "gaussian way" << endl;
+//	cout << "intima: " << i_l - i_m << endl;
+//	cout << "media: "  << i_m - m_a << endl;
+//	cout << "total: " << i_l-s_a << endl;
 
 	curve->helper_data->add_gauss(v->from_val_to_x(in.center) + (intima-search_area), sig1, in.amplitude);
 	curve->helper_data->add_gauss(v->from_val_to_x(adv.center) + (adventitia-search_area), sig2, adv.amplitude);
@@ -308,6 +319,17 @@ vector<gaussian> ultra1dops::fit_gaussian_curve_and_calculate(curve_scalar<unsig
 
 	return g;
 }
+/*int ultra1dops::temp_peak(curve_scalar<unsigned short> *curve, int start, int dir, int max){
+		max = max/2;
+		cout << "max: " << max;
+		for(int i = 1; i < 10; i++){
+			if(curve->get_data(start + (i*dir)) < max){
+				
+				return (i*dir)+ start;
+			}
+		}
+		return -1;
+}*/
 
 Vector3D ultra1dops::find_steep_slope_and_calculate(curve_scalar<unsigned short> *curve, int intima, int adventitia){
 	//curve->save_curve_to_file("./" + curve->name() + ".ptc");
@@ -315,6 +337,11 @@ Vector3D ultra1dops::find_steep_slope_and_calculate(curve_scalar<unsigned short>
 	float i_m = mark_point(curve, get_vally(curve, intima, -1), intima); //intima begin
 	float m_a = mark_point(curve, adventitia, get_vally(curve, adventitia, 1)); //media begin
 	float s_a = mark_point(curve, get_vally(curve, adventitia, -1), adventitia); //adventitia begin
+
+	//i_l = (i_l+temp_peak(curve, intima, 1, curve->get_data(intima)))/2;
+	//i_m = (i_m+temp_peak(curve, intima, -1, curve->get_data(intima)))/2;
+	//m_a = (m_a + temp_peak(curve, adventitia, 1, curve->get_data(adventitia)))/2;
+	//s_a = (s_a + temp_peak(curve, adventitia, -1, curve->get_data(adventitia)))/2;
 
 	if(i_l == -1 ||i_m == -1 ||m_a == -1 || s_a == -1){
 		Vector3D r;
@@ -347,9 +374,9 @@ Vector3D ultra1dops::find_steep_slope_and_calculate(curve_scalar<unsigned short>
 	res[1] = (i_m - m_a)*curve->get_scale();
 	res[2] = (i_l - s_a)*curve->get_scale();
 
-	cout << "manual way" << endl;
-	cout << "intima: " << (i_l - i_m)*curve->get_scale() << endl;
-	cout << "media: "  << (i_m - m_a)*curve->get_scale()<< endl;
+	//cout << "manual way" << endl;
+	//cout << "intima: " << (i_l - i_m)*curve->get_scale() << endl;
+	//cout << "media: "  << (i_m - m_a)*curve->get_scale()<< endl;
 	
 	return res;
 }

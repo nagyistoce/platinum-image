@@ -24,11 +24,58 @@ ultrasound_importer::ultrasound_importer(string file){
 	read_file(file);
 	file.substr(0, 2);
 	name = file.substr(file.find_last_of('/')+1);
-	cout << "File name: " << name;
+	//cout << "File name: " << name;
 
 }
 
 ultrasound_importer::~ultrasound_importer(){
+}
+
+/*void ultrasound_importer::read_study(ifstream &myfile, long length){
+	char input;
+	char buff[6000];
+	int id = 0;
+	long size;
+	myfile.getline(buff,6000); //useless short row
+	//myfile.getline(buff,6000);
+	size = myfile.gcount();
+	int i = size-2;
+	
+	while(buff[i] != 0){
+		i--;
+	}
+	cout << "from: " << i << " to" << size << endl;
+	char* sub = &buff[i+1];
+	cout << "found study: " << sub << endl;
+}*/
+void ultrasound_importer::set_date(ifstream &myfile, long length){
+	std::tr1::cmatch res;
+	std::tr1::regex rx("(\\d{2,2}).(\\d{2,2}).(\\d{4,4})");
+	char buff[11];
+	long pos_ = 0;
+	char input;
+	while(pos_ < length){// && (pos_ > -1)){
+		input = myfile.get();
+		//myfile.read( (char *)(&val), sizeof(val) );
+		if(input == '.'){
+			long new_pos = myfile.tellg();
+			new_pos -=3; //move to start of date
+			myfile.seekg(new_pos);
+			myfile.read(buff,11);
+			string line(buff);
+			//cout << "line: " << line << endl;
+			if(std::tr1::regex_search(line.c_str(), res, rx)){ //Supports from 20:th century. Not 21:st
+				//cout << "date is: " << res[1] << "."<< res[2] << "." << res[3] << endl;
+				string day = res[1];
+				string month = res[2];
+				string year = res[3];
+				
+				study_date = year +"-"+ month +"-"+ day;
+				return;
+			}
+		}
+		pos_ = myfile.tellg();
+	}
 }
 
 void ultrasound_importer::read_file(string filepath){
@@ -56,6 +103,11 @@ void ultrasound_importer::read_file(string filepath){
 		end = myfile.tellg();
 		f_length = end-begin;
 		myfile.seekg (0, ios::beg);
+		
+		set_date(myfile, f_length);
+
+		myfile.seekg (0, ios::beg); //should not be needed
+		//read_study(myfile, f_length);
 
 		unsigned short val;
 		char input;
@@ -76,7 +128,7 @@ void ultrasound_importer::read_file(string filepath){
 					myfile.seekg(olle-100);
 					myfile.read( (char *)(&val), sizeof(val) );
 					nr_of_lines = val;
-					cout << "lines for " << name << ": " << nr_of_lines << endl;
+					//cout << "lines for " << name << ": " << nr_of_lines << endl;
 					/*myfile.seekg(olle-108);
 					for(int i = 0; i < 100; i+=2){
 						myfile.read( (char *)(&val), sizeof(val) );
@@ -110,7 +162,7 @@ void ultrasound_importer::read_file(string filepath){
 			}
 			pos_ = myfile.tellg();
 		}
-		cout << "bytes read: " << pos_  << "/" << f_length << endl;
+		//cout << "bytes read: " << pos_  << "/" << f_length << endl;
 		myfile.close();
 		if(all_scans.empty()){
 			cout << "reading old file" << endl;
@@ -203,7 +255,7 @@ void ultrasound_importer::read_old_file(string filepath){
 			}
 			pos_ = myfile.tellg();
 		}
-		cout << "bytes read: " << pos_  << "/" << f_length << endl;
+		//cout << "bytes read: " << pos_  << "/" << f_length << endl;
 		myfile.close();
 		if(!all_scans.empty()){
 			loaded = true;

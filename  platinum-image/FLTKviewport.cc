@@ -926,7 +926,7 @@ void FLTK_Pt_pane::resize_content(int w,int h)
 		cout << "NULL!!!" << endl;
 	else{
 //		event_pane->resize(0,0,w,h); //JK //RN --> se fˆr fan till att det stÂr 20 h‰r!!!!
-		event_pane->resize(event_pane->x(),event_pane->y(),w,h); //JK //RN --> se fˆr fan till att det stÂr 20 h‰r!!!!
+		event_pane->resize(event_pane->x(),event_pane->y(),w,h-20); //JK //RN --> se fˆr fan till att det stÂr 20 h‰r!!!!
 	}
 }
 

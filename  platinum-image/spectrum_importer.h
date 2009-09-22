@@ -22,55 +22,66 @@
 //    along with the Platinum library; if not, write to the Free Software
 //    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef __usimport__
-#define __usimport__
+#ifndef __specimport__
+#define __specimport__
 
 
-#include "image_scalar.h"
+//#include "image_scalar.h"
 //#include "curve.hxx"
-#include <regex>
-//#include <iostream>
 #include <string>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
 #include "pt_vector.h"
-
 using namespace std;
 
-class us_scan;
+class header;
 
 
-class ultrasound_importer{
+class spectrum_importer{
 protected:
 	
 public:
-	ultrasound_importer(string);
-	~ultrasound_importer(void);
-	//void read_study(ifstream &myfile, long length);
-	void set_date(ifstream &myfile, long length);
-	void read_file(string name);
-	void read_old_file(string name);
-	string set_current_scan(int i);
-	int set_current_row(int i);
-	pt_vector<unsigned short>* get_mean_vector_for_scan();
+	spectrum_importer(string);
+	~spectrum_importer(void);
+	bool read_header(string name);
+	void read_data(string name);
+	inline bool my_isnan(double x){ return x != x;};
 	
-	vector<us_scan*> all_scans;
-	int scan_index;
-	int row_index;
 	bool loaded;
 	string name;
-	string study_date;
-	
+	header *head;
+	vector<ptc_vector<float>*> curves;
 };
 
-class us_scan{
+class keywords{
+public:
+	keywords(string k, double v);
+
+	string key;
+	double val;
+};
+
+class header{
 public:
 
-	us_scan(string name, int init_size, int lines);
-	~us_scan();
-	int id;
-	string name;
-	pts_vector<unsigned short> *mean_vector;
-	vector<pts_vector<unsigned short>*> rows;
+	header();
+	~header();
+	void add_info(string s);
+
+	template<class T> T string_to_val(string s){
+		istringstream buffer(s);
+		T some_val;
+		buffer >> some_val;
+		return some_val;
+	};
+
+	double get_value(string key);
+	
+	vector<keywords> keys;
+	int start_to_look;
 
 };
 
-#endif	//__ultrasound_importer.h__
+#endif	//__spectrum_importer.h__

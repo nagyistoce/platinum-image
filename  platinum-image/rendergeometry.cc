@@ -288,7 +288,7 @@ void rendergeom_spectrum::set_borders(curve_base *the_curve_pointer, bool *y_typ
 	x_offset = the_curve_pointer->get_offset(); //Fixa denna som en variabel av x_type
 	x_scale = the_curve_pointer->get_scale();
 
-	start_y = the_curve_pointer->get_min();
+	start_y = min;//the_curve_pointer->get_min();
 
 }
 void rendergeom_spectrum::set_curve(curve_base *the_curve_pointer){

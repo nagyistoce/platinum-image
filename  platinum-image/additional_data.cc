@@ -205,7 +205,6 @@ void circle_data::calc_data(unsigned char* pixels, int width, int height, render
 	
 	//vector<Vector3D> points_to_draw;
 	points_to_draw.clear();
-	int pix_addr;
 	double factor;
 	Vector3D w,u,v;
 	double pi = 3.14159265;

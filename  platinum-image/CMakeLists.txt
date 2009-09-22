@@ -127,6 +127,7 @@ rendererVTK.h
 rendergeometry.h 
 rendermanager.h 
 ptmath.h 
+spectrum_importer.h
 statusarea.h 
 stringmatrix.h 
 threshold.h 
@@ -204,6 +205,7 @@ rendergeometry.cc
 rendercombination.cc 
 rendermanager.cc 
 ptmath.cc 
+spectrum_importer.cc
 statusarea.cc 
 stringmatrix.cc 
 threshold.cc 
@@ -345,6 +347,7 @@ point.h
 point_collection.h 
 points_seq_func1D.h 
 rawimporter.h 
+spectrum_importer.h
 dicom_importer.h 
 ultrasound_importer.h
 voxel_tools.h
@@ -365,6 +368,7 @@ point_collection.cc
 point.cc 
 points_seq_func1D.hxx 
 rawimporter.cc 
+spectrum_importer.cc
 dicom_importer.cc
 ultrasound_importer.cc
 voxel_tools.hxx)

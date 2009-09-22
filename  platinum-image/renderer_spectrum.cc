@@ -194,10 +194,6 @@ void renderer_spectrum::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeo
 			//char x_type = the_curve_pointer->get_x_type();
 			vector<double> x_vector;
 			vector<vector<double> > y_vector;
-			for(int i = 0; i < the_curve_pointer->get_data_size(); i++){
-				cout << " " << the_curve_pointer->get_data(i);
-			}
-			cout << endl;
 
 			if(x_type = 'f'){
 				//Fill x_vec with frequency stuff
@@ -220,10 +216,10 @@ void renderer_spectrum::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeo
 			if(y_type[0]){
 				//Draw real curve
 				vector<double> y_val;
+				cout << "data_size: " << the_curve_pointer->get_data_size() << endl;
 				for(int i = 0; i < the_curve_pointer->get_data_size(); i++){
-					y_val.push_back(rg->curve_to_view(2,the_curve_pointer->get_data(i), rgb_sx, rgb_sy)[1]); //remains to do curve_to_view
+					y_val.push_back(rg->curve_to_view(i,the_curve_pointer->get_data(i), rgb_sx, rgb_sy)[1]); //remains to do curve_to_view
 				}
-				cout << "filling real!"  << endl;
 				y_vector.push_back(y_val);
 			}
 			if(y_type[1]){
@@ -291,11 +287,17 @@ void renderer_spectrum::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeo
 						x1 = round(x_vector.at(min_bound));
 						y1 = round(y_vector.at(j).at(min_bound));
 						for(int i = min_bound+1; i<max_bound; i++){
+							/*if(i == 388){
+								cout << "Innan! " << y_vector.at(j).at(i-1) << endl;
+								cout << "Nu jävlar! " << y_vector.at(j).at(i) << endl;
+								cout << "Efter! " << y_vector.at(j).at(i+1) << endl;
+							}*/
 							y2 = round(y_vector.at(j).at(i));
 							x2 = round(x_vector.at(i));
 							draw_line(pixels, rgb_sx, rgb_sy, x1, y1, x2, y2, color);
 							x1 = x2;
 							y1 = y2;
+							//cout << "draw: " << i  << "/" << (max_bound-1) << endl;
 						}
 					}
 					break;

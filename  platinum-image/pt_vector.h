@@ -320,11 +320,11 @@ void pts_vector<ELEMTYPE>::normalize_to_maximum(){
 	long double dy = max-min;
 	ELEMTYPE dy_new = new_max-new_min;
 	ELEMTYPE shift = new_min - min;
-	cout << "innan: " << this->at(23);
+	//cout << "innan: " << this->at(23);
 	for(int i = 0; i < this->size(); i++){
 		this->at(i) = (ELEMTYPE) floor( (this->at(i)+shift)*(dy_new/dy) );
 	}
-	cout << "   efter" << this->at(23) << endl;
+	//cout << "   efter" << this->at(23) << endl;
 }
 
 template<class ELEMTYPE>

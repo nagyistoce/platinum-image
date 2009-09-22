@@ -61,6 +61,7 @@ class ultra1dops{
 		static vector<gaussian> fit_gaussian_curve_and_calculate(curve_scalar<unsigned short> *curve, int intima, int adventitia);
 
 		static Vector3D find_steep_slope_and_calculate(curve_scalar<unsigned short> *curve, int intima, int adventitia);
+		//static int temp_peak(curve_scalar<unsigned short> *curve, int start, int dir, int max);
 };
 
 #endif __ultra1dops__
