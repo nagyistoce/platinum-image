@@ -563,6 +563,22 @@ void image_general<ELEMTYPE, IMAGEDIM>::save_to_VTK_file(const std::string file_
         }
     }
 
+template <class ELEMTYPE, int IMAGEDIM>
+void image_general<ELEMTYPE, IMAGEDIM>::save_to_VTK_file_if_true(const bool save_bool_variable, const std::string file_path, const bool useCompression)
+{
+	if(save_bool_variable){
+		this->save_to_VTK_file(file_path,useCompression);
+	}
+}
+
+template <class ELEMTYPE, int IMAGEDIM>
+void image_general<ELEMTYPE, IMAGEDIM>::save_to_VTK_file_if_non_empty(string save_base, const std::string file_path, const bool useCompression)
+{
+	if(save_base!=""){
+		this->save_to_VTK_file(file_path,useCompression);
+	}
+}
+
 
 template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::save_to_DCM_file(const std::string file_path, const bool useCompression, const bool anonymize)

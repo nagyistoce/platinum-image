@@ -99,6 +99,21 @@ public:
 	void save_int_dist_images(string file_path_base);
 
 	fcm_image_vector_type get_membership_images();
+	
+	template <class ELEMTYPE>
+		vector<image_scalar<ELEMTYPE,3>*> get_membership_images(float scale_factor=1000.0){
+	
+			vector<image_scalar<float,3>*> v = get_membership_images();
+			vector<image_scalar<ELEMTYPE,3>*> v2;
+			for(int i=0;i<v.size();i++){
+				v[i]->scale_by_factor(scale_factor);
+				v2.push_back( new image_scalar<ELEMTYPE,3>(v[i]) );
+				v2[i]->data_has_changed();
+				v[i]->scale_by_factor(1/scale_factor);
+			}
+
+			return v2;
+		}
 
 //	fcm_image_vector_type get_image_vector_from_u_vector(); //note that geometrical info is not reconstructed...
 	static void load_vnl_matrix_from_file(vnl_matrix<float> &V, std::string file_path);

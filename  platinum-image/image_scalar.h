@@ -359,18 +359,18 @@ public:
 	//Assumes the feet direction is in increasing voxel-y direction... (nose is in neg Z-direction) 
 
 	//Function for localizing main axis of objects (via 2D center of gravities)... pixels are not weighted by their intensities...
-	float appl_wb_correct_inclination(image_scalar<ELEMTYPE, IMAGEDIM>*fat, image_scalar<ELEMTYPE, IMAGEDIM>*water);
-	image_binary<3>* appl_wb_segment_body_from_sum_image(int initial_thres=30);
-	image_binary<3>* appl_wb_segment_rough_lung_from_sum_image(image_binary<3> *mask, float lung_volume_in_litres=2.5);
-	image_binary<3>* appl_wb_segment_one_lung_from_sum_image(image_binary<3> *thorax_body_mask, float lung_volume_in_litres=2.5, int high_lung_fitting_thres=50, string base="");
-	image_binary<3>* appl_wb_segment_both_lungs_from_sum_image(image_binary<3> *body_mask, float lung_volume_in_litres=2.5, int high_lung_fitting_thres=50, string base="");
+//	float appl_wb_correct_inclination(image_scalar<ELEMTYPE, IMAGEDIM>*fat, image_scalar<ELEMTYPE, IMAGEDIM>*water);
+//	image_binary<3>* appl_wb_segment_body_from_sum_image(int initial_thres=30);
+//	image_binary<3>* appl_wb_segment_rough_lung_from_sum_image(image_binary<3> *mask, float lung_volume_in_litres=2.5);
+//	image_binary<3>* appl_wb_segment_one_lung_from_sum_image(image_binary<3> *thorax_body_mask, float lung_volume_in_litres=2.5, int high_lung_fitting_thres=50, string base="");
+//	image_binary<3>* appl_wb_segment_both_lungs_from_sum_image(image_binary<3> *body_mask, float lung_volume_in_litres=2.5, int high_lung_fitting_thres=50, string base="");
 //	image_binary<3>* appl_wb_segment_lungs_from_sum_image(image_binary<3> *body_mask, float lung_volume_in_litres=5);
-	void appl_wb_segment_find_crotch_pos_from_wp_smooth_image(int &pos_x, int &pos_y, int mip_thres=950, string base="", int y_start=180);
+//	void appl_wb_segment_find_crotch_pos_from_wp_smooth_image(int &pos_x, int &pos_y, int mip_thres=950, string base="", int y_start=180);
 //	void appl_wb_segment_find_crotch_pos_from_water_percent_image(int &pos_x, int &pos_y, int mip_thres=950, string base="", int y_start=180);
-	int appl_find_femur_y_level_from_wp_image(image_scalar<unsigned short, 3>* model_l, Vector3Dint guess_center_l, Vector3Dint d_xyz, image_scalar<unsigned short,3> *cost_image);
-	int appl_find_femur_y_level_from_body_masked_fp_image(int from_y, int to_y, Vector3Dint &femur_l, Vector3Dint &femur_r, float p2a_c=12.8,float p2a_sd=1.5, float area_c=230, float area_sd=50, int res_thresh=2500, string base="");
+//	int appl_find_femur_y_level_from_wp_image(image_scalar<unsigned short, 3>* model_l, Vector3Dint guess_center_l, Vector3Dint d_xyz, image_scalar<unsigned short,3> *cost_image);
+//	int appl_find_femur_y_level_from_body_masked_fp_image(int from_y, int to_y, Vector3Dint &femur_l, Vector3Dint &femur_r, float p2a_c=12.8,float p2a_sd=1.5, float area_c=230, float area_sd=50, int res_thresh=2500, string base="");
 
-	image_binary<3>* appl_wb_segment_VAT_mask_from_this_water_percent_abd_subvolume(image_binary<3> *bin_body, string base="", int dir=1);
+//	image_binary<3>* appl_wb_segment_VAT_mask_from_this_water_percent_abd_subvolume(image_binary<3> *bin_body, string base="", int dir=1);
 	void appl_wb_normalize_features_slicewise_by_global_mean_on_this_float (image_scalar<float, 3>* second_feature, image_scalar<float, 3>* sum=NULL, image_binary<3>* body_lung_mask=NULL);
 	void appl_wb_SIM_bias_correction_on_this_float(image_scalar<float, 3>* second_feature, int num_iterations=1, float iteration_strength=0.02, float map_x_smoothing_std_dev=60, float map_y_smoothing_std_dev=15, float map_z_smoothing_std_dev=60, float feat1_smoothing_std_dev=30, float feat2_smoothing_std_dev=30, image_binary<3>* body_lung_mask=NULL, int num_buckets_feat1=200, int num_buckets_feat2=200, bool save_corrected_images_each_iteration=false, bool save_histogram_each_iteration=false, bool save_field_each_iteration=false);
 

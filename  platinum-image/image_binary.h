@@ -137,11 +137,15 @@ public:
 	void dilate_3D_26Nbh(int num_iter, IMGBINARYTYPE object_value); ///Morphological dilate (26 Neighbourhood)
 	int find_voxel_index_percent_object_content(int dir, int object_content_percent, IMGBINARYTYPE object_value=TRUE); 
 	void convex_hull_line_filling_3D(int dir, IMGBINARYTYPE object_value=TRUE); 
+	void convex_hull_line_filling_in_two_dirs_3D(int dir1, int dir2, IMGBINARYTYPE object_value=TRUE); 
+	void convex_hull_line_filling_inplane_3D(int dir, IMGBINARYTYPE object_value=TRUE); 
 
 	void get_num_neighbours_distribution_3D_26Nbh(vector<int> &num_nb, vector<int> &num_vox, IMGBINARYTYPE object_value=TRUE); //Returns statistics on the number of object neighbours object voxels have.
 	float get_border_volume_ratio_3D_26Nbh(int num_nb_inside_limit=17, IMGBINARYTYPE object_value=TRUE); //Returns statistics on the number of object neighbours object voxels have.
 	float mutual_overlap_3D(image_binary<IMAGEDIM>* second_image);
 	vector<Vector3D> get_center_of_gravities_for_objects_3D(SPACE_TYPE type = VOXEL_SPACE); //oooo
+
+	image_binary<3>* region_grow_3D_if_lower_intensity_using_dist_thresholding(int dist_thresh=10);
 
 	void appl_crude_abdominal_artifact_removal();
 

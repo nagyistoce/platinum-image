@@ -2583,6 +2583,26 @@ void image_binary<IMAGEDIM>::convex_hull_line_filling_3D(int dir, IMGBINARYTYPE 
 }
 
 template <int IMAGEDIM>
+void image_binary<IMAGEDIM>::convex_hull_line_filling_in_two_dirs_3D(int dir1, int dir2, IMGBINARYTYPE object_value)
+{
+	this->convex_hull_line_filling_3D(dir1,object_value);
+	this->convex_hull_line_filling_3D(dir2,object_value);
+}
+
+template <int IMAGEDIM>
+void image_binary<IMAGEDIM>::convex_hull_line_filling_inplane_3D(int dir, IMGBINARYTYPE object_value)
+{
+	if(dir==0){
+		this->convex_hull_line_filling_in_two_dirs_3D(1,2,object_value);
+	}else if(dir==1){
+		this->convex_hull_line_filling_in_two_dirs_3D(0,2,object_value);
+	}else if(dir==2){
+		this->convex_hull_line_filling_in_two_dirs_3D(0,1,object_value);
+	}
+}
+
+
+template <int IMAGEDIM>
 void image_binary<IMAGEDIM>::get_num_neighbours_distribution_3D_26Nbh(vector<int> &num_nb, vector<int> &num_vox, IMGBINARYTYPE object_value)
 {
 	int nx = this->nx();
@@ -2726,6 +2746,23 @@ vector<Vector3D> image_binary<IMAGEDIM>::get_center_of_gravities_for_objects_3D(
 	}
 	return sums;
 }
+
+template <int IMAGEDIM>
+image_binary<3>* image_binary<IMAGEDIM>::region_grow_3D_if_lower_intensity_using_dist_thresholding(int dist_thresh)
+{
+	image_integer<short,3> *dist = this->distance_345_3D();
+	dist->name("dist");
+//	dist->save_to_file(base+"__c01_lung_2_dist.vtk");
+
+	image_binary<3> *seeds = dist->threshold(dist_thresh);
+	seeds->largest_object_3D();
+
+	image_binary<3> *res = dist->region_grow_3D_if_lower_intensity(seeds);
+	delete dist;
+	delete seeds;
+	return res;
+}
+
 
 template <int IMAGEDIM>
 void image_binary<IMAGEDIM>::appl_crude_abdominal_artifact_removal()

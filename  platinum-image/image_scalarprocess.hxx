@@ -289,6 +289,7 @@ vector< image_scalar<ELEMTYPE, IMAGEDIM>* > image_scalar<ELEMTYPE, IMAGEDIM>::sl
 	return vec;
 }
 
+/*
 template <class ELEMTYPE, int IMAGEDIM>
 float image_scalar<ELEMTYPE, IMAGEDIM>::appl_wb_correct_inclination(image_scalar<ELEMTYPE, IMAGEDIM> *fat, image_scalar<ELEMTYPE, IMAGEDIM> *water)
 {
@@ -472,7 +473,7 @@ image_binary<3>* image_scalar<ELEMTYPE, IMAGEDIM>::appl_wb_segment_both_lungs_fr
 
 	return r_lung;
 }
-
+*/
 
 /*
 template <class ELEMTYPE, int IMAGEDIM>
@@ -553,6 +554,7 @@ image_binary<3>* image_scalar<ELEMTYPE, IMAGEDIM>::appl_wb_segment_lungs_from_su
 }
 */
 
+/*
 
 template <class ELEMTYPE, int IMAGEDIM>
 void image_scalar<ELEMTYPE, IMAGEDIM>::appl_wb_segment_find_crotch_pos_from_wp_smooth_image(int &pos_x, int &pos_y, int mip_thres, string base, int y_start)
@@ -621,7 +623,8 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::appl_wb_segment_find_crotch_pos_from_wp_s
 	delete tmip;
 	delete tbin;
 }
-
+*/
+/*
 template <class ELEMTYPE, int IMAGEDIM>
 int image_scalar<ELEMTYPE, IMAGEDIM>::appl_find_femur_y_level_from_wp_image(image_scalar<unsigned short, 3>* model_l, Vector3Dint guess_center_l, Vector3Dint d_xyz, image_scalar<unsigned short,3> *cost_image)
 {
@@ -687,11 +690,13 @@ int image_scalar<ELEMTYPE, IMAGEDIM>::appl_find_femur_y_level_from_wp_image(imag
 
 	return y_min;
 }
-
+*/
+/*
 template <class ELEMTYPE, int IMAGEDIM>
 int image_scalar<ELEMTYPE, IMAGEDIM>::appl_find_femur_y_level_from_body_masked_fp_image(int from_y, int to_y, Vector3Dint &femur_l, Vector3Dint &femur_r, float p2a_c,float p2a_sd, float area_c, float area_sd, int res_thresh, string base)
 {
-	image_scalar<unsigned short,3> *fp_sub = dynamic_cast<image_scalar<unsigned short,3 >*>( this->get_subvolume_from_region_3D(create_Vector3Dint(0,from_y,0),create_Vector3Dint(this->nx(),to_y - from_y,this->nz())) );
+//	image_scalar<unsigned short,3> *fp_sub = dynamic_cast<image_scalar<unsigned short,3 >*>( this->get_subvolume_from_region_3D(create_Vector3Dint(0,from_y,0),create_Vector3Dint(this->nx(),to_y - from_y,this->nz())) );
+	image_scalar<unsigned short,3> *fp_sub = this->get_subvolume_from_region_3D( create_Vector3Dint(0,from_y,0), create_Vector3Dint(this->nx(),to_y - from_y,this->nz()) );
 	fp_sub->smooth_3D(create_Vector3D(1,1,1));
 	image_binary<3> *bin = fp_sub->threshold(500);
 
@@ -713,8 +718,7 @@ int image_scalar<ELEMTYPE, IMAGEDIM>::appl_find_femur_y_level_from_body_masked_f
 	vector<Vector3D> cgs = femurs->get_center_of_gravities_for_objects_3D();
 
 	if(cgs.size()>=2){
-		//add the "from_y" value to the resulting voxel position
-		cgs[0][1] = cgs[0][1] + from_y;
+		cgs[0][1] = cgs[0][1] + from_y;	//add the "from_y" value to the resulting voxel position
 		cgs[1][1] = cgs[1][1] + from_y;
 		if(cgs[0][0] > cgs[1][0]){
 			for(int i=0; i<3; i++){
@@ -859,6 +863,7 @@ image_binary<3>* image_scalar<ELEMTYPE, IMAGEDIM>::appl_wb_segment_VAT_mask_from
 
 	return vat_mask;
 }
+*/
 
 template <class ELEMTYPE, int IMAGEDIM>
 void image_scalar<ELEMTYPE, IMAGEDIM>::appl_wb_normalize_features_slicewise_by_global_mean_on_this_float (image_scalar<float, 3>* second_feature, image_scalar<float, 3>* sum, image_binary<3>* body_lung_mask)

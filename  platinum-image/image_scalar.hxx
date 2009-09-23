@@ -1004,7 +1004,7 @@ image_scalar<ELEMTYPE, IMAGEDIM>* image_scalar<ELEMTYPE, IMAGEDIM>::get_subvolum
 template <class ELEMTYPE, int IMAGEDIM>
 image_scalar<ELEMTYPE, IMAGEDIM>* image_scalar<ELEMTYPE, IMAGEDIM>::get_subvolume_from_region_3D(Vector3Dint vox_pos, Vector3Dint vox_size)
 {
-	return get_subvolume_from_region_3D(vox_pos[0],vox_pos[1],vox_pos[2],vox_pos[0]+vox_size[0],vox_pos[1]+vox_size[1],vox_pos[2]+vox_size[2]);
+	return get_subvolume_from_region_3D(vox_pos[0],vox_pos[1],vox_pos[2],vox_pos[0]+vox_size[0]-1,vox_pos[1]+vox_size[1]-1,vox_pos[2]+vox_size[2]-1);
 }
 
 
@@ -2328,6 +2328,7 @@ image_binary<IMAGEDIM>* image_scalar<ELEMTYPE, IMAGEDIM>::region_grow_3D_if_lowe
 	cout<<"region_grow_3D_if_lower_intensity --> Done...(seed_queue.size()="<<seed_queue.size()<<")"<<endl;
 	return res;
 }
+
 
 
 template <class ELEMTYPE, int IMAGEDIM>

@@ -105,7 +105,7 @@ image_binary<IMAGEDIM>* image_binary<IMAGEDIM>::get_subvolume_from_region_3D(ima
 template <int IMAGEDIM>
 image_binary<IMAGEDIM>* image_binary<IMAGEDIM>::get_subvolume_from_region_3D(Vector3Dint vox_pos, Vector3Dint vox_size)
 {
-	return get_subvolume_from_region_3D(vox_pos[0],vox_pos[1],vox_pos[2],vox_pos[0]+vox_size[0],vox_pos[1]+vox_size[1],vox_pos[2]+vox_size[2]);
+	return get_subvolume_from_region_3D(vox_pos[0],vox_pos[1],vox_pos[2],vox_pos[0]+vox_size[0]-1,vox_pos[1]+vox_size[1]-1,vox_pos[2]+vox_size[2]-1);
 }
 
 template <int IMAGEDIM>
