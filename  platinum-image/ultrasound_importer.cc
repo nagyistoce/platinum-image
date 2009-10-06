@@ -252,7 +252,7 @@ void ultrasound_importer::read_old_file(string filepath){
 	string line = "";
 	int header_size = 0; //To be determined or ignored ;)
 	int linesize = 82*2;//176/2;
-	int nr_of_lines = 128;//Verifyed but is determined by a setting on the scanner...
+	int nr_of_lines = 130;//128;//Verifyed but is determined by a setting on the scanner...
 	int line_offset = -2;//102; //verifyed
 
 	//string filepath = userIOmanagement.get_parameter<string>(userIO_ID,0);
