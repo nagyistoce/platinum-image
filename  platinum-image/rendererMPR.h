@@ -44,6 +44,8 @@ class rendererMPR : public renderer_image_base
 
         static void render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_image *rg, rendercombination *rc,thresholdparvalue * threshold);
 
+		static void draw_additional_data(image_base* the_image_pointer, rendergeom_image* rg, uchar *pixels, int rgb_sx, int rgb_sy);
+
 		static void draw_cross(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_image *rg, Vector3D point, std::vector<int>);
 		
 		static void draw_slice_locators(uchar *pixels, int sx, int sy, rendergeom_image *rg, rendercombination *rc);

@@ -55,7 +55,7 @@ class ultra1dops{
 		static int count_peaks(vector<Vector3D> c, curve_scalar<unsigned short> *curve, Vector3D *peak);
 		static vector<Vector3D> simplify_the_curve(curve_scalar<unsigned short> *curve);
 
-		static void straighten_the_peaks(us_scan * scan, int intima, int adventitia);
+		static int straighten_the_peaks(us_scan * scan, int intima, int adventitia);
 		static void shift(vector<pts_vector<unsigned short>*> curve, pts_vector<int> *s);
 		static void recalculate_mean_curve(us_scan * scan);
 		static vector<gaussian> fit_gaussian_curve_and_calculate(curve_scalar<unsigned short> *curve, int intima, int adventitia);

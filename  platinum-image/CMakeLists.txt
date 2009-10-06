@@ -85,6 +85,7 @@ ${WIN32_DIRENT_HEAD}
 datamanager.h 
 datawidget.h 
 dicom_importer.h 
+draw_tool.h
 error.h 
 event.h 
 fcm.h 
@@ -160,6 +161,7 @@ data_base.cc
 datamanager.cc 
 datawidget.cc 
 dicom_importer.cc 
+draw_tool.cc
 error.cc 
 event.cc 
 fcm.cc
@@ -410,6 +412,7 @@ transfer_interpolated.hxx)
 SOURCE_GROUP(Interaction FILES 
 curve_tool.h
 datawidget.h 
+draw_tool.h
 event.h 
 userIO.h 
 FLTKuserIOparameters.h 
@@ -422,6 +425,7 @@ userIOmanager.h
 viewporttool.h 
 curve_tool.cc
 datawidget.cc 
+draw_tool.cc
 event.cc 
 userIO.cc 
 FLTKuserIOparameters.cc 

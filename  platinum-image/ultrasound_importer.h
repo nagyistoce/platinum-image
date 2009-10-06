@@ -44,7 +44,9 @@ public:
 	ultrasound_importer(string);
 	~ultrasound_importer(void);
 	//void read_study(ifstream &myfile, long length);
+	void set_side(ifstream &myfile, long length);
 	bool match(string text);
+	bool is_new_version(ifstream &myfile);
 	void set_date(ifstream &myfile, long length);
 	void read_file(string name);
 	void read_old_file(string name);
@@ -58,6 +60,8 @@ public:
 	bool loaded;
 	string name;
 	string study_date;
+	string side; //dx = right or sin = left
+	string ecode;
 	
 };
 

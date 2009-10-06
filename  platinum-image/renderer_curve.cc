@@ -314,7 +314,7 @@ void renderer_curve::render_additional_data(uchar *pixels, curve_base *the_curve
 
 		vector<Vector3D> vals = the_curve_pointer->helper_data->data.at(i)->points_to_draw;
 		if(vals.empty() || the_curve_pointer->modified){
-			the_curve_pointer->helper_data->data.at(i)->calc_data(pixels,rgb_sx, rgb_sy,rg,renderer_type());
+			the_curve_pointer->helper_data->data.at(i)->calc_data();
 			vals = the_curve_pointer->helper_data->data.at(i)->points_to_draw;
 		}
 

@@ -106,6 +106,7 @@ class datamanager
         static void removedata_callback(Fl_Widget *, void *);
 		static void save_additional_data_callback(Fl_Widget *, void *);
 		static void save_curve_callback(Fl_Widget *, void *);
+		static void toggle_additional_data(Fl_Widget *, void *);
 		static void connect_additional_data_callback(Fl_Widget *, void *);
         static void save_dcm_callback(Fl_Widget *, void *);
         static void save_vtk_callback(Fl_Widget *, void *);

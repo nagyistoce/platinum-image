@@ -201,7 +201,12 @@ void datamanager::save_curve_callback(Fl_Widget *callingwidget, void * thisdatam
 	(dynamic_cast<curve_base*>(((datamanager*)thisdatamanager)->dataItems[image_index]))->save_curve_to_file(chooser.value(1));
 	pt_config::write("latest_path",path_parent(chooser.value(1)));
 }
-
+void datamanager::toggle_additional_data(Fl_Widget *callingwidget, void * thisdatamanager){
+	datawidget_base * the_datawidget=(datawidget_base *)(callingwidget->user_data());
+    int image_index=((datamanager*)thisdatamanager)->find_data_index(the_datawidget->get_data_id());
+	((datamanager*)thisdatamanager)->dataItems[image_index]->draw_additional_data = 
+		!((datamanager*)thisdatamanager)->dataItems[image_index]->draw_additional_data;
+}
 void datamanager::connect_additional_data_callback(Fl_Widget *callingwidget, void * thisdatamanager){
 	datawidget_base * the_datawidget=(datawidget_base *)(callingwidget->user_data());
     int image_index=((datamanager*)thisdatamanager)->find_data_index(the_datawidget->get_data_id());

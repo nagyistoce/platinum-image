@@ -18,13 +18,20 @@
 #include "ultrasound_importer.h"
 
 ultrasound_importer::ultrasound_importer(string file){
+	side = "unknown";
 	loaded = false;
 	scan_index = 0;
 	row_index = 0;
 	read_file(file);
 	file.substr(0, 2);
 	name = file.substr(file.find_last_of('/')+1);
-	//cout << "File name: " << name;
+	ecode = name;
+	/*if(name.at(0) == '0'){
+		ecode = "E" + name.substr(0,8);
+	}else{
+		ecode = "E000" + name.substr(0,5);
+	}*/
+	//cout << "File name: " << name << endl;
 
 }
 
@@ -62,7 +69,43 @@ bool ultrasound_importer::match(string text){
 	}
 	return l[2] == dot && l[5] == dot;
 }
+bool ultrasound_importer::is_new_version(ifstream &myfile){
+	char buff[7];
 
+	myfile.read(buff,7);
+	string line(buff);
+	return line.find("3.00",0) == string::npos && study_date.find("199",0) == string::npos; //not old version. Want all newer versions to be supported
+}
+void ultrasound_importer::set_side(ifstream &myfile, long length){
+	char buff[6];
+	long pos_ = 0;
+	char input;
+	long new_pos;
+	while(pos_ < length){// && (pos_ > -1)){
+		new_pos = myfile.tellg();
+		input = myfile.get();
+		if(input == 'c'){
+			myfile.read(buff,6);
+			string line(buff);
+			//cout << line << endl;
+			if(line.find("aroti",0)!=string::npos){
+				new_pos -= 5; //f or h;
+				myfile.seekg(new_pos);
+				myfile.read(buff,6);
+				string line(buff);
+				//There are 1 or 2 spaces between right(left) and carotis
+				if(line.find("ht",0)!=string::npos){
+					side = "dx";
+					return;
+				}else if(line.find("ft",0)!=string::npos){
+					side = "sin";
+					return;
+				}
+			}
+		}
+		pos_ = myfile.tellg();
+	}
+}
 void ultrasound_importer::set_date(ifstream &myfile, long length){
 	char buff[11];
 	long pos_ = 0;
@@ -117,11 +160,29 @@ void ultrasound_importer::read_file(string filepath){
 		end = myfile.tellg();
 		f_length = end-begin;
 		myfile.seekg (0, ios::beg);
+
 		
+
+		//myfile.seekg (0, ios::beg); no need
+		
+		set_side(myfile, f_length);
+
+		cout << "side is set to: " << side << endl;
+		
+		myfile.seekg (0, ios::beg); //if side is not found
+
 		set_date(myfile, f_length);
 
 		myfile.seekg (0, ios::beg); //should not be needed
 		//read_study(myfile, f_length);
+
+		//This last so side and date is set
+		if(!is_new_version(myfile)){
+			myfile.close();
+			cout << "reading old file" << endl;
+			read_old_file(filepath);
+			return;
+		}
 
 		unsigned short val;
 		char input;
@@ -192,7 +253,7 @@ void ultrasound_importer::read_old_file(string filepath){
 	int header_size = 0; //To be determined or ignored ;)
 	int linesize = 82*2;//176/2;
 	int nr_of_lines = 128;//Verifyed but is determined by a setting on the scanner...
-	int line_offset = 102; //verifyed
+	int line_offset = -2;//102; //verifyed
 
 	//string filepath = userIOmanagement.get_parameter<string>(userIO_ID,0);
 	if(filepath.empty()){
@@ -213,6 +274,12 @@ void ultrasound_importer::read_old_file(string filepath){
 		f_length = end-begin;
 		myfile.seekg (0, ios::beg);
 
+		if(is_new_version(myfile)){
+			myfile.close();
+			cout << "Unknown version" << endl;
+			return;
+		}
+
 		unsigned short val;
 		char input;
 		char buff[7];
@@ -223,7 +290,7 @@ void ultrasound_importer::read_old_file(string filepath){
 			if(input == '.'){
 				myfile.read(buff,7);
 				string line(buff);
-				if(line.find(".19",0)!=string::npos){ //Supports from 20:th century. Not 21:st
+				if(line.find(".19",0)!=string::npos || line.find(".20",0)!=string::npos){ //Supports from 20:th century. Not 21:st
 					string name = "OldScan ";
 					myfile.read(buff, 1);
 					myfile.read(buff,2);

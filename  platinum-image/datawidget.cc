@@ -85,8 +85,8 @@ const Fl_Menu_Item datawidget_base::the_image_base_items[] = {
  {"Save histogram", 0,  (Fl_Callback*)datamanager::save_hist_callback, (void*)(&datamanagement), 0, FL_NORMAL_LABEL, 0, 14, 0},
  {"Save additional data", 0,  (Fl_Callback*)datamanager::save_additional_data_callback, (void*)(&datamanagement), 0, FL_NORMAL_LABEL, 0, 14, 0},
  {"Connect additional data", 0,  (Fl_Callback*)datamanager::connect_additional_data_callback, (void*)(&datamanagement), 0, FL_NORMAL_LABEL, 0, 14, 0},
+ {"Toggle additional data", 0, (Fl_Callback*)datamanager::toggle_additional_data, (void*)(&datamanagement),0, FL_NORMAL_LABEL, 0, 14, 0},
  {"Geometry Edit(Show/Hide)", 0, (Fl_Callback*)datawidget_base::edit_geometry_callback,0,0, FL_NORMAL_LABEL, 0, 14, 0},
- {0,0,0,0,0,0,0,0,0},
  {0,0,0,0,0,0,0,0,0}
 };
 

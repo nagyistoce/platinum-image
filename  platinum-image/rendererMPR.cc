@@ -474,7 +474,9 @@ void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_imag
 			}
             
 		} //the_image_pointer != NULL
-        				
+        //TODO_R add drawing of the additional data here!
+		if(the_image_pointer->draw_additional_data)
+			draw_additional_data(the_image_pointer, rg, pixels, rgb_sx, rgb_sy);
         the_image++;
 	} //per-image loop
     	
@@ -529,7 +531,47 @@ void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_imag
 }//render_ function
 
 
+void rendererMPR::draw_additional_data(image_base* the_image_pointer, rendergeom_image* rg,  uchar *pixels, int rgb_sx, int rgb_sy){
+	std::vector<int> col;
+	col.push_back(255);
+	col.push_back(255);
+	col.push_back(0);
 
+	for(int i = 0; i < the_image_pointer->helper_data->data.size(); i++){
+
+
+		vector<Vector3D> vals = the_image_pointer->helper_data->data.at(i)->points_to_draw;
+		if(vals.empty()){
+			the_image_pointer->helper_data->data.at(i)->calc_data();
+			vals = the_image_pointer->helper_data->data.at(i)->points_to_draw;
+		}
+
+		ADDITIONAL_TYPE type = the_image_pointer->helper_data->data.at(i)->type;
+		if(type == AT_POINT){
+			for(int j = 0; j < vals.size(); j++){
+				int pix_addr;
+				vector<int> point = world_to_view(rg, rgb_sx, rgb_sy, the_image_pointer->voxel_to_world(vals.at(i)));
+				point[0] = round(point[0]);
+				point[1] = round(point[1]);
+				if(point[0] <= rgb_sx && point[0] >= 0 && point[1] <= rgb_sy && point[1] >= 0 ){
+					pix_addr = (point[1]*rgb_sx + point[0])*RGB_pixmap_bpp;
+					pixels[pix_addr] = col[0];
+					pixels[pix_addr+1] = col[1];
+					pixels[pix_addr+2] = col[2];
+				}
+			}
+		}else{
+			vector<int> start;
+			vector<int> stop;
+			start = world_to_view(rg, rgb_sx, rgb_sy, the_image_pointer->voxel_to_world(vals.at(0)));
+			for(int j = 1; j < vals.size(); j++){
+				stop = world_to_view(rg, rgb_sx, rgb_sy, the_image_pointer->voxel_to_world(vals.at(j)));
+				draw_line(pixels, rgb_sx, rgb_sy, start[0], start[1], stop[0], stop[1], col);
+				start = stop;
+			}
+		}
+	}
+}
 
 
 void rendererMPR::draw_cross(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_image *rc, Vector3D point, std::vector<int> on_spot_rgb)

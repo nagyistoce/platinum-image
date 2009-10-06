@@ -5,7 +5,7 @@ additional_data::additional_data(){
 additional_data::~additional_data(){
 }
 
-void additional_data::draw_all_data(unsigned char* rgb_map, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type){
+/*void additional_data::draw_all_data(unsigned char* rgb_map, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type){
 	
 	for(int i = 0; i<data.size(); i++){
 		if(data[i]->points_to_draw.empty()){
@@ -14,7 +14,7 @@ void additional_data::draw_all_data(unsigned char* rgb_map, int width, int heigh
 		data[i]->draw_it(data[i]->points_to_draw,rgb_map, width, height, rg, type);
 		//data[i]->draw_data(rgb_map, width, height, rg, type);
 	}
-}
+}*/
 void additional_data::write_all_data_to_file(string file){
 	ofstream myfile(file.c_str());
 	if(myfile.is_open()){
@@ -30,7 +30,6 @@ void additional_data::read_all_data_from_file(string file){
 	ADDITIONAL_TYPE type;
 	int t;
 	Vector3D vec1, vec2;
-	int size;
 	float r1, r2, a;
 	string s;
 
@@ -43,8 +42,8 @@ void additional_data::read_all_data_from_file(string file){
 			type = (ADDITIONAL_TYPE) t;
 			switch(type){
 				case AT_POINT:
-					myfile >> vec1[0] >> vec1[1] >> vec1[2] >> size;
-					add_point(vec1,size);
+					myfile >> vec1[0] >> vec1[1] >> vec1[2];
+					add_point(vec1);
 					break;
 				case AT_LINE:
 					myfile >> vec1[0] >> vec1[1] >> vec1[2];
@@ -73,8 +72,8 @@ void additional_data::read_all_data_from_file(string file){
 	}
 }
 
-void additional_data::add_point(Vector3D p, int size){
-	data.push_back(new point_data(p, size));
+void additional_data::add_point(Vector3D p){
+	data.push_back(new point_data(p));
 }
 void additional_data::add_circle(Vector3D p, Vector3D n, float r, float r1){
 	data.push_back(new circle_data(p, n, r, r1));
@@ -94,6 +93,9 @@ void additional_data::add_text(Vector3D p, string s){
 void additional_data::add_gauss(float mean, float std, float amp){
 	data.push_back(new gauss_data(mean, std, amp));
 }
+void additional_data::add_freehand(vector<Vector3D> p){
+	data.push_back(new freehand_data(p));
+}
 
 /* -------------------------------------------- */
 /* -------------------------------------------- */
@@ -101,7 +103,7 @@ void additional_data::add_gauss(float mean, float std, float amp){
 additional_data_base::additional_data_base(){
 	
 }
-void additional_data_base::draw_it(vector<Vector3D> points_to_draw, unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type){
+/*void additional_data_base::draw_it(vector<Vector3D> points_to_draw, unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type){
 	int pix_addr;
 	//inside
 	
@@ -130,44 +132,28 @@ void additional_data_base::draw_it(vector<Vector3D> points_to_draw, unsigned cha
 		}
 	}
 
-}
+}*/
 /* -------------------------------------------- */
 /* -------------------------------------------- */
 
-point_data::point_data(Vector3D c, int size) : additional_data_base(){
+point_data::point_data(Vector3D c) : additional_data_base(){
 		p = c;
-		point_size = size;
 		type = AT_POINT;
 }
 
-void point_data::draw_data(unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type){
-	fl_color(FL_BLACK);
-	int b = round(point_size/2.0);
-	fl_rectf(p[0]-b,p[1]-b,point_size,point_size);
-}
 void point_data::write_data(ofstream &myfile){
 	myfile << type << "\n";
-	myfile << p[0] << " " << p[1] << " " << p[2] << point_size <<"\n";
+	myfile << p[0] << " " << p[1] << " " << p[2] <<"\n";
 }
 
-void point_data::calc_data(unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type){
+void point_data::calc_data(){
 	
 	//vector<Vector3D> points_to_draw;
 	points_to_draw.clear();
 //	int pix_addr;
 	
-	int span = floor(point_size/2.0);
-	for(int i = -span; i<=span; i++){
-		for(int j = -span; j<=span; j++){
-			for(int k = -span; k<=span; k++){
-				Vector3D point;
-				point[0] = p[0]+i;
-				point[1] = p[1]+j;
-				point[2] = p[2]+k;
-				points_to_draw.push_back(point);
-			}
-		}
-	}
+
+	points_to_draw.push_back(p);
 	//this->draw_it(points_to_draw, pixels, width, height, rg, type);
 	
 }
@@ -187,13 +173,6 @@ circle_data::circle_data(Vector3D p, Vector3D normal, float r, float r1) : addit
 		type = AT_CIRCLE;
 }
 
-void circle_data::draw_data(unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type){
-	fl_color(FL_BLACK);
-	fl_arc(c[0], c[1],radius,0,360);
-	fl_arc(10, 10,10,0,360);
-	fl_line(10,10,500,500);
-	cout << "drawing circle" << endl;
-}
 void circle_data::write_data(ofstream &myfile){
 	myfile << type << "\n";
 	myfile << c[0] << " " << c[1] << " " << c[2] <<"\n";
@@ -201,7 +180,7 @@ void circle_data::write_data(ofstream &myfile){
 	myfile << radius << "\n" << radius1 << "\n";
 }
 
-void circle_data::calc_data(unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type){
+void circle_data::calc_data(){
 	
 	//vector<Vector3D> points_to_draw;
 	points_to_draw.clear();
@@ -251,16 +230,12 @@ line_data::line_data(Vector3D p1, Vector3D  p2) : additional_data_base(){
 		type = AT_LINE;
 }
 
-void line_data::draw_data(unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type){
-	fl_color(FL_BLACK);
-	fl_line(start[0],start[1], stop[0], stop[1]);
-}
 void line_data::write_data(ofstream &myfile){
 	myfile << type << "\n";
 	myfile << start[0] << " " << start[1] << " " << start[2] <<"\n";
 	myfile << stop[0] << " " << stop[1] << " " << stop[2] <<"\n";
 }
-void line_data::calc_data(unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type){
+void line_data::calc_data(){
 
 	points_to_draw.push_back(start);
 	points_to_draw.push_back(stop);
@@ -276,16 +251,14 @@ text_data::text_data(Vector3D c, string text) : additional_data_base(){
 		s = text;
 		type = AT_STRING;
 }
-void text_data::draw_data(unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type){
-	fl_color(FL_BLACK);
-	fl_draw(s.c_str(),p[0],p[1]);
-}
+
 void text_data::write_data(ofstream &myfile){
 	myfile << type << "\n";
 	myfile << p[0] << " " << p[1] << " " << p[2] << "\n";
 	myfile << s << "\n";
 }
-void text_data::calc_data(unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type){
+void text_data::calc_data(){
+	points_to_draw.clear();
 	points_to_draw.push_back(p);
 }
 
@@ -296,24 +269,17 @@ gauss_data::gauss_data(float mean, float std, float amplitude) : additional_data
 		amp = amplitude;
 		type = AT_GAUSS;
 }
-
-void gauss_data::draw_data(unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type){
-}
 void gauss_data::write_data(ofstream &myfile){
 	myfile << type << "\n";
-	myfile << omega << " " << my << " " << amp <<"\n";
+	myfile << my<< " " << omega << " " << amp <<"\n";
 }
-void gauss_data::calc_data(unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type){
+void gauss_data::calc_data(){
 	points_to_draw.clear();
 	float ans;
 	double multi = 1.0;
 	//ans = amp*(1/(omega*sqrt(2*pt_PI)))*exp(-(pow(my-my,2)/(2*pow(omega,2))));
 	ans = amp* exp( -0.5 * pow((my-my),2)/pow(omega,2) );
 	
-	if(type = RENDERER_CURVE){
-		int curve_delta = height/(dynamic_cast<rendergeom_curve*>(rg))->qy;
-		multi = 1.0;//curve_delta/ans;
-	}
 	Vector3D point;
 	point[0] = my;
 	//ans = amp*(1/(omega*sqrt(2*pt_PI)))*exp(-(pow(my-my,2)/(2*pow(omega,2))));
@@ -333,4 +299,32 @@ void gauss_data::calc_data(unsigned char* pixels, int width, int height, renderg
 		points_to_draw.insert(points_to_draw.begin(),point);
 	}
 	//this->draw_it(points_to_draw, pixels, width, height, rg, type);
+}
+
+
+/* -------------------------------------------- */
+/* -------------------------------------------- */
+
+freehand_data::freehand_data(vector<Vector3D> c) : additional_data_base(){
+		p = c;
+		type = AT_FREEHAND;
+}
+
+void freehand_data::write_data(ofstream &myfile){
+	myfile << type << "\n";
+	myfile << p.size() << "\n";
+	for(int i = 0; i < p.size(); i++)
+		myfile << p.at(i)[0] << " " << p.at(i)[1] << " " << p.at(i)[2] <<"\n";
+}
+
+void freehand_data::calc_data(){
+	
+	//vector<Vector3D> points_to_draw;
+	points_to_draw.clear();
+//	int pix_addr;
+	
+	for(int i = 0; i < p.size(); i++)
+		points_to_draw.push_back(p.at(i));
+	//this->draw_it(points_to_draw, pixels, width, height, rg, type);
+	
 }

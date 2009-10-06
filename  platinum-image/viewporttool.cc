@@ -26,6 +26,7 @@
 #include "landmark_tool.h"
 #include "meta_tool.h"
 #include "curve_tool.h"
+#include "draw_tool.h"
 
 
 extern viewmanager viewmanagement;
@@ -72,6 +73,7 @@ void viewporttool::init (int posX, int posY,statusarea * s)
 	viewporttool::Register<landmark_tool>();
 	viewporttool::Register<meta_tool>();
 	viewporttool::Register<curve_tool>();
+	viewporttool::Register<draw_tool>();
 	//TODO_R L‰gg till curve_tool h‰r sen
     
     selected = "Navigation";

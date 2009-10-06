@@ -194,7 +194,7 @@ void ultra1dops::shift(vector<pts_vector<unsigned short>*> curve, pts_vector<int
 	}
 }
 
-void ultra1dops::straighten_the_peaks(us_scan * scan, int intima, int adventitia){
+int ultra1dops::straighten_the_peaks(us_scan * scan, int intima, int adventitia){
 	double mass, pos;//, cog;
 	pts_vector<double> *s = new pts_vector<double>(0);
 	int search_area = pt_config::read<double>("scope_for_maximum_diff",CURVE_CONF_PATH)/scan->rows.at(0)->x_res;
@@ -207,7 +207,7 @@ void ultra1dops::straighten_the_peaks(us_scan * scan, int intima, int adventitia
 			if(j < scan->rows.at(i)->size() && j >=0){
 				a+= scan->rows.at(i)->at(j)/10;
 			}else{
-				return;
+				return -1;
 			}
 		}
 		area.push_back(a);
@@ -248,6 +248,22 @@ void ultra1dops::straighten_the_peaks(us_scan * scan, int intima, int adventitia
 
 	shift(scan->rows, s_m);
 	recalculate_mean_curve(scan);
+	/*check if correct */
+/*	double max_int, min_int, mean_int;
+	double t_val;
+	max_int = scan->rows.at(0)->at(intima);
+	min_int = max_int;
+	mean_int = max_int;
+	for(int i = 1; i < scan->rows.size(); i++){
+		t_val = (double) scan->rows.at(i)->at(intima);
+		min_int = t_val < min_int ? t_val : min_int;
+		max_int = t_val > max_int ? t_val : max_int;
+		mean_int = mean_int + ((t_val - mean_int)/(i+1));
+	}
+	if(max_int-mean_int > mean_int-min_int){
+		return 1;
+	}*/
+	return 1;
 }
 
 
@@ -288,13 +304,16 @@ vector<gaussian> ultra1dops::fit_gaussian_curve_and_calculate(curve_scalar<unsig
 		return g; //Ändra så de har samma coordinates kanske!!!!!!
 	}
 
-
 	//v->fit_gaussian_with_amoeba(amp2, center2, sigma2, adventitia-search_area, adventitia+search_area);
 
 	i_l = in.center + v->from_x_to_val(intima-search_area) + in.sigma; //everything in x_scale coords. NOT index coords!
 	i_m = in.center + v->from_x_to_val(intima-search_area) - in.sigma;//everything in x_scale coords
 	m_a = adv.center + v->from_x_to_val(adventitia-search_area) + adv.sigma;//everything in x_scale coords
 	s_a = adv.center + v->from_x_to_val(adventitia-search_area) - adv.sigma;//everything in x_scale coords
+
+	/*check that it is normal*/
+	if(i_m - m_a < 0.1)//media should always be bigger than 0.1 mm
+		return g;
 
 	double sig1, sig2;
 	sig1 = (in.sigma - v->x_axis_start)/v->x_res; //convert to unrounded index coordinates
