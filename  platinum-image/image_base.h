@@ -101,7 +101,7 @@ class image_base : public data_base
 
         virtual void transfer_function(std::string functionName)=0; //! replace transfer function using string identifier
                     
-        virtual void get_display_voxel(RGBvalue &val,int x, int y, int z=0) const = 0;
+        virtual void get_display_voxel(RGBvalue &val,int x, int y, int z=0) const = 0; //uses transfer function to map its data to rgb
         virtual float get_number_voxel(int x, int y, int z) const = 0;//get value as float for onscreen display in numbers (e.g. complex values--> scalars)
                                                                     //when other kinds than 3D images are implemented,
                                                                     //one might want to make these dimensionality-independent 
@@ -159,6 +159,7 @@ class image_base : public data_base
         Vector3D get_voxel_z_dir_in_phys();
 		Matrix3D get_dir_rendering_matrix(preset_direction direction);
 		void set_orientation(const Matrix3D m);
+		void set_orientation_to_unity();
         Vector3D get_origin() const;
         void set_origin(const Vector3D v); 
         void translate_origin(const Vector3D t); 

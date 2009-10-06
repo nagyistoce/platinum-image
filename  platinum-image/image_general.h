@@ -213,12 +213,14 @@ class image_general : public image_storage <ELEMTYPE >
 		void add_value_to_voxel(int x, int y, int z, ELEMTYPE value);
 		void add_value_to_voxel(Vector3D coord_pos, ELEMTYPE value);
 		void add_value_to_voxels(vector<Vector3D> coords, ELEMTYPE value);
+		void fill_slice_wise_grid(float grid_res_mm, ELEMTYPE value, int dir=2);
 		void fill_region_3D(int x, int y, int z, int dx, int dy, int dz, ELEMTYPE value);
 		void fill_region_3D(int dir, int start_index, int end_index, ELEMTYPE value);
 		void fill_region_3D(Vector3Dint vox_pos, Vector3Dint vox_size, ELEMTYPE value);
 		void fill_region_3D_with_subvolume_image(image_general<ELEMTYPE, IMAGEDIM> *subvolume); //based on physical coords
 		void fill_region_3D_with_subvolume_image(Vector3Dint to_pos, image_general<ELEMTYPE, IMAGEDIM> *im, Vector3Dint from_pos, Vector3Dint from_size, ELEMTYPE empty_value=0); //based on given voxel coords
 		void fill_region_of_mask_3D(image_binary<IMAGEDIM> *mask, ELEMTYPE value);
+		void fill_region_3D_around_voxels(vector<Vector3D> coords, int rx, int ry, int rz, ELEMTYPE val);
 		void combine_with_offset(image_general<ELEMTYPE, IMAGEDIM> *const image2, COMBINE_MODE mode, Vector3Dint to_pos);
 		void fill_image_border_3D(ELEMTYPE value, int border_thickness=1);
 		void translate_subvolume_3D(Vector3Dint pos, Vector3Dint size, Vector3Dint T, ELEMTYPE empty_value=0);

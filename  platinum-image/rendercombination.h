@@ -110,6 +110,7 @@ public:
         void add_data(int dataID);
         void toggle_data(int dataID);
 		void enable_data(int dataID);
+		int get_number_of_enabled_data_objects();
 		void disable_data(int dataID);
         void remove_data(int dataID);
         int image_rendered(int ID);//for updating various widgets: returns nonzero if

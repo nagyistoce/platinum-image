@@ -304,7 +304,7 @@ void datamanager::save_hist_callback(Fl_Widget *callingwidget, void * thisdatama
 
 
 
-void datamanager::add(image_base *im, string name, bool data_changed)
+void datamanager::add(image_base *im, string name, bool data_changed, string slc_orient)
 {
     if(im != NULL){
         if(dataItems.size() < DATA_VECTOR_MAX){
@@ -316,6 +316,9 @@ void datamanager::add(image_base *im, string name, bool data_changed)
 				}
 				if(data_changed){
 					im->data_has_changed();
+				}
+				if(slc_orient!=""){
+					im->set_slice_orientation(slc_orient);
 				}
 
                 viewmanagement.show_in_empty_viewport(im->get_id());

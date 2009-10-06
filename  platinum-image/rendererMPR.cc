@@ -63,6 +63,7 @@ void rendererMPR::paint_overlay(int h_offset, int vp_w, int vp_h_pane, bool pain
 	if(paint_rendergeometry){
 		paint_rendergeometry_to_overlay(h_offset, vp_w, vp_h_pane, (rendergeom_image*)the_rg, the_rc);
 	}
+	paint_data_name_order_to_overlay(h_offset, vp_w, vp_h_pane, the_rc); //JK***
 }
 
 Vector3D rendererMPR::view_to_world(int vx, int vy, int sx, int sy) const
@@ -836,6 +837,23 @@ void rendererMPR::paint_overlay_line(int h_offset, int vp_w, int vp_h_pane, line
 //		cout<<"("<<x<<","<<y<<")   ("<<x2<<","<<y2<<")"<<endl;
 
 		fl_line(x, h_offset+y, x2, h_offset+y2);
+	}
+}
+
+void rendererMPR::paint_data_name_order_to_overlay(int h_offset, int vp_w, int vp_h_pane, rendercombination *rc)
+{
+	fl_color(FL_CYAN);
+	int str_w, str_h;
+	string tmp;
+
+	int i=1;
+
+    for(rendercombination::iterator itr = rc->begin(); itr != rc->end();itr++){
+		tmp = datamanagement.get_data_name(itr->ID);
+//		cout<<i<<" itr->ID="<<itr->ID<<"   "<<tmp<<" "<<rc->get_number_of_enabled_data_objects()<<endl;
+		fl_measure(tmp.c_str(),str_w,str_h);
+		fl_draw(tmp.c_str(), 5, h_offset+vp_h_pane-5 -(rc->get_number_of_enabled_data_objects()-i)*(str_h+2)); //type
+		i++;
 	}
 }
 

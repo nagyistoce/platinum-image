@@ -332,6 +332,14 @@ void image_base::set_orientation(const Matrix3D m)
     orientation = m;
 }
 
+void image_base::set_orientation_to_unity()
+{
+	Matrix3D m;
+	m.Fill(0);
+	m[0][0]=m[1][1]=m[2][2]=1;
+	this->set_orientation(m);
+}
+
 Vector3D image_base::get_origin () const
 {
     return origin;

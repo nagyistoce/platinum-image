@@ -152,6 +152,7 @@ public:
 //	void interpolate_trilinear_3D_ITK(float phys_x, float phys_y, float phys_z); //no boundary checks in "itkLinearInterpolateImageFunction.h" 
 	void interpolate_trilinear_3D_vxl(image_scalar<ELEMTYPE, IMAGEDIM > *src_im); //Implementation using the vxl package, alpha-tested
 
+	void resample_slice_wise_with_spline_interpolation_3D(float factor, int spline_order=3);
 	void resample_with_spline_interpolation_3D(int newxsize, int newysize, int newzsize, int spline_order=3);
 
 	// Tricubic interpolation using method described in:
@@ -176,6 +177,7 @@ public:
 	image_scalar<ELEMTYPE, IMAGEDIM>* get_subvolume_from_slice_rotated_3D(int slice, int dir=2);
 	image_scalar<ELEMTYPE, IMAGEDIM>* get_subvolume_from_region_3D(Vector3Dint vox_pos, Vector3Dint vox_size);	
 	image_scalar<ELEMTYPE, IMAGEDIM>* get_subvolume_from_region_3D(int x1, int y1, int z1, int x2, int y2, int z2);	
+//	image_scalar<ELEMTYPE, IMAGEDIM>* get_subvolume_from_region_3D(int dir, int from_slice, int to_slice);	
 	image_scalar<ELEMTYPE, IMAGEDIM>* get_subvolume_from_region_3D(image_binary<3> *mask, IMGBINARYTYPE object_value=TRUE);
 	image_scalar<ELEMTYPE, IMAGEDIM>* get_subvolume_from_thresholded_region_3D(ELEMTYPE from_val, ELEMTYPE to_val=std::numeric_limits<ELEMTYPE>::max());
 

@@ -52,6 +52,7 @@ class rendererMPR : public renderer_image_base
 		static void paint_slice_locators_to_overlay(int h_offset, int vp_w, int vp_h_pane, rendergeom_image *rg, rendercombination *rc);
 		static void paint_rendergeometry_to_overlay(int h_offset, int vp_w, int vp_h_pane, rendergeom_image *rg, rendercombination *rc);
 		static void paint_overlay_line(int h_offset, int vp_w, int vp_h_pane, line2D local_vp_line);
+		static void paint_data_name_order_to_overlay(int h_offset, int vp_w, int vp_h_pane, rendercombination *rc);
 		
 		static int sgn(long a);
 		

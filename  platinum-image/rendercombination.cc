@@ -145,6 +145,12 @@ void rendercombination::enable_data( int dataID )
 	}
 }
 
+int rendercombination::get_number_of_enabled_data_objects()
+{
+	return renderdata.size();
+}
+
+
 void rendercombination::disable_data( int dataID )
 {
 	for ( std::list<renderpair>::iterator itr = renderdata.begin(); itr != renderdata.end(); itr++ )

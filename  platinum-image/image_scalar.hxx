@@ -742,6 +742,27 @@ void image_scalar<ELEMTYPE, IMAGEDIM >::interpolate_trilinear_3D_vxl(image_scala
 }
 
 template <class ELEMTYPE, int IMAGEDIM >
+void image_scalar<ELEMTYPE, IMAGEDIM >::resample_slice_wise_with_spline_interpolation_3D(float factor, int spline_order)
+{
+	int newxsize=this->datasize[0]*factor;
+	int newysize=this->datasize[1]*factor;
+	int newzsize=this->datasize[2];
+
+	image_scalar<ELEMTYPE, IMAGEDIM> *ref_im = new image_scalar<ELEMTYPE, IMAGEDIM>(newxsize, newysize, newzsize); // sen template
+		
+	ref_im->set_parameters(this);
+
+	Vector3D v=ref_im->get_voxel_size();
+	v.SetElement(0, v.GetElement(0)/factor);
+	v.SetElement(1, v.GetElement(1)/factor);
+	ref_im->set_voxel_size(v);
+	
+	this->interpolate_spline_ITK_3D(ref_im, spline_order);
+	delete ref_im;
+}
+
+
+template <class ELEMTYPE, int IMAGEDIM >
 void image_scalar<ELEMTYPE, IMAGEDIM >::resample_with_spline_interpolation_3D(int newxsize, int newysize, int newzsize, int spline_order)
 {
 	int oldxsize=this->datasize[0];
@@ -1034,7 +1055,13 @@ image_scalar<ELEMTYPE, IMAGEDIM>* image_scalar<ELEMTYPE, IMAGEDIM>::get_subvolum
 	res->set_origin(this->get_physical_pos_for_voxel(x1,y1,z1));
 	return res;
 }
+/*
+template <class ELEMTYPE, int IMAGEDIM>
+image_scalar<ELEMTYPE, IMAGEDIM>* image_scalar<ELEMTYPE, IMAGEDIM>::get_subvolume_from_region_3D(int dir, int from_slice, int to_slice)
+{
 
+}
+*/
 template <class ELEMTYPE, int IMAGEDIM>
 image_scalar<ELEMTYPE, IMAGEDIM>* image_scalar<ELEMTYPE, IMAGEDIM>::get_subvolume_from_region_3D(image_binary<3> *mask, IMGBINARYTYPE object_value)
 {

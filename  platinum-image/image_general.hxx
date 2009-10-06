@@ -2217,6 +2217,15 @@ void image_general<ELEMTYPE, IMAGEDIM>::fill_region_3D_with_subvolume_image(Vect
 	}
 }
 
+template <class ELEMTYPE, int IMAGEDIM>
+void image_general<ELEMTYPE, IMAGEDIM>::fill_slice_wise_grid(float grid_res_mm, ELEMTYPE value, int dir)
+{
+//	this->get_phys_span_in_dir(
+	for(int z=0; z<this->get_size_by_dim_and_dir(2,dir); z++){
+
+	}
+}
+
 
 template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::fill_region_3D(int dir, int start_index, int end_index, ELEMTYPE value)
@@ -2285,6 +2294,25 @@ void image_general<ELEMTYPE, IMAGEDIM>::fill_region_of_mask_3D(image_binary<IMAG
 		pt_error::error("image_general<ELEMTYPE, IMAGEDIM>::fill_region_of_mask_3D - images do not have same size", pt_error::debug);
 	}
 }
+
+
+template <class ELEMTYPE, int IMAGEDIM>
+void image_general<ELEMTYPE, IMAGEDIM>::fill_region_3D_around_voxels(vector<Vector3D> coords, int rx, int ry, int rz, ELEMTYPE val)
+{
+	int x1, y1, z1, dx, dy, dz;
+	for(int i=0;i<coords.size();i++){
+		if(coords[i][2]>0){
+			x1 = max(0,int(coords[i][0])-rx);
+			y1 = max(0,int(coords[i][1])-ry);
+			z1 = max(0,int(coords[i][2])-rz);
+			dx = min(int(this->nx()),int(2*rx+1));
+			dy = min(int(this->ny()),int(2*ry+1));
+			dz = min(int(this->nz()),int(2*rz+1));
+			this->fill_region_3D(x1,y1,z1,dx,dy,dz,val);
+		}
+	}
+}
+
 
 
 template <class ELEMTYPE, int IMAGEDIM>
