@@ -50,6 +50,7 @@ public:
 	void add_gauss(float mean, float std, float amp);
 	void add_freehand(vector<Vector3D> p);
 	void write_all_data_to_file(string file);
+//	image_binary<3>* generate_binary_image(int x, int y, int z);
 	void read_all_data_from_file(string file);
 	bool show_up, show_down;
 	vector<additional_data_base*> data;

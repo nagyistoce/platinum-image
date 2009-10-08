@@ -170,6 +170,7 @@ class image_base : public data_base
 
 		string resolve_tooltip();
 		string resolve_tooltip_image_base();
+		void helper_data_to_binary_image(){cout << "Image_base has not implemented this yet" <<endl;};
 
     };
 

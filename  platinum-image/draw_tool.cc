@@ -67,23 +67,23 @@ void draw_tool::handle(viewport_event &event)
 	{
 		case pt_event::key:  
 			numbers.str("");
-			if ( event.key_combo( pt_event::f1_key ) ){
+			if ( event.key_combo( '1') ){
 				draw_type = 'p';
 				numbers << "Drawing: point";
 				event.grab();
-			}else if(event.key_combo( pt_event::f2_key )){
+			}else if(event.key_combo( '2' )){
 				draw_type = 'l';
 				numbers << "Drawing: line";
 				event.grab();
-			}else if(event.key_combo( pt_event::f3_key )){
+			}else if(event.key_combo( '3' )){
 				draw_type = 'c';
 				numbers << "Drawing: circle";
 				event.grab();
-			}else if(event.key_combo( pt_event::f4_key )){
+			}else if(event.key_combo( '4' )){
 				draw_type = 'r';
 				numbers << "Drawing: rectangle";
 				event.grab();
-			}else if(event.key_combo( pt_event::f5_key )){
+			}else if(event.key_combo( '5' )){
 				draw_type = 'f';
 				numbers << "Drawing: freehand";
 				event.grab();

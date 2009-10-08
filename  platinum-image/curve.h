@@ -69,6 +69,7 @@ class curve_base : public data_base
 
 		virtual void save_curve_to_file(string s) {};
 		virtual void read_curve_from_file(string s){};
+		void helper_data_to_binary_image(){cout << "curve_base has not implemented this yet" << endl;};
 
 		bool modified;
 

@@ -45,6 +45,8 @@ class point_collection : public data_base
 		const point_collection & operator=(const point_collection & source);
 
 		static vector<RENDERER_TYPE> get_supported_renderers();
+
+		void helper_data_to_binary_image(){cout << "point_base has not implemented this yet" << endl;};
          
 		pointStorage::const_iterator begin() const;
         pointStorage::iterator begin();
