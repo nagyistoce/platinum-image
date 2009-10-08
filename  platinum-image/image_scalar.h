@@ -373,11 +373,7 @@ public:
 //	int appl_find_femur_y_level_from_body_masked_fp_image(int from_y, int to_y, Vector3Dint &femur_l, Vector3Dint &femur_r, float p2a_c=12.8,float p2a_sd=1.5, float area_c=230, float area_sd=50, int res_thresh=2500, string base="");
 
 //	image_binary<3>* appl_wb_segment_VAT_mask_from_this_water_percent_abd_subvolume(image_binary<3> *bin_body, string base="", int dir=1);
-	void appl_wb_normalize_features_slicewise_by_global_mean_on_this_float (image_scalar<float, 3>* second_feature, image_scalar<float, 3>* sum=NULL, image_binary<3>* body_lung_mask=NULL);
-	void appl_wb_SIM_bias_correction_on_this_float(image_scalar<float, 3>* second_feature, int num_iterations=1, float iteration_strength=0.02, float map_x_smoothing_std_dev=60, float map_y_smoothing_std_dev=15, float map_z_smoothing_std_dev=60, float feat1_smoothing_std_dev=30, float feat2_smoothing_std_dev=30, image_binary<3>* body_lung_mask=NULL, int num_buckets_feat1=200, int num_buckets_feat2=200, bool save_corrected_images_each_iteration=false, bool save_histogram_each_iteration=false, bool save_field_each_iteration=false);
-
-	void appl_1D_SIM_bias_correction(image_binary<3>* mask, int num_iterations=1, float iteration_strength=0.02, float map_x_smoothing_std_dev=60, float map_y_smoothing_std_dev=60, float map_z_smoothing_std_dev=6, float feat1_smoothing_std_dev=30, int num_buckets_feat1=200, bool save_corrected_images_each_iteration=false, bool save_histogram_each_iteration=false, bool save_field_each_iteration=false);
-
+	
 	//JK move to private later...
 	float get_mean_squared_difference_to_template_3D(Vector3D pos, image_scalar<ELEMTYPE, IMAGEDIM> *small_template);
 	float get_mean_squared_difference_to_template_centered_3D(Vector3D pos, image_scalar<ELEMTYPE, IMAGEDIM> *small_template);

@@ -201,7 +201,7 @@ class image_general : public image_storage <ELEMTYPE >
         virtual float get_display_max_float() const;
 
         ELEMTYPE get_voxel_by_dir(int u, int v, int w, int direction=2);
-
+		ELEMTYPE* get_voxel_pointer_by_dir(int u, int v, int w, int direction=2);
 
         histogram_1D<ELEMTYPE>* get_histogram_from_masked_region_3D(image_binary<3>* mask, int num_buckets=1000);
 

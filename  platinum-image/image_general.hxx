@@ -2086,6 +2086,16 @@ ELEMTYPE image_general<ELEMTYPE, IMAGEDIM>::get_voxel_by_dir(int u, int v, int w
 }
 
 template <class ELEMTYPE, int IMAGEDIM>
+ELEMTYPE* image_general<ELEMTYPE, IMAGEDIM>::get_voxel_pointer_by_dir(int u, int v, int w, int direction)
+{
+	if(direction==0)//Loop over x
+		return get_voxel_pointer(w,u,v);
+	if(direction==1)//Loop over y
+		return get_voxel_pointer(v,w,u);
+	return get_voxel_pointer(u,v,w); //Loop over z		
+}
+
+template <class ELEMTYPE, int IMAGEDIM>
 double image_general<ELEMTYPE, IMAGEDIM>::get_num_diff_1storder_central_diff_3D(int x, int y, int z, int direction)
 {	
 	if(direction==0)
