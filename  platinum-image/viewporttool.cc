@@ -350,8 +350,9 @@ void nav_tool::handle(viewport_event &event)
 				{
 					event.grab();
 //					cout<<"***pt_event::rotate - temporary work (ctrl + shift + mouse drag)***"<<endl; 
-					float dx = (mouse[0]-last_global_x);
-					float dy = (mouse[1]-last_global_y);
+					float dx = (event.mouse_pos_global()[0]-last_global_x);
+					float dy = (event.mouse_pos_global()[1]-last_global_y);
+					//float dy = (mouse[1]-last_global_y);
 					myRenderer->rotate_dir(dx, dy);
 					
 					fp->needs_rerendering();

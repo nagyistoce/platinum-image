@@ -57,6 +57,8 @@ class rendererMPR : public renderer_image_base
 		static int sgn(long a);
 		
 		static void draw_line(uchar *pixels, int sx, int sy, int a, int b, int c, int d, std::vector<int> color);
+		static void color_coded_line(uchar *pixels, int sx, int sy, int a, int b, int c, int d,  
+			std::vector<int> color, float start_distance, float end_distance, bool up, bool down);
 	
 
     public:

@@ -80,6 +80,14 @@ float rendergeom_image::distance_to_viewing_plane(Vector3D point)
 	return distance;
 }
 
+float rendergeom_image::signed_distance_to_viewing_plane(Vector3D point){
+	Vector3D v;
+	v = point - look_at;
+	Vector3D n = get_n();
+	float distance = v * n;
+	return distance;
+}
+
 Vector3D rendergeom_image::get_N()
 {
 	Vector3D direction = create_Vector3D(0, 0, 1);
@@ -178,7 +186,8 @@ void rendergeom_curve::set_curve(curve_base *the_curve_pointer){
 Vector3D rendergeom_curve::view_to_curve(int x_hat, int y_hat, int width, int height){
 	Vector3D val;
 	val[0] = round((x_hat - cx)/(qx*zoom));
-	val[1] = -((y_hat - cy - height + 1)/(qy*zoom)) + (start_y/qy);
+	//val[1] = -((y_hat - cy - height + 1)/(qy*zoom)) + (start_y/qy);
+	val[1] = -(y_hat-height-cy+1-qy*start_y)/(qy*zoom);
 	val[2] = 0;
 	return val;
 }

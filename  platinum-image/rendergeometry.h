@@ -47,6 +47,7 @@ class rendergeometry_base
 		int get_id();
 		virtual Matrix3D view_to_world_matrix(int vms) const = 0;
 		virtual Vector3D get_lookat() const = 0;
+		virtual Vector3D get_n(){return create_Vector3D(0,0,1);};// return unit normal vector
 };
 
 //-----------------------------------------------------
@@ -70,6 +71,7 @@ class rendergeom_image : public rendergeometry_base
         void refresh_viewports();   //refresh viewports using this combination
 		
 		float distance_to_viewing_plane(Vector3D point);
+		float signed_distance_to_viewing_plane(Vector3D point);
 
 		Vector3D get_N();	// return normal vector
 		Vector3D get_n();	// return unit normal vector

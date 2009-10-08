@@ -1,6 +1,7 @@
 #include "additional_data.h"
 
 additional_data::additional_data(){
+	show_up = show_down = false;
 }
 additional_data::~additional_data(){
 }
@@ -29,7 +30,7 @@ void additional_data::read_all_data_from_file(string file){
 	int nr_items;
 	ADDITIONAL_TYPE type;
 	int t;
-	Vector3D vec1, vec2;
+	Vector3D vec1, vec2, vec3, vec4;
 	float r1, r2, a;
 	string s;
 
@@ -49,6 +50,13 @@ void additional_data::read_all_data_from_file(string file){
 					myfile >> vec1[0] >> vec1[1] >> vec1[2];
 					myfile >> vec2[0] >> vec2[1] >> vec2[2];
 					add_line(vec1, vec2);
+					break;
+				case AT_RECT:
+					myfile >> vec1[0] >> vec1[1] >> vec1[2];
+					myfile >> vec2[0] >> vec2[1] >> vec2[2];
+					myfile >> vec3[0] >> vec3[1] >> vec3[2];
+					myfile >> vec4[0] >> vec4[1] >> vec4[2];
+					add_rect(vec1, vec2, vec3, vec4);
 					break;
 				case AT_CIRCLE:
 					myfile >> vec1[0] >> vec1[1] >> vec1[2];
@@ -79,10 +87,7 @@ void additional_data::add_circle(Vector3D p, Vector3D n, float r, float r1){
 	data.push_back(new circle_data(p, n, r, r1));
 }
 void additional_data::add_rect(Vector3D c1, Vector3D c2, Vector3D c3, Vector3D c4){
-	data.push_back(new line_data(c1,c2));
-	data.push_back(new line_data(c2,c3));
-	data.push_back(new line_data(c3,c4));
-	data.push_back(new line_data(c4,c1));
+	data.push_back(new rect_data(c1,c2, c3, c4));
 }
 void additional_data::add_line(Vector3D x1, Vector3D x2){
 	data.push_back(new line_data(x1, x2));
@@ -241,6 +246,33 @@ void line_data::calc_data(){
 	points_to_draw.push_back(stop);
 
 
+	//this->draw_it(points_to_draw, pixels, width, height, rg, type);
+}
+/* -------------------------------------------- */
+/* -------------------------------------------- */
+
+rect_data::rect_data(Vector3D p1, Vector3D  p2, Vector3D  p3, Vector3D  p4) : additional_data_base(){
+		c1 = p1;
+		c2 = p2;
+		c3 = p3;
+		c4 = p4;
+		type = AT_RECT;
+}
+
+void rect_data::write_data(ofstream &myfile){
+	myfile << type << "\n";
+	myfile << c1[0] << " " << c1[1] << " " << c1[2] <<"\n";
+	myfile << c2[0] << " " << c2[1] << " " << c2[2] <<"\n";
+	myfile << c3[0] << " " << c3[1] << " " << c3[2] <<"\n";
+	myfile << c4[0] << " " << c4[1] << " " << c4[2] <<"\n";
+}
+void rect_data::calc_data(){
+
+	points_to_draw.push_back(c1);
+	points_to_draw.push_back(c2);
+	points_to_draw.push_back(c3);
+	points_to_draw.push_back(c4);
+	points_to_draw.push_back(c1); //have to close the rectangle
 	//this->draw_it(points_to_draw, pixels, width, height, rg, type);
 }
 /* -------------------------------------------- */

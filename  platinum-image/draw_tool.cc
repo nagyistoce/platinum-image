@@ -37,8 +37,9 @@ extern userIOmanager userIOmanagement;
 draw_tool::draw_tool(viewport_event & event) : nav_tool(event)
 {
 	draw_type = 'x';
-	if (event.type() == pt_event::hover || event.type() == pt_event::key ||event.type() == pt_event::adjust ||
-		event.type() == pt_event::browse|| event.type() == pt_event::create || event.type() == pt_event::scroll)
+	remove_data = false;
+	drawed = false;
+	if (event.type() == pt_event::hover || event.type() == pt_event::key ||event.type() == pt_event::adjust)
 	{
         event.grab();
 	}
@@ -50,7 +51,7 @@ draw_tool::~draw_tool()
 
 const std::string draw_tool::name()
 {
-	return "draw tool";
+	return "Draw tool";
 }
 
 void draw_tool::init()
@@ -61,34 +62,6 @@ void draw_tool::handle(viewport_event &event)
 {
     const int * mouse2d = event.mouse_pos_local();
     FLTK_Event_pane *fp = event.get_FLTK_Event_pane();
-
-	if(event.state() == pt_event::end && myPort->ROI_rect_is_changing && event.type() != pt_event::hover){
-		//hover is excluded since this event.type is thown when mouse is first clicked
-		   //Knapp slapps upp
-		cout << "Knapp slapps upp" << endl;
-    }
-	if(event.state() == pt_event::begin){
-		start = create_Vector2D(event.mouse_pos_local()[0], event.mouse_pos_local()[1]);
-		event.grab();
-	}
-	if(event.state() == pt_event::end){
-
-		switch(draw_type){
-			case 'c':
-				//find the dataobjects in viewport!
-				break;
-			case 'l':
-				break;
-			case 'p':
-				break;
-			case 'r':
-				break;
-			case 'f':
-				break;
-			default:
-				break;
-		}
-	}
 
 	switch (event.type())
 	{
@@ -114,24 +87,106 @@ void draw_tool::handle(viewport_event &event)
 				draw_type = 'f';
 				numbers << "Drawing: freehand";
 				event.grab();
+			}else if(event.key_combo( pt_event::up_key )){
+				myRenderer->the_rc->top_image<data_base>()->helper_data->show_up = 
+					!myRenderer->the_rc->top_image<data_base>()->helper_data->show_up;
+				event.grab();
+			}else if(event.key_combo( pt_event::down_key )){
+				myRenderer->the_rc->top_image<data_base>()->helper_data->show_down = 
+					!myRenderer->the_rc->top_image<data_base>()->helper_data->show_down;
+				event.grab();
+			}else if(event.key_combo( pt_event::left_key)){
+				myRenderer->the_rc->top_image<data_base>()->draw_additional_data = true;
+				event.grab();
+			}else if(event.key_combo( pt_event::right_key)){
+				myRenderer->the_rc->top_image<data_base>()->draw_additional_data = false;
+				event.grab();
+			}else if(event.key_combo( pt_event::space_key )){
+
+				if(draw_type != 'x' && !drawed){
+					cout << "starting!!!!" << endl;
+					start = myRenderer->view_to_world(event.mouse_pos_local()[0], event.mouse_pos_local()[1],fp->w(),fp->h());
+					cout << "location: " << start[0] << " " << start[1] << " " << start[2] << endl; 
+					drawed = true;
+				}else if(draw_type != 'x' && drawed){
+					data_base * base = myRenderer->the_rc->top_image<data_base>();
+					if(remove_data){
+						base->helper_data->data.pop_back();
+					}
+					draw_data(event, fp);
+					draw_type = 'x';
+					drawed = false;
+					remove_data = false;
+					free.clear();
+				}else{
+					cout << "No draw type selected" << endl;
+				}
+				event.grab();
 			}
 			userIOmanagement.interactive_message(numbers.str());
 			fp->needs_rerendering();
+			event.grab();
 			break;
 
-		case pt_event::adjust://left mouse button
-			if ( event.state() == pt_event::iterate){ //moving kursor
-                    event.grab();
-					if(draw_type == 'f'){
-						Vector2Dint i = create_Vector2Dint(event.mouse_pos_local()[0], event.mouse_pos_local()[1]);
-						free.push_back(i);
-						fp->needs_rerendering();
-					}
-			}
-			break;
-
+	}
+	if(event.state() == pt_event::iterate && drawed){
+		if(remove_data){
+			data_base * base = myRenderer->the_rc->top_image<data_base>();
+			base->helper_data->data.pop_back();
+		}else{
+			remove_data = true;
+		}
+		if(draw_type == 'f' && drawed){
+			free.push_back(myRenderer->view_to_world(event.mouse_pos_local()[0], event.mouse_pos_local()[1],fp->w(),fp->h()));
+		}
+		draw_data(event, fp);
+		fp->needs_rerendering();
+		event.grab();
 	}
 		// NOTE: no break, update hovering also (scroll is ignored because there is no iterate event)
 	nav_tool::handle(event);
 	//}
+}
+void draw_tool::draw_data(viewport_event &event, FLTK_Event_pane *fp){
+	data_base * base = myRenderer->the_rc->top_image<data_base>();
+	Vector3D stop = myRenderer->view_to_world(event.mouse_pos_local()[0], event.mouse_pos_local()[1],fp->w(),fp->h());
+	std::vector<int> w_start, w_stop;
+	Vector3D middle, ender;
+	//Vector3D vpos = myRenderer->view_to_voxel(mouse2d[0], mouse2d[1],fp->w(),fp->h());
+	switch(draw_type){
+		case 'c':
+			cout << "adding circle" << endl;
+			base->helper_data->add_circle(start, myRenderer->the_rg->get_n(),sqrt(
+				pow((start[0]-stop[0]),2)+
+				pow((start[1]-stop[1]),2)+
+				pow((start[2]-stop[2]),2)
+				));
+			break;
+		case 'l':
+			base->helper_data->add_line(start, stop);
+			//cout << "adding line: " << start << "   " << stop << endl;
+			break;
+		case 'p':
+			cout << "adding point" << endl;
+			base->helper_data->add_point(stop);
+			break;
+		case 'r':
+			cout << "adding rectangle" << endl;
+			w_start = myRenderer->world_to_view(fp->w(), fp->h(),start);
+			w_stop = myRenderer->world_to_view(fp->w(), fp->h(),stop);
+			middle = myRenderer->view_to_world(w_start[0]+(w_stop[0]-w_start[0]), w_start[1],fp->w(), fp->h());
+			ender = myRenderer->view_to_world(w_start[0], w_start[1]+(w_stop[1]-w_start[1]),fp->w(), fp->h());
+			base->helper_data->add_rect(start, middle, stop, ender);
+			break;
+		case 'f':
+			cout << "adding freehand" << endl;
+			//free.push_back(stop);
+			base->helper_data->add_freehand(free);
+			break;
+		default:
+			cout << "This should not happen..." << endl;
+			break;
+	}
+	//draw_type = 'x';
+	//drawed = false;
 }

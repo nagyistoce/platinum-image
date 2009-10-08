@@ -51,6 +51,7 @@ public:
 	void add_freehand(vector<Vector3D> p);
 	void write_all_data_to_file(string file);
 	void read_all_data_from_file(string file);
+	bool show_up, show_down;
 	vector<additional_data_base*> data;
 private:
 	
@@ -100,6 +101,16 @@ public:
 	void write_data(ofstream &myfile);
 	Vector3D start;
 	Vector3D stop;
+};
+/* -------------------------------------------- */
+/* -------------------------------------------- */
+class rect_data : public additional_data_base{
+public:
+	rect_data(Vector3D a, Vector3D b, Vector3D c, Vector3D d);
+	void calc_data();
+	//void draw_data(unsigned char* rgb_map, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type);
+	void write_data(ofstream &myfile);
+	Vector3D c1, c2, c3, c4;
 };
 /* -------------------------------------------- */
 /* -------------------------------------------- */

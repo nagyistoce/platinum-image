@@ -45,14 +45,16 @@ class draw_tool : public nav_tool
 		static const std::string name();
 		static void init();
 		virtual void handle(viewport_event &);
+		void draw_data(viewport_event &, FLTK_Event_pane *fp);
 		
 //		static void register_userIO_ID(int ID);
 //		static void register_point_collection_ID(int ID);
 	private:
 		char draw_type;
-		Vector2D start;
+		Vector3D start;
 		bool drawed;
-		vector<Vector2Dint> free;
+		bool remove_data;
+		vector<Vector3D> free;
 };
 
 #endif
