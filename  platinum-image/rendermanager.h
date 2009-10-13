@@ -77,6 +77,8 @@ class rendermanager
         void toggle_data(int rendererIndex, int dataID);   //turn image on or off in a combination, triggered by menu selection
 		void enable_data(int rendererID, int dataID);	// turn image (data) on or leave it on
 		void disable_data(int rendererID, int dataID);	// turn image (data) off or leave it off
+		void disable_all_data(int rendererID);			// turn image (data) off or leave it off
+		
 		
         //int get_renderer_type(int rendererIndex);
         int get_blend_mode(int rendererIndex);

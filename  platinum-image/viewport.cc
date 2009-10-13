@@ -285,10 +285,10 @@ void viewport::enable_and_set_direction( preset_direction direction )
 	set_renderer_direction( direction );
 }
 
-void viewport::disable_all_data( )
+void viewport::disable_all_data()
 {
 //	set_renderer_direction( direction );
-	rendermanagement.get_renderer()->	///
+	rendermanagement.disable_all_data(this->get_renderer_id());
 }
 
 

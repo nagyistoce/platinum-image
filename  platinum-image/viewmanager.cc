@@ -678,10 +678,9 @@ void viewmanager::set_vp_blend_mode(int vp_id, blendmode bm)
 
 void viewmanager::disable_all_data_in_all_vps()
 {
-
-			void disable_data(int rendererID, int dataID);	// turn image (data) off or leave it off
-	rendermanagement.enable_data(r_id,data_id);
-
+	for(int i=0;i<viewports.size();i++){
+		rendermanagement.disable_all_data(viewports[i].get_renderer_id());
+	}
 }
 
 

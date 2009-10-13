@@ -163,6 +163,14 @@ void rendercombination::disable_data( int dataID )
 	}
 }
 
+void rendercombination::disable_all_data()
+{
+	renderdata.clear();
+	rendermanagement.combination_update_callback(this->id);
+}
+
+
+
 void rendercombination::remove_data(int dataID)
 {
     bool removed=false;

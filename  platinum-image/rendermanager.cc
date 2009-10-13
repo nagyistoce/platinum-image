@@ -442,6 +442,12 @@ void rendermanager::disable_data(int rendererID, int dataID)
 	renderers[rendererIndex]->the_rc->disable_data(dataID);
 }
 
+void rendermanager::disable_all_data(int rendererID)
+{
+	int rendererIndex = find_renderer_index(rendererID);
+	renderers[rendererIndex]->the_rc->disable_all_data();
+}
+
 int rendermanager::image_rendered(int rendererIndex, int volID)
     {
     return renderers[rendererIndex]->the_rc->image_rendered(volID);
