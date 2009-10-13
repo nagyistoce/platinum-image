@@ -160,7 +160,7 @@ void landmark_tool::handle(viewport_event &event)
 		break;
 		
 		case pt_event::key:		
-			if ( event.key_combo(pt_event::pageup_key) )
+			if ( event.key_combo(pt_event::pageup_key) )	
 			{
 				event.grab();
 				move_voxels( 0, 0, -1 );				

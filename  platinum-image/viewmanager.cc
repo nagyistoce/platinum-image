@@ -676,6 +676,22 @@ void viewmanager::set_vp_blend_mode(int vp_id, blendmode bm)
 	this->get_viewport(vp_id)->set_blend_mode(bm);
 }
 
+void viewmanager::disable_all_data_in_all_vps()
+{
+
+			void disable_data(int rendererID, int dataID);	// turn image (data) off or leave it off
+	rendermanagement.enable_data(r_id,data_id);
+
+}
+
+
+void viewmanager::enable_data_in_vp(int vp_id, int data_id)
+{
+	int r_id = this->get_viewport(vp_id)->get_renderer_id();
+	rendermanagement.enable_data(r_id,data_id);
+}
+
+
 std::vector<int> viewmanager::get_viewport_ids_from_same_geometry_types(const int geometry_id)
 {
 	std::vector<int> vp_ids;

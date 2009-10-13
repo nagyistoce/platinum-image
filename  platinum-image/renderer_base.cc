@@ -71,6 +71,17 @@ void renderer_base::connect_geometry(rendergeometry_base *rg)
 	original_rg_id = rg_id;
 }
 
+void renderer_base::use_other_geometry(rendergeometry_base *geom)
+{
+	the_rg = geom; 
+	rg_id = geom->get_id();
+}
+
+bool renderer_base::is_my_geom(int id)
+{
+	return original_rg_id == id;
+}
+
 int renderer_base::geometry_id() const
 {
 	return rg_id;

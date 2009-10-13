@@ -114,6 +114,7 @@ public:
 
 //	void set_timer_delay(int delay = 0); // if zero, remove timer and always render directly
 	void enable_and_set_direction(preset_direction direction);
+	void disable_all_data();
 	void set_renderer(string renderer_type);
 	void set_blend_mode(blendmode bm);
 

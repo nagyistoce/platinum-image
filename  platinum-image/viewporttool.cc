@@ -427,6 +427,14 @@ void nav_tool::handle(viewport_event &event)
 			break;
 
             case pt_event::key:				
+                if (event.key_combo('y'))			//JK***
+				{
+					if(myRenderer->type()==RENDERER_MPR){
+//						myRenderer->the_rg->
+//						move_voxels( 0, 0, -1 );
+//	                    event.grab();
+					}
+				}
                 if (event.key_combo(pt_event::pageup_key))
 				{
                     event.grab();

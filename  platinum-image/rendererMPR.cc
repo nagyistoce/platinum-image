@@ -851,10 +851,15 @@ void rendererMPR::paint_data_name_order_to_overlay(int h_offset, int vp_w, int v
 	int i=1;
 
     for(rendercombination::iterator itr = rc->begin(); itr != rc->end();itr++){
-		tmp = datamanagement.get_data_name(itr->ID);
+		if(datamanagement.get_data(itr->ID)->has_additionl_data()){
+			tmp="*";
+		}else{
+			tmp=" ";
+		}
+		tmp += datamanagement.get_data_name(itr->ID);
 //		cout<<i<<" itr->ID="<<itr->ID<<"   "<<tmp<<" "<<rc->get_number_of_enabled_data_objects()<<endl;
 		fl_measure(tmp.c_str(),str_w,str_h);
-		fl_draw(tmp.c_str(), 5, h_offset+vp_h_pane-5 -(rc->get_number_of_enabled_data_objects()-i)*(str_h+2)); //type
+		fl_draw(tmp.c_str(), 2, h_offset+vp_h_pane-5 -(rc->get_number_of_enabled_data_objects()-i)*(str_h+2)); //type
 		i++;
 	}
 }

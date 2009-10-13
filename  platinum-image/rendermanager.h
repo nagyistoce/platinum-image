@@ -137,8 +137,10 @@ class rendermanager
         Vector3D get_location(int rendererIndex, int imageID, int px, int py, int sx, int sy);
 
 //        Matrix3D get_direction(int renderer_index);
-        void set_image_geometry(int renderer_index, Matrix3D * dir);
         void set_image_geometry(int renderer_ID, Vector3D look_at,float zoom = 0);
+        void set_image_geometry(int renderer_index, Matrix3D * dir);
+		void use_other_geometry_for_all_other_renderers(int renderer_index_src=0);
+		void use_other_geometry_for_renderer(int renderer_index_target, int renderer_index_src=0);
 
         void set_blendmode(int rend_index,blendmode mode);   //sets combination-wide blend mode, if blendmode is later defined
                                                              //for each image in a combination, this should set all of them

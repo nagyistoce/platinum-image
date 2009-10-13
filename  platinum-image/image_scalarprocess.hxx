@@ -969,3 +969,98 @@ image_binary<3>* image_scalar<ELEMTYPE, IMAGEDIM>::appl_abd_create_crude_grad_ma
 	delete this_float;
 	return gradient_mask;
 }
+
+
+template <class ELEMTYPE, int IMAGEDIM>
+void image_scalar<ELEMTYPE, IMAGEDIM>::appl_1D_SIM_bias_correction(image_binary<3>* mask, int num_iterations, float iteration_strength, float map_x_smoothing_std_dev, float map_y_smoothing_std_dev, float map_z_smoothing_std_dev, float feat1_smoothing_std_dev, int num_buckets_feat1, bool save_corrected_images_each_iteration, bool save_histogram_each_iteration, bool save_field_each_iteration) 
+{
+	// corrected images:
+	image_scalar<float,3> *feat1_corr = new image_scalar<float,3>(this, "feat1_corr"); //Note... Used as the starting value...
+	cout<<"feat1_corr->get_min()="<<feat1_corr->get_min()<<endl;
+	cout<<"feat1_corr->get_max()="<<feat1_corr->get_max()<<endl;
+
+	// bias correction field:
+	image_scalar<float,3> *field = new image_scalar<float,3>(feat1_corr, "field");
+	field->fill(0);	
+	field->data_has_changed();
+
+	image_scalar<float,3> *tmp_field = new image_scalar<float,3>(field, "tmp_field");
+
+
+	//Parameters:
+	filter_gaussian* gauss_x=new filter_gaussian(map_x_smoothing_std_dev*2+1,0,map_x_smoothing_std_dev);
+	filter_gaussian* gauss_y=new filter_gaussian(map_y_smoothing_std_dev*2+1,1,map_y_smoothing_std_dev);
+	filter_gaussian* gauss_z=new filter_gaussian(map_z_smoothing_std_dev*2+1,2,map_z_smoothing_std_dev);
+
+	float bodysize = mask->get_number_of_voxels_with_value(1);
+	int xsize=feat1_corr->get_size_by_dim(0);
+	int ysize=feat1_corr->get_size_by_dim(1);
+	int zsize=feat1_corr->get_size_by_dim(2);
+	histogram_1D<float> *hist = NULL;
+
+
+	for (int iter=0; iter<num_iterations; iter++){
+		cout << "---------Starting iteration " << iter+1 << " out of " << num_iterations << " ---------" << endl;
+
+		// Calculate feature space
+		if(hist!=NULL){
+			delete hist;
+		}
+		hist = feat1_corr->get_histogram_from_masked_region_3D(mask, num_buckets_feat1);
+		
+		// Calculate force in each bucket: Smooth, normalize and log, then derivate in each direction with sobel filter
+//		hist->save_histogram_to_txt_file("tmp_SIM_hist_" + int2str(iter) + ".txt");
+		hist->smooth_mean(10,10);
+		hist->data_has_changed();
+//		hist->save_histogram_to_txt_file("tmp_SIM_hist_" + int2str(iter) + "_smooth.txt");
+
+		for(int z=0; z<zsize; z++){
+			for(int y=0; y<ysize; y++){
+				for(int x=0; x<xsize; x++){
+					if(mask->get_voxel(x,y,z)){
+						tmp_field->set_voxel( x,y,z, -hist->get_norm_p_log_p_gradient_for_intensity(feat1_corr->get_voxel(x,y,z)) );
+					}
+				}
+			}
+		}
+//		tmp_field->save_to_file( "tmp_SIM_fields_" + int2str(iter) + ".vtk" );
+
+
+		// Smooth in each direction
+		cout << "Gauss smoothing in x-direction" << endl;
+		tmp_field->filter_3D(gauss_x, 1, mask, 1);
+
+		cout << "Gauss smoothing in y-direction" << endl;
+		tmp_field->filter_3D(gauss_y, 1, mask, 1);
+
+		cout << "Gauss smoothing in z-direction" << endl;
+		tmp_field->filter_3D(gauss_z, 1, mask, 1);
+
+
+		// field[i] = field[i-1] + iteration_strength*(force / mean(abs(force)))
+		tmp_field->mask_out(mask);
+		float sum = tmp_field->get_sum_of_voxels(std::numeric_limits<float>::min(), true, mask);
+		tmp_field->scale_by_factor( iteration_strength/(sum/bodysize) ); // oklart varfˆr
+//		tmp_field->save_to_file( "tmp_SIM_fields_" + int2str(iter) + "_smooth_scale.vtk" );
+		field->combine(tmp_field, COMB_ADD);
+		field->data_has_changed();
+		field->save_to_file( "tmp_SIM_field_sum_" + int2str(iter) + ".vtk" );
+		field->add_value_to_all_voxels(1,mask);
+		feat1_corr->combine(field, COMB_MULT);
+		feat1_corr->map_negative_values(0);
+		feat1_corr->save_to_file( "tmp_SIM_feat1_corr_" + int2str(iter) + ".vtk" );
+	}
+
+	if(hist!=NULL){
+		delete hist;
+	}
+	delete tmp_field;
+	delete field;
+	
+	//feat1_corr->name("feat1_corr");
+	//datamanagement.add(feat1_corr);
+	this->name(this->name()+"_SIM_bias_corr");
+	feat1_corr->scale(this->get_min(),this->get_max()); //sets the old intensity range!
+	copy_data(feat1_corr,this);
+	delete feat1_corr;
+}

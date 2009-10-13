@@ -138,13 +138,14 @@ void viewport::set_renderer_direction( const Matrix3D & dir )
     rendermanagement.set_image_geometry( rendererIndex, dir_p );
 //    cout<<"vp_id="<<this->ID<<" dir_p="<<dir_p<<endl;
     delete dir_p;
-	
 }
+
 
 void viewport::set_renderer_direction( preset_direction direction ) 
 {
 	the_widget->pane_widget->set_renderer_direction(direction); 
 }
+
 void viewport::change_color( colors color ,VIEWPORT_TYPE type) 
 {
 	if(type == PT_CURVE)
@@ -152,18 +153,22 @@ void viewport::change_color( colors color ,VIEWPORT_TYPE type)
 	else if(type == PT_SPECTRUM)
 		((FLTK_Pt_Spectrum_pane*)the_widget->pane_widget)->change_color(color);
 }
+
 void viewport::change_line_type(char line, VIEWPORT_TYPE type){
 	if(type == PT_CURVE)
 		((FLTK_Pt_Curve_pane*)the_widget->pane_widget)->change_line(line); 
 	else if(type == PT_SPECTRUM)
 		((FLTK_Pt_Spectrum_pane*)the_widget->pane_widget)->change_line(line); 
 }
+
 void viewport::change_x(char x){
 	((FLTK_Pt_Spectrum_pane*)the_widget->pane_widget)->change_x(x); 
 }
+
 void viewport::change_y(char y){
 	((FLTK_Pt_Spectrum_pane*)the_widget->pane_widget)->change_y(y); 
 }
+
 void viewport::change_geom_type(int vp_id, VIEWPORT_TYPE type){
 	if(type == PT_CURVE)
 		((FLTK_Pt_Curve_pane*)the_widget->pane_widget)->change_geom(vp_id);
@@ -279,6 +284,13 @@ void viewport::enable_and_set_direction( preset_direction direction )
 {
 	set_renderer_direction( direction );
 }
+
+void viewport::disable_all_data( )
+{
+//	set_renderer_direction( direction );
+	rendermanagement.get_renderer()->	///
+}
+
 
 void viewport::set_renderer(string renderer_type)
 {

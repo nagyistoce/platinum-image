@@ -1215,7 +1215,7 @@ void FLTK_Pt_MPR_pane::set_renderer_direction( preset_direction direction )
 			}
             break;
 
-	
+/*	
 		case Z_DIR:
 			dir.Fill(0);
             dir[x][0]=1;	// the x direction of the viewport ("0") lies in the positive ("+1") x direction ("x") of the world coordinate system
@@ -1257,7 +1257,9 @@ void FLTK_Pt_MPR_pane::set_renderer_direction( preset_direction direction )
             dir[z][1]=-1;
             dir[x][2]=-1;
             break;
+*/
     }
+
 	
 	this->get_viewport_parent()->set_renderer_direction( dir );
 	this->set_direction_button_label(direction);

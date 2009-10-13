@@ -46,6 +46,54 @@ rendergeom_image::rendergeom_image():rendergeometry_base()
     zoom=1;					//intialize zoom to 100%
 }
 
+void rendergeom_image::set_dir_matrix_from_preset_direction(preset_direction pd)
+{
+/*
+    switch(pd){
+		case Z_DIR:
+			dir.Fill(0);
+            dir[x][0]=1;	// the x direction of the viewport ("0") lies in the positive ("+1") x direction ("x") of the world coordinate system
+            dir[y][1]=1;	// the y direction of the viewport ("1") lies in the positive ("+1") y direction ("y") of the world coordinete system
+            dir[z][2]=1;	// the z direction of the viewport ("2") lies in the positive ("+1") z direction ("z") of the world coordinate system
+            break;
+            
+        case Y_DIR:
+			dir.Fill(0);
+            dir[x][0]=1;
+            dir[z][1]=-1;
+            dir[y][2]=1;
+            break;
+            
+        case X_DIR:
+			dir.Fill(0);
+            dir[y][0]=-1;
+            dir[z][1]=-1;
+            dir[x][2]=1;
+            break;
+            
+        case Z_DIR_NEG:
+			dir.Fill(0);
+            dir[x][0]=-1;
+            dir[y][1]=1;
+            dir[z][2]=-1;
+            break;
+            
+        case Y_DIR_NEG:
+			dir.Fill(0);
+            dir[x][0]=-1;
+            dir[z][1]=-1;
+            dir[y][2]=-1;
+            break;
+            
+        case X_DIR_NEG:
+			dir.Fill(0);
+            dir[y][0]=1;
+            dir[z][1]=-1;
+            dir[x][2]=-1;
+            break;
+*/
+}
+
 Matrix3D rendergeom_image::view_to_world_matrix(int viewminsize) const
 {
 //    return dir*renderer_base::display_scale/(viewminsize*zoom);

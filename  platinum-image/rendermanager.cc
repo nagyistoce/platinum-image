@@ -533,11 +533,6 @@ void rendermanager::data_vector_has_changed()
         }
 }
 
-void rendermanager::set_image_geometry(int renderer_index, Matrix3D * dir)
-    {
-    ((rendergeom_image*)renderers[renderer_index]->the_rg)->dir=(*dir);
-    ((rendergeom_image*)renderers[renderer_index]->the_rg)->refresh_viewports();
-    }
 
 void rendermanager::set_image_geometry(int renderer_ID,Vector3D look_at,float zoom)
 {
@@ -550,10 +545,31 @@ void rendermanager::set_image_geometry(int renderer_ID,Vector3D look_at,float zo
 	r->refresh_viewports();
 }
 
+void rendermanager::set_image_geometry(int renderer_index, Matrix3D * dir)
+{
+    ((rendergeom_image*)renderers[renderer_index]->the_rg)->dir=(*dir);
+    ((rendergeom_image*)renderers[renderer_index]->the_rg)->refresh_viewports();
+}
+
+void rendermanager::use_other_geometry_for_all_other_renderers(int renderer_index_src)
+{
+	for(int i=0;i<renderers.size();i++){
+		if(i!=renderer_index_src){
+			renderers[i]->use_other_geometry(renderers[renderer_index_src]->the_rg);
+		}
+	}
+}
+
+void rendermanager::use_other_geometry_for_renderer(int renderer_index_target, int renderer_index_src)
+{
+	renderers[renderer_index_target]->use_other_geometry(renderers[renderer_index_src]->the_rg);
+}
+
+
 int rendermanager::get_blend_mode (int rendererIndex)
-    {
+{
     return renderers[rendererIndex]->the_rc->blend_mode();
-    }
+}
 
 rendercombination* rendermanager::get_combination (int ID)
 {

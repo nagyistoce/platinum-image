@@ -32,7 +32,7 @@ gaussian::gaussian(float amp, float cent, float sig){
 gaussian::~gaussian(){}
 
 float gaussian::evaluate_at(float x){
-	return amplitude * exp( -0.5 * pow((x-center),2)/pow(sigma,2) );
+	return amplitude * exp( -0.5 * pow((x-center)/sigma,2) );
 }
 
 double gaussian::integrate_total_area(int from_x, int to_x){

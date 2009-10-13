@@ -127,6 +127,14 @@ const data_base & data_base::operator=(const data_base & source)
 }
 */
 
+bool data_base::has_additionl_data()
+{
+	if(helper_data->data.size()>0){
+		return true;
+	}
+	return false;
+}
+
 void data_base::data_has_changed (bool) 
 {}
         

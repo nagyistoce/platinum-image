@@ -64,7 +64,7 @@ class rendergeom_image : public rendergeometry_base
         Matrix3D dir;       //view to composite image matrix    //only direction (no scaling) = normal of slice plane
         float zoom;			//user-determined magnification, zoom=1 renders 50mm in viewport_x direction (ZOOM_CONSTANT)
 					
-
+		void set_dir_matrix_from_preset_direction(preset_direction pd);
 
 		Matrix3D view_to_world_matrix(int viewminsize) const;
 		Vector3D get_lookat() const;

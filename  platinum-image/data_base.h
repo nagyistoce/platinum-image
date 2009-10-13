@@ -62,6 +62,7 @@ class data_base
 	
         virtual ~data_base();
 		additional_data* helper_data;
+		bool has_additionl_data();
 		//virtual const data_base & operator=(const data_base & source);
 		bool is_supported(RENDERER_TYPE type){
 			for(int i = 0; i < supported_renderers.size(); i++){
