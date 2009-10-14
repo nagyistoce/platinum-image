@@ -191,7 +191,7 @@ template <class ELEMTYPE>
 histogram_1D<ELEMTYPE>::histogram_1D (image_storage<ELEMTYPE> *image_data, image_storage<unsigned char> *image_bin_mask, int num_buckets):histogram_typed<ELEMTYPE>()
 {
 //	cout<<"histogram_1D...masked..."<<endl;
-
+             
 	this->reallocate_buckets_if_necessary(num_buckets);
 /*	if(num_buckets >=0){
 		this->num_buckets = num_buckets;
@@ -1052,6 +1052,31 @@ float histogram_1D<ELEMTYPE>::get_mean_intensity()
 	return this->bucket_vector->get_mean_in_range(0,this->bucket_vector->size()-1);
 }
 
+template <class ELEMTYPE>
+float histogram_1D<ELEMTYPE>::get_hist_mean() {
+	float mean = 0;
+	int total = 0;
+	for(int i = 0; i<this->num_buckets;i++) 	
+		total += this->bucket_vector->at(i);
+	for(int i = 0; i<this->num_buckets;i++) 
+		mean  += float(bucketpos_to_intensity(i))*float(this->bucket_vector->at(i))/float(total);
+	return mean;
+}
+
+template <class ELEMTYPE>
+float histogram_1D<ELEMTYPE>::get_hist_variance() {
+	float mean = 0;
+	int total = 0;
+	float variance = 0;
+	for(int i = 0; i<this->num_buckets;i++) 	
+		total += this->bucket_vector->at(i);
+	for(int i = 0; i<this->num_buckets;i++) 
+		mean  += float(bucketpos_to_intensity(i))*float(this->bucket_vector->at(i))/float(total);
+	for(int i = 0; i<this->num_buckets;i++) 
+		variance += pow(float(bucketpos_to_intensity(i)) - mean, 2) *float(this->bucket_vector->at(i));
+
+	return variance;
+}
 
 template <class ELEMTYPE>
 float histogram_1D<ELEMTYPE>::get_variance_in_intensity_range(ELEMTYPE from, ELEMTYPE to)
