@@ -690,6 +690,12 @@ void viewmanager::enable_data_in_vp(int vp_id, int data_id)
 	rendermanagement.enable_data(r_id,data_id);
 }
 
+void viewmanager::enable_data_in_vp(int vp_id, data_base *d)
+{
+	this->enable_data_in_vp(vp_id,d->get_id());
+}
+
+
 
 std::vector<int> viewmanager::get_viewport_ids_from_same_geometry_types(const int geometry_id)
 {

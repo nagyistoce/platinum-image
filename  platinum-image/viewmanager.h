@@ -109,6 +109,7 @@ class viewmanager
 
 		void disable_all_data_in_all_vps();
 		void enable_data_in_vp(int vp_id, int data_id);
+		void enable_data_in_vp(int vp_id, data_base *d);
 
 		std::vector<int> get_viewport_ids_from_same_geometry_types(const int geometry_id); //JK lists possible vp's for geometry-linking
 };

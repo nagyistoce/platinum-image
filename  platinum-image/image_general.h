@@ -330,6 +330,8 @@ class image_general : public image_storage <ELEMTYPE >
         void save_regular_slices_to_VTK_file(const std::string file_path, int start_slc=1, int jump_num_slc=2, int dir=2, const bool useCompression = false);
 
 		void set_image_geometry(float ox,float oy,float oz,float dx,float dy,float dz,float fi_x,float fi_y,float fi_z);
+		template <class sourceType>
+		void set_image_geometry(image_general<sourceType, IMAGEDIM> *ref_im);
         bool read_geometry_from_dicom_file(std::string dcm_file);
         void print_geometry();
         void print_physical_corner_coords();

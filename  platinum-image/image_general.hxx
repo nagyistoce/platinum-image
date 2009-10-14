@@ -157,10 +157,7 @@ template <class sourceType>
 void image_general<ELEMTYPE, IMAGEDIM>::set_parameters (image_general<sourceType, IMAGEDIM> * sourceImage)
     {
 //	cout<<this->get_id()<<"->set_parameters("<<sourceImage->get_id()<<")"<<endl;
-	this->set_origin(sourceImage->get_origin());
-    this->set_voxel_size(sourceImage->get_voxel_size());
-	this->set_orientation(sourceImage->get_orientation());
-	this->set_slice_orientation(sourceImage->get_slice_orientation());
+	this->set_image_geometry(sourceImage); //origin, voxel_size, orientation, slice_orientation
 
     this->set_max(sourceImage->get_max_float_safe());
     this->set_min(sourceImage->get_min_float_safe());
@@ -2568,7 +2565,18 @@ void image_general<ELEMTYPE, IMAGEDIM>::set_image_geometry(float ox,float oy,flo
 	this->orientation.SetIdentity();
 	this->rotate(fi_z,fi_y,fi_x);
 }
+
+template <class ELEMTYPE, int IMAGEDIM>
+template <class sourceType>
+void image_general<ELEMTYPE, IMAGEDIM>::set_image_geometry (image_general<sourceType, IMAGEDIM> *ref_im)
+{
+	this->set_origin(ref_im->get_origin());
+	this->set_voxel_size(ref_im->get_voxel_size());
+	this->set_orientation(ref_im->get_orientation());
+	this->set_slice_orientation(ref_im->get_slice_orientation());
+}
 			
+
 
 template <class ELEMTYPE, int IMAGEDIM>
 bool image_general<ELEMTYPE, IMAGEDIM>::read_geometry_from_dicom_file(std::string dcm_file)
