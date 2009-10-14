@@ -242,6 +242,8 @@ class histogram_1D : public histogram_typed<ELEMTYPE> //horizontal 1D graph hist
 		ELEMTYPE get_max_value_in_bucket_range(int from, int to, int &max_val_bucket_pos);
 		float get_mean_intensity_in_bucket_range(int from, int to);
 		float get_mean_intensity();
+		float get_hist_mean();
+		float get_hist_variance();
 		float get_variance_in_bucket_range(int from, int to);
 		float get_variance_in_intensity_range(ELEMTYPE from, ELEMTYPE to);
 		int get_bucket_pos_with_largest_value_in_bucket_range(int from, int to);
