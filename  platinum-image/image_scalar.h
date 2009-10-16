@@ -211,6 +211,7 @@ public:
 	ELEMTYPE get_intensity_at_lower_percentile(float percentile, bool ignore_zero_intensity);
     void save_histogram_to_txt_file(const std::string filename, const std::string separator=";");
     void save_histogram_to_txt_file(const std::string filename, gaussian *g=NULL, bool reload_hist_from_image=false, const std::string separator=";");
+	void save_histogram_to_txt_file(const std::string filename, image_binary<ELEMTYPE,3> *mask_im, int num_buckets = 1000);
 
     image_scalar<unsigned short, 3>* create2Dhistogram_3D(image_scalar<ELEMTYPE, IMAGEDIM> *second_image, bool remove_zero_intensity=false, int num_buckets_a=-1, int num_buckets_b=-1, image_binary<IMAGEDIM>* mask=NULL); 
 
