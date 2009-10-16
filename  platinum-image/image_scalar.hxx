@@ -1752,6 +1752,10 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::save_histogram_to_txt_file(const std::str
 	this->stats->save_histogram_to_txt_file(filename, g, reload_hist_from_image, separator);
 }
 
+void save_histogram_to_txt_file(const std::string filename, image_binary<ELEMTYPE,3> *mask_im, int num_buckets = 1000) {
+	(this->get_histogram_from_masked_region_3D(mask_im, num_buckets))->save_histogram_to_txt_file(filename);
+}
+
 
 template <class ELEMTYPE, int IMAGEDIM>
 image_scalar<unsigned short, 3>* image_scalar<ELEMTYPE, IMAGEDIM>::create2Dhistogram_3D(image_scalar<ELEMTYPE, IMAGEDIM> *second_image, bool remove_zero_intensity, int num_buckets_a, int num_buckets_b, image_binary<IMAGEDIM>* mask)
