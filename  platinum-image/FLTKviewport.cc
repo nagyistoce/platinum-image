@@ -1175,7 +1175,7 @@ void FLTK_Pt_MPR_pane::set_renderer_direction( preset_direction direction )
     
     //remember,
     // A sagittal plane divides the body into left and right portions.
-    //The midsagittal plane is in the midline, i.e. it would pass through midline structures such as the navel or spine, and all other sagittal planes are parallel to it.
+    // The midsagittal plane is in the midline, i.e. it would pass through midline structures such as the navel or spine, and all other sagittal planes are parallel to it.
     // A coronal plane divides the body into dorsal and ventral portions.
     // A transverse plane divides the body into cranial (cephalic) and caudal portions.
     
@@ -1215,7 +1215,7 @@ void FLTK_Pt_MPR_pane::set_renderer_direction( preset_direction direction )
 			}
             break;
 
-/*	
+	
 		case Z_DIR:
 			dir.Fill(0);
             dir[x][0]=1;	// the x direction of the viewport ("0") lies in the positive ("+1") x direction ("x") of the world coordinate system
@@ -1257,7 +1257,7 @@ void FLTK_Pt_MPR_pane::set_renderer_direction( preset_direction direction )
             dir[z][1]=-1;
             dir[x][2]=-1;
             break;
-*/
+
     }
 
 	
