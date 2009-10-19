@@ -121,7 +121,7 @@ public:
 	vector<double> get_overlaps_in_percent(vector<gaussian> v);
 	vnl_vector<double> get_vnl_vector_with_start_guess_of_num_gaussians(int num_gaussians);
 	ELEMTYPE fit_two_gaussians_to_histogram_and_return_threshold(string save_histogram_file_path = "");
-	ELEMTYPE fit_n_gaussians_to_histogram_and_return_threshold(int n = 2, string save_histogram_file_path = "");
+	vnl_vector<double> fit_n_gaussians_to_histogram(int n = 2, string save_histogram_file_path = "");
 
 	gaussian fit_gaussian_with_amoeba(int from, int to);
 
@@ -752,7 +752,7 @@ ELEMTYPE pts_vector<ELEMTYPE>::fit_two_gaussians_to_histogram_and_return_thresho
 
 	if(save_histogram_file_path != ""){
 		vector<gaussian> v; v.push_back(g); v.push_back(g2);
-		//this->save_histogram_to_txt_file(save_histogram_file_path,v);
+		//this->sa->save_histogram_to_txt_file(save_histogram_file_path,v);
 	}
 
 //	return x[1] + 3*x[2]; //pos + 2*SD
@@ -760,7 +760,7 @@ ELEMTYPE pts_vector<ELEMTYPE>::fit_two_gaussians_to_histogram_and_return_thresho
 }
 
 template <class ELEMTYPE>
-ELEMTYPE pts_vector<ELEMTYPE>::fit_n_gaussians_to_histogram_and_return_threshold(int n, string save_histogram_file_path)
+vnl_vector<double> pts_vector<ELEMTYPE>::fit_n_gaussians_to_histogram(int n, string save_histogram_file_path)
 {
 	fit_gaussians_to_curve_cost_function<ELEMTYPE> cost(this,n, true, true);
 	vnl_amoeba amoeba_optimizer = vnl_amoeba(cost);
@@ -778,22 +778,7 @@ ELEMTYPE pts_vector<ELEMTYPE>::fit_n_gaussians_to_histogram_and_return_threshold
 	cout<<"amoeba_optimizer.F_tolerance="<<amoeba_optimizer.F_tolerance<<endl;
 	cout<<"amoeba_optimizer.X_tolerance="<<amoeba_optimizer.X_tolerance<<endl;
 
-	gaussian g = gaussian(x[0],x[1],x[2]);
-	gaussian g2 = gaussian(x[3],x[4],x[5]);
-	/*for(int i = 1; i<=n; ++i) {
-
-	}
-
-	
-	
-
-	if(save_histogram_file_path != ""){
-		vector<gaussian> v; v.push_back(g); v.push_back(g2);
-		//this->save_histogram_to_txt_file(save_histogram_file_path,v);
-	}*/
-
-	//	return x[1] + 3*x[2]; //pos + 2*SD
-	return g.get_value_at_intersection_between_centers(g2);
+	return x;
 }
 //-----------------------------
 

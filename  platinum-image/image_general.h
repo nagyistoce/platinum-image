@@ -174,6 +174,8 @@ class image_general : public image_storage <ELEMTYPE >
 		ELEMTYPE get_max_in_region(int x,int y,int z, unsigned int radius=1);
 		Vector3D get_phys_pos_of_corner(int corner_id); //return physical position of corner 0...7 (for simple iteration over all corners)
 
+        template<class ELEMTYPE2>
+		void combine_using_physical_pos(image_general<ELEMTYPE2, IMAGEDIM> *const image2, COMBINE_MODE mode);
 
 
         // *** element access methods ***
@@ -332,6 +334,8 @@ class image_general : public image_storage <ELEMTYPE >
 		void set_image_geometry(float ox,float oy,float oz,float dx,float dy,float dz,float fi_x,float fi_y,float fi_z);
 		template <class sourceType>
 		void set_image_geometry(image_general<sourceType, IMAGEDIM> *ref_im);
+		template <class sourceType>
+		void set_image_geometry_with_different_resolution(image_general<sourceType, IMAGEDIM> *ref_im, Vector3D new_voxel_size);
         bool read_geometry_from_dicom_file(std::string dcm_file);
         void print_geometry();
         void print_physical_corner_coords();

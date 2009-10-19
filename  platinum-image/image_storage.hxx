@@ -272,13 +272,13 @@ ELEMTYPE image_storage<ELEMTYPE >::get_num_values()
 	return stats->num_values(); 
 }
 */
-/*
+
 template <class ELEMTYPE >
 unsigned long image_storage<ELEMTYPE >::get_num_elements()
 {
 	return num_elements;
 }
-*/
+
 /*
 template <class ELEMTYPE >
 histogram_1D<ELEMTYPE> * image_storage<ELEMTYPE >::get_histogram()
@@ -474,18 +474,20 @@ int image_storage<ELEMTYPE >::get_number_of_voxels_with_value_greater_than(ELEMT
 
 
 template <class ELEMTYPE >
-bool image_storage<ELEMTYPE >::same_size(image_storage<ELEMTYPE> *const image2)
+template<class ELEMTYPE2>
+bool image_storage<ELEMTYPE >::same_size(image_storage<ELEMTYPE2> *const image2)
 {
-	return (this->num_elements == image2->num_elements)?true:false;
+	return (this->num_elements == image2->get_num_elements())?true:false;
 }
 
 template <class ELEMTYPE >
-void image_storage<ELEMTYPE >::combine(image_storage<ELEMTYPE> *const image2, COMBINE_MODE mode)
+template<class ELEMTYPE2>
+void image_storage<ELEMTYPE >::combine(image_storage<ELEMTYPE2> *const image2, COMBINE_MODE mode)
 {
 //	cout<<"Combine...";
 	if(this->same_size(image2)){
 	    typename image_storage<ELEMTYPE>::iterator i = this->begin();
-	    typename image_storage<ELEMTYPE>::iterator i2 = image2->begin();
+	    typename image_storage<ELEMTYPE2>::iterator i2 = image2->begin();
 
 		switch(mode)
         {
@@ -537,7 +539,7 @@ void image_storage<ELEMTYPE >::combine(image_storage<ELEMTYPE> *const image2, CO
 //			cout<<"...MAX";
 			while(i != this->end())
 			{
-				*i = std::max(*i,*i2);
+				*i = std::max<ELEMTYPE>(*i,*i2);
 				++i;
 				++i2;
 			}
@@ -547,7 +549,7 @@ void image_storage<ELEMTYPE >::combine(image_storage<ELEMTYPE> *const image2, CO
 //			cout<<"...MIN";
 			while(i != this->end())
 			{
-				*i = std::min(*i,*i2);
+				*i = std::min<ELEMTYPE>(*i,*i2);
 				++i;
 				++i2;
 			}

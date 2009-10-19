@@ -992,13 +992,22 @@ ELEMTYPE histogram_1D<ELEMTYPE>::fit_two_gaussians_to_histogram_and_return_thres
 }
 
 template <class ELEMTYPE>
-ELEMTYPE histogram_1D<ELEMTYPE>::fit_n_gaussians_to_histogram_and_return_threshold(int n, string save_histogram_file_path)
+void histogram_1D<ELEMTYPE>::fit_n_gaussians_to_histogram(int n, string save_histogram_file_path)
 {
-	unsigned short  t= this->get_intensity_at_histogram_higher_percentile(0.04,true);
+	unsigned short t = this->get_bucket_at_histogram_higher_percentile(0.04,true);
 
 	for( int i = t; i< this->bucket_vector->size(); ++i)
 		this->bucket_vector->at(i) = 0;
-	return this->bucket_vector->fit_n_gaussians_to_histogram_and_return_threshold(n, save_histogram_file_path);
+
+	vnl_vector<double> x = this->bucket_vector->fit_n_gaussians_to_histogram(n, save_histogram_file_path);
+
+	if(save_histogram_file_path != ""){
+		vector<gaussian> v;
+		for(int i=0; i<n; i++) {
+			v.push_back( gaussian(this->bucketpos_to_intensity(x[i*3+0]),this->bucketpos_to_intensity(x[i*3+1]),this->bucketpos_to_intensity(x[i*3+2])) );
+		}
+		this->save_histogram_to_txt_file(save_histogram_file_path,v);
+	}
 }
 	
 //-----------------------------

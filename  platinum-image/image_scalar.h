@@ -145,7 +145,8 @@ public:
 
 	//------------------------- Interpolations -------------------------
 	//Implementation "inspired" by "ResampleImageFilter7" example in the ITK documentation
-	void interpolate_spline_ITK_3D(image_scalar<ELEMTYPE, IMAGEDIM > *ref_im, int spline_order=3); 
+    template<class ELEMTYPE2>
+	void interpolate_spline_ITK_3D(image_scalar<ELEMTYPE2, IMAGEDIM > *ref_im, int spline_order=3); 
 
 
 //	void interpolate_bilinear_2D(float phys_x, float phys_y, int vox_z);
@@ -283,7 +284,7 @@ public:
 //	void meanFilter();
 //	void discreteGaussFilter(double gaussianVariance,int maxKernelWidth);
 //	void gradientFilter();
-//	void gradientFilter2D();
+	void gradientFilter2D(int dir);
 //	itk::MeanImageFilter<theImageType,theImageType>::Pointer filter = itk::MeanImageFilter<theImageType,theImageType>::New();
 
 	//TODO: to implement different PROJ_MODES and to return a 2D Image...

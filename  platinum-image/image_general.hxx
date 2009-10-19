@@ -435,6 +435,39 @@ Vector3D image_general<ELEMTYPE, IMAGEDIM>::get_phys_pos_of_corner(int corner_id
 }
 
 template <class ELEMTYPE, int IMAGEDIM>
+template<class ELEMTYPE2>
+void image_general<ELEMTYPE, IMAGEDIM>::combine_using_physical_pos(image_general<ELEMTYPE2, IMAGEDIM> *const image2, COMBINE_MODE mode)
+{	
+	Vector3D phys;
+	Vector3D vox_pos;
+	Matrix3D mat1 = this->get_orientation() * this->get_voxel_resize();
+//	this->origin + this->get_orientation() * this->get_voxel_resize() * vox_pos;
+
+	switch(mode)
+	{
+    case COMB_ADD:
+		cout<<"...ADD";
+		for(vox_pos[2]=0;vox_pos[2]<this->nz();vox_pos[2]++){
+			cout<<vox_pos[2]<<" ";
+			for(vox_pos[1]=0;vox_pos[1]<this->ny();vox_pos[1]++){
+				for(vox_pos[0]=0;vox_pos[0]<this->nx();vox_pos[0]++){
+					phys = this->origin + mat1*vox_pos;
+
+					if(image2->is_physical_pos_within_image_3D(phys)){
+						this->set_voxel_in_physical_pos(phys, this->get_voxel_in_physical_pos(phys) + image2->get_voxel_in_physical_pos(phys));
+					}
+				}
+			}
+		}
+	break;
+	default:
+		pt_error::error("image_general<ELEMTYPE, IMAGEDIM>::combine_using_physical_pos --> COMBINE_MODE not recognized",pt_error::debug);
+		break;
+	}
+}
+
+
+template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::set_parameters()
     {
     calc_transforms();
@@ -2575,7 +2608,22 @@ void image_general<ELEMTYPE, IMAGEDIM>::set_image_geometry (image_general<source
 	this->set_orientation(ref_im->get_orientation());
 	this->set_slice_orientation(ref_im->get_slice_orientation());
 }
-			
+
+template <class ELEMTYPE, int IMAGEDIM>
+template <class sourceType>
+void image_general<ELEMTYPE, IMAGEDIM>::set_image_geometry_with_different_resolution(image_general<sourceType, IMAGEDIM> *ref_im, Vector3D new_voxel_size)
+{
+	cout<<"set_image_geometry_with_different_resolution..."<<endl;
+
+	this->set_image_geometry(ref_im);
+	cout<<"old_voxel_size="<<this->get_voxel_size()<<endl;
+	cout<<"new_voxel_size="<<new_voxel_size<<endl;
+
+	this->initialize_dataset( this->nx()*this->get_voxel_size()[0]/new_voxel_size[0], this->ny()*this->get_voxel_size()[1]/new_voxel_size[1], this->nz()*this->get_voxel_size()[2]/new_voxel_size[2] );
+	this->fill(50);
+	this->set_voxel_size(new_voxel_size);
+}
+
 
 
 template <class ELEMTYPE, int IMAGEDIM>

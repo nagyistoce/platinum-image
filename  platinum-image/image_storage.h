@@ -89,7 +89,7 @@ class image_storage : public image_base
 		float get_mean(image_storage<IMGBINARYTYPE>* mask=NULL);
 		float get_standard_deviation(image_storage<IMGBINARYTYPE>* mask=NULL);
 //        ELEMTYPE get_num_values();
-//		unsigned long get_num_elements();
+		unsigned long get_num_elements();
 		virtual histogram_1D<ELEMTYPE>* get_histogram(){return NULL;};
 		virtual histogram_1D<ELEMTYPE>* get_histogram_new_with_same_num_buckets_as_intensities(){return NULL;};
 
@@ -115,8 +115,10 @@ class image_storage : public image_base
 		int get_number_of_voxels_with_value_greater_than(ELEMTYPE val);
 
 		
-		bool same_size(image_storage<ELEMTYPE> *const image2); //checks the data size only... (not the dimension)
-		void combine(image_storage<ELEMTYPE> *const image2, COMBINE_MODE mode);
+        template<class ELEMTYPE2>
+		bool same_size(image_storage<ELEMTYPE2> *const image2); //checks the data size only... (not the dimension)
+        template<class ELEMTYPE2>
+		void combine(image_storage<ELEMTYPE2> *const image2, COMBINE_MODE mode);
 
 
 		string resolve_tooltip();		//combines tooltip data of this class with data from other classes

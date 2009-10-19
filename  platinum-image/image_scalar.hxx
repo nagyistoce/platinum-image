@@ -627,7 +627,8 @@ image_scalar<double,3>* image_scalar<ELEMTYPE, IMAGEDIM>::get_num_diff_image_2nd
 
 
 template <class ELEMTYPE, int IMAGEDIM >
-void image_scalar<ELEMTYPE, IMAGEDIM >::interpolate_spline_ITK_3D(image_scalar<ELEMTYPE, IMAGEDIM > *ref_im, int spline_order)
+template<class ELEMTYPE2>
+void image_scalar<ELEMTYPE, IMAGEDIM >::interpolate_spline_ITK_3D(image_scalar<ELEMTYPE2, IMAGEDIM > *ref_im, int spline_order)
 {
 	cout<<"interpolate_spline_ITK_3D..."<<endl;
 	typedef itk::ResampleImageFilter<theImageType, theImageType>  FilterType;
@@ -640,7 +641,7 @@ void image_scalar<ELEMTYPE, IMAGEDIM >::interpolate_spline_ITK_3D(image_scalar<E
 
 	TransformType::MatrixType m;
 
-	typename itk::OrientedImage<ELEMTYPE, IMAGEDIM >::DirectionType d = ref_im->get_orientation_itk();
+	typename itk::OrientedImage<ELEMTYPE2, IMAGEDIM >::DirectionType d = ref_im->get_orientation_itk();
 //	cout<<"m="<<endl;
 	for(int i=0;i<3;i++){
 		for(int j=0;j<3;j++){
@@ -660,7 +661,7 @@ void image_scalar<ELEMTYPE, IMAGEDIM >::interpolate_spline_ITK_3D(image_scalar<E
 	filter->SetInput(this->get_image_as_itk_output());
 	filter->SetTransform( transform );
 	filter->SetInterpolator( interpolator );//3-rd order is default.....
-	filter->SetDefaultPixelValue( 1 );
+	filter->SetDefaultPixelValue( 0 );
 	filter->SetOutputOrigin( ref_im->get_origin_itk() );
 	filter->SetOutputSpacing( ref_im->get_voxel_size_itk() );
 	filter->SetSize( ref_im->get_size_itk() );
@@ -3152,6 +3153,15 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::fit_gaussian_2D_to_this_image_2D(gaussian
 	cout<<"Final x="<<x<<endl;
 	*/
 }
+
+
+template <class ELEMTYPE, int IMAGEDIM>
+void image_scalar<ELEMTYPE, IMAGEDIM>::gradientFilter2D(int dir)
+{
+	filter_central_difference_magn_2d* diff_2d = new filter_central_difference_magn_2d(dir);
+	this->filter_3D(diff_2d);
+}
+
 
 template <class ELEMTYPE, int IMAGEDIM>
 image_scalar<ELEMTYPE, 3>* image_scalar<ELEMTYPE, IMAGEDIM>::create_projection_3D(int dir, PROJECTION_MODE PROJ)
