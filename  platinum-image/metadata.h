@@ -131,7 +131,7 @@ public:
 	
 	void print_all();
 	
-	string metadata::get_data_as_string ( std::string key );
+	string get_data_as_string ( std::string key );
 
 	std::string get_name();
 	std::string get_slice_orientation();
