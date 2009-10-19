@@ -42,7 +42,7 @@
 #include <FL/Fl_Box.H>
 
 //#include <FL/Fl_Counter.H>
-//#include <FL/Fl_Menu_Button.H>
+#include <FL/Fl_Menu_Button.H>
 
 #include "ptmath.h"
 
@@ -423,6 +423,20 @@ class FLTKuserIOpar_string : public FLTKuserIOparameter_base    //string value
     public:
 		FLTKuserIOpar_string (const std::string name, std::string init_status);
                                                   
+        const std::string type_name ();
+		void par_value (std::string & s);
+    };
+
+class FLTKuserIOpar_stringlist : public FLTKuserIOparameter_base    //menu of strings given in vector<string>
+    {
+    protected:
+        Fl_Menu_Button* control;
+		char current_value[512];
+		void set_string_callback(Fl_Widget* callingwidget);
+		static void set_string_static_callback(Fl_Widget* callingwidget, void* the_object);
+	public:
+		FLTKuserIOpar_stringlist (const std::string name, std::vector<std::string> strlist);
+		
         const std::string type_name ();
 		void par_value (std::string & s);
     };

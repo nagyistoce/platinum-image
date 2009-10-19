@@ -215,6 +215,12 @@ int userIOmanager::add_par_string(int userIO_ID, std::string new_param_name,std:
     return block_from_ID(userIO_ID)->add_par(par);
 }
 
+int userIOmanager::add_par_stringlist(int userIO_ID, std::string new_param_name,std::vector<std::string> strvector)
+{
+	FLTKuserIOparameter_base * par=new FLTKuserIOpar_stringlist (new_param_name,strvector);
+    return block_from_ID(userIO_ID)->add_par(par);
+}
+
 int userIOmanager::add_par_image(int userIO_ID, std::string new_param_name)
     {
     FLTKuserIOparameter_base * par=new FLTKuserIOpar_image (new_param_name);

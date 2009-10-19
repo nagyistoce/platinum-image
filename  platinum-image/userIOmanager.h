@@ -90,6 +90,7 @@ class userIOmanager
         int add_par_longint_box(int userIO_ID, std::string new_param_name,long max=255,long min=0);
         int add_par_bool(int userIO_ID, std::string new_param_name,bool init_status = false);
 		int add_par_string(int userIO_ID, std::string new_param_name,std::string init_status = "");
+		int add_par_stringlist(int userIO_ID, std::string new_param_name,std::vector<std::string> strvector);
 
         int add_par_image(int userIO_ID, std::string new_param_name);
 		int add_par_imageshow( int userIO_ID, std::string new_param_name );

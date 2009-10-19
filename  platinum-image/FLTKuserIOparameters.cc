@@ -1117,29 +1117,72 @@ const std::string FLTKuserIOpar_bool::type_name ()
 #pragma mark *** FLTKuserIOpar_string ***
 
 FLTKuserIOpar_string::FLTKuserIOpar_string (const std::string name, std::string init_status ) : FLTKuserIOparameter_base (INITPARWIDGETWIDTH,STDPARWIDGETHEIGHT, name)
-    {
+{
     //label set by superclass constructor
     //position & width set by parent userIO later, including margin
     control = new Fl_Input(x(),y()+PARTITLEMARGIN,w(),h()-PARTITLEMARGIN);
-
+	
     control->callback(par_update_callback);
-//    control->type(FL_TOGGLE_BUTTON);
+	//    control->type(FL_TOGGLE_BUTTON);
 	control->value(init_status.c_str());
-
+	
     resizable(control);
-
+	
     end();
-    }
+}
 
 void FLTKuserIOpar_string::par_value (std::string & s)
-    {
+{
     s = std::string(control->value());
-    }
+}
 
 const std::string FLTKuserIOpar_string::type_name ()
-    {
+{
 	return "std::string";
-    }
+}
+
+
+#pragma mark *** FLTKuserIOpar_stringlist ***
+
+FLTKuserIOpar_stringlist::FLTKuserIOpar_stringlist (const std::string name, std::vector<std::string> strlist ) : FLTKuserIOparameter_base (INITPARWIDGETWIDTH,STDPARWIDGETHEIGHT, name)
+{
+	Fl_Menu_Item* menuitems = (Fl_Menu_Item*)malloc((strlist.size()+1)*sizeof(Fl_Menu_Item));
+	for (int i = 0; i<strlist.size(); i++) {
+		init_fl_menu_item(menuitems[i]);
+		menuitems[i].label(strlist[i].c_str());
+		menuitems[i].flags=FL_MENU_RADIO;
+		menuitems[i].callback(set_string_static_callback, this);
+	}
+	menuitems[strlist.size()].label(NULL);
+    menuitems[0].setonly();
+	control = new Fl_Menu_Button(x(),y()+PARTITLEMARGIN,w(),h()-PARTITLEMARGIN,current_value);
+	strcpy(current_value,strlist[0].c_str());
+	
+	control->copy(menuitems);
+	control->box(FL_THIN_UP_BOX);
+	control->labelsize(FLTK_SMALL_LABEL);
+	
+    end();
+}
+
+void FLTKuserIOpar_stringlist::set_string_callback(Fl_Widget* callingwidget) {
+	//string value = (((Fl_Menu_*)callingwidget)->mvalue())->label();
+	//strcpy(current_value, value.c_str());
+	strcpy(current_value, (((Fl_Menu_*)callingwidget)->mvalue())->label());
+}
+
+void FLTKuserIOpar_stringlist::set_string_static_callback(Fl_Widget* callingwidget, void* the_object) {
+	FLTKuserIOpar_stringlist* object = (FLTKuserIOpar_stringlist*)the_object;
+	object->set_string_callback(callingwidget);
+}
+
+void FLTKuserIOpar_stringlist::par_value (std::string & s) {
+	s = (control->mvalue())->label();
+}
+
+const std::string FLTKuserIOpar_stringlist::type_name () {
+	return "std::string";
+}
 
 
 #pragma mark *** FLTKuserIOpar_image ***
