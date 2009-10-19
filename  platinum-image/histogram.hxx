@@ -991,6 +991,16 @@ ELEMTYPE histogram_1D<ELEMTYPE>::fit_two_gaussians_to_histogram_and_return_thres
 	return this->bucket_vector->fit_two_gaussians_to_histogram_and_return_threshold(save_histogram_file_path);
 }
 
+template <class ELEMTYPE>
+ELEMTYPE histogram_1D<ELEMTYPE>::fit_n_gaussians_to_histogram_and_return_threshold(int n, string save_histogram_file_path)
+{
+	unsigned short  t= this->get_intensity_at_histogram_higher_percentile(0.04,true);
+
+	for( int i = t; i< this->bucket_vector->size(); ++i)
+		this->bucket_vector->at(i) = 0;
+	return this->bucket_vector->fit_n_gaussians_to_histogram_and_return_threshold(n, save_histogram_file_path);
+}
+	
 //-----------------------------
 
 template <class ELEMTYPE>
