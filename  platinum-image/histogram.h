@@ -229,6 +229,7 @@ class histogram_1D : public histogram_typed<ELEMTYPE> //horizontal 1D graph hist
 		vector<double> get_overlaps_in_percent(vector<gaussian> v);
 		vnl_vector<double> get_vnl_vector_with_start_guess_of_num_gaussians(int num_gaussians);
 		ELEMTYPE fit_two_gaussians_to_histogram_and_return_threshold(string save_histogram_file_path = "");
+		ELEMTYPE fit_n_gaussians_to_histogram_and_return_threshold(int n = 2,string save_histogram_file_path = "");
 
 		//------ Fitting of rayleigh functions ------
 		void fit_rayleigh_distr_to_intensity_range(float &amp, float &M, ELEMTYPE from_int, ELEMTYPE to_int, bool print_info=false);
