@@ -121,6 +121,7 @@ public:
 	vector<double> get_overlaps_in_percent(vector<gaussian> v);
 	vnl_vector<double> get_vnl_vector_with_start_guess_of_num_gaussians(int num_gaussians);
 	ELEMTYPE fit_two_gaussians_to_histogram_and_return_threshold(string save_histogram_file_path = "");
+	ELEMTYPE fit_n_gaussians_to_histogram_and_return_threshold(int n = 2, string save_histogram_file_path = "");
 
 	gaussian fit_gaussian_with_amoeba(int from, int to);
 
@@ -342,7 +343,7 @@ double pts_vector<ELEMTYPE>::from_x_to_val(int x){
 template <class ELEMTYPE>
 float pts_vector<ELEMTYPE>::get_variance_in_range(int from, int to)
 {
-	float mean = get_mean_x_in_range(from,to); //TITTA pÂ mean
+	float mean = get_mean_x_in_range(from,to); //TITTA p?mean
 	float sum = 0;
 	float num_values = 0;
 	float diff=0;
@@ -419,7 +420,7 @@ void pts_vector<ELEMTYPE>::fit_gaussian_to_intensity_range(float &amp, float &ce
 
 	gaussian g(amp,center,sigma);
 	g.amplitude = float(this->get_max_value_in_range(from_bucket,to_bucket));
-	g.center = this->get_mean_x_in_range(from_bucket,to_bucket); //detta ‰r inte sÂ logiskt fˆr kurvor.....
+	g.center = this->get_mean_x_in_range(from_bucket,to_bucket); //detta ‰r inte s?logiskt fˆr kurvor.....
 //	g.center = this->get_max_value_in_range(from_bucket,to_bucket);
 	g.sigma = sqrt(this->get_variance_in_range(from_bucket,to_bucket)); //intensity variance...
 	int dyn_from_bucket = std::max(from_bucket, this->from_val_to_x(g.center-1.5*g.sigma));
@@ -758,6 +759,42 @@ ELEMTYPE pts_vector<ELEMTYPE>::fit_two_gaussians_to_histogram_and_return_thresho
 	return g.get_value_at_intersection_between_centers(g2);
 }
 
+template <class ELEMTYPE>
+ELEMTYPE pts_vector<ELEMTYPE>::fit_n_gaussians_to_histogram_and_return_threshold(int n, string save_histogram_file_path)
+{
+	fit_gaussians_to_curve_cost_function<ELEMTYPE> cost(this,n, true, true);
+	vnl_amoeba amoeba_optimizer = vnl_amoeba(cost);
+	amoeba_optimizer.verbose = false;
+	amoeba_optimizer.set_x_tolerance(1);
+	//	amoeba_optimizer.set_relative_diameter(0.10);
+	//	amoeba_optimizer.set_max_iterations(10);
+	//	amoeba_optimizer.set_f_tolerance(1);
+
+	vnl_vector<double> x = this->get_vnl_vector_with_start_guess_of_num_gaussians(n);
+	cout<<"x="<<x<<endl;
+	amoeba_optimizer.minimize(cost,x);
+	cout<<"x="<<x<<endl;
+	cout<<"amoeba_optimizer.maxiter="<<amoeba_optimizer.maxiter<<endl;
+	cout<<"amoeba_optimizer.F_tolerance="<<amoeba_optimizer.F_tolerance<<endl;
+	cout<<"amoeba_optimizer.X_tolerance="<<amoeba_optimizer.X_tolerance<<endl;
+
+	gaussian g = gaussian(x[0],x[1],x[2]);
+	gaussian g2 = gaussian(x[3],x[4],x[5]);
+	/*for(int i = 1; i<=n; ++i) {
+
+	}
+
+	
+	
+
+	if(save_histogram_file_path != ""){
+		vector<gaussian> v; v.push_back(g); v.push_back(g2);
+		//this->save_histogram_to_txt_file(save_histogram_file_path,v);
+	}*/
+
+	//	return x[1] + 3*x[2]; //pos + 2*SD
+	return g.get_value_at_intersection_between_centers(g2);
+}
 //-----------------------------
 
 template <class ELEMTYPE>
