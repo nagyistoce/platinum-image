@@ -46,7 +46,7 @@ class userIOmanager
         std::list<userIO *> IOblocks;
         userIO * block_from_ID(int IOblockID);
 
-		FLTKuserIOpar_landmarks * userIOmanager::get_landmarks(int userIO_ID);
+		FLTKuserIOpar_landmarks * get_landmarks(int userIO_ID);
 		
         //void maintenance ();    //called on idle or other time, to cleanup deleted objects and such
 

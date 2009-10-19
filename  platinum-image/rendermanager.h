@@ -146,7 +146,7 @@ class rendermanager
 
         void set_blendmode(int rend_index,blendmode mode);   //sets combination-wide blend mode, if blendmode is later defined
                                                              //for each image in a combination, this should set all of them
-		Vector3D rendermanager::center_of_image(const int imageID) const;
+		Vector3D center_of_image(const int imageID) const;
 		void center2d(const int rendererID, const int imageID);															 
 
 		void center3d_and_fit(const int rendererID, const int imageID);

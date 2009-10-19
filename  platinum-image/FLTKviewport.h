@@ -279,6 +279,8 @@ class FLTKpane2 : public FLTKpane
 };
 */
 
+class FLTK_Pt_pane;
+
 //---------------------------------------------
 //---------------------------------------------
 class FLTK_Event_pane : public Fl_Widget		//This class catches events and passes them on to "viewport" and draws the "rgbpixmap"

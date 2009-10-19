@@ -208,7 +208,7 @@ image_general<ELEMTYPE, IMAGEDIM>::image_general(std::vector<std::string> files,
         this->voxel_size = voxelSize;
         
 		delete[] data; //To avoid memory leak !!!!!!!
-        name_from_path (files.front());
+        this->name_from_path(files.front());
 
         //image_has_changed(true);
         }

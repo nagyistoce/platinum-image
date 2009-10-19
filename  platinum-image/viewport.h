@@ -44,7 +44,7 @@ class thresholdparvalue;
 
 #define NO_RENDERER_ID 0
 
-
+class FLTKviewport; //Forward declaration needed by Xcode (version 3.2.1)...
 
 class viewport
 {

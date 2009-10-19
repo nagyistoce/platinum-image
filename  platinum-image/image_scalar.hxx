@@ -1753,7 +1753,7 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::save_histogram_to_txt_file(const std::str
 }
 
 template <class ELEMTYPE, int IMAGEDIM>
-void image_scalar<ELEMTYPE, IMAGEDIM>::save_histogram_to_txt_file(const std::string filename, image_binary<3> *mask_im, int num_buckets = 1000) {
+void image_scalar<ELEMTYPE, IMAGEDIM>::save_histogram_to_txt_file(const std::string filename, image_binary<3> *mask_im, int num_buckets) {
 	histogram_1D<ELEMTYPE> *tmpHist = this->get_histogram_from_masked_region_3D(mask_im, num_buckets);
 	tmpHist->save_histogram_to_txt_file(filename);
 }

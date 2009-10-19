@@ -318,7 +318,7 @@ class histogram_2D : public histogram_base
         ~histogram_2D ();
         void images (int image_hor,int image_vert);
         void calculate_from_image_data(int number_of_buckets=0);
-        thresholdparvalue histogram_2D::get_threshold (float h_min,float h_max, float v_min, float v_max, int mode = THRESHOLD_2D_MODE_RECT);
+        thresholdparvalue get_threshold (float h_min,float h_max, float v_min, float v_max, int mode = THRESHOLD_2D_MODE_RECT);
         void highlight (regionofinterest * region); //highlight histogram values for supplied
                                                     //region of interest
         bool ready ();

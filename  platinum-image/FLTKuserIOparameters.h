@@ -517,7 +517,7 @@ class FLTKuserIOpar_histogram2D : public FLTKuserIOparameter_base
         static void selmode_change_callback (Fl_Widget *callingwidget, void *);   //called when oval/rect button is pushed
         void data_vector_has_changed ();
         int histogram_image_ID (int n);                                          //image used for axis n in histogram
-        void FLTKuserIOpar_histogram2D::highlight_ROI (regionofinterest *);       //highlight region of interest
+        void highlight_ROI (regionofinterest *);       //highlight region of interest
         void set_images (int hor, int vert);                                     //set images in histogram and refresh image
     };
 
