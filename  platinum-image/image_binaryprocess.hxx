@@ -2502,7 +2502,7 @@ int image_binary<IMAGEDIM>::find_voxel_index_percent_object_content(int dir, int
 	return backup_return_value;
 }
 
-
+/*
 template <int IMAGEDIM>
 void image_binary<IMAGEDIM>::convex_hull_line_filling_3D(int dir, IMGBINARYTYPE object_value)
 {
@@ -2581,25 +2581,8 @@ void image_binary<IMAGEDIM>::convex_hull_line_filling_3D(int dir, IMGBINARYTYPE 
 	}
 
 }
+*/
 
-template <int IMAGEDIM>
-void image_binary<IMAGEDIM>::convex_hull_line_filling_in_two_dirs_3D(int dir1, int dir2, IMGBINARYTYPE object_value)
-{
-	this->convex_hull_line_filling_3D(dir1,object_value);
-	this->convex_hull_line_filling_3D(dir2,object_value);
-}
-
-template <int IMAGEDIM>
-void image_binary<IMAGEDIM>::convex_hull_line_filling_inplane_3D(int dir, IMGBINARYTYPE object_value)
-{
-	if(dir==0){
-		this->convex_hull_line_filling_in_two_dirs_3D(1,2,object_value);
-	}else if(dir==1){
-		this->convex_hull_line_filling_in_two_dirs_3D(0,2,object_value);
-	}else if(dir==2){
-		this->convex_hull_line_filling_in_two_dirs_3D(0,1,object_value);
-	}
-}
 
 
 template <int IMAGEDIM>

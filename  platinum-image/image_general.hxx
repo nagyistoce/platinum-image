@@ -442,23 +442,42 @@ void image_general<ELEMTYPE, IMAGEDIM>::combine_using_physical_pos(image_general
 	Vector3D vox_pos;
 	Matrix3D mat1 = this->get_orientation() * this->get_voxel_resize();
 //	this->origin + this->get_orientation() * this->get_voxel_resize() * vox_pos;
+//	Vector3D vpos = wpos - origin;
+
+//	Matrix3D inv_orientation;
+//	inv_orientation = this->get_orientation().GetInverse();
+//	Matrix3D inv_voxel_resize;
+//	inv_voxel_resize = this->get_voxel_resize().GetInverse();
+//	Matrix3D mat2 = inv_voxel_resize * inv_orientation;	// the operations are done from right to left
+
+	Matrix3D mat2 = this->get_orientation().GetInverse() * this->get_voxel_resize().GetInverse();	// the operations are done from right to left
+	Vector3D this_voxel;
+
+	Matrix3D mat3 = image2->get_voxel_resize().GetInverse() * image2->get_orientation().GetInverse();	// the operations are done from right to left
+	Vector3D other_voxel;
+
 
 	switch(mode)
 	{
     case COMB_ADD:
 		cout<<"...ADD";
 		for(vox_pos[2]=0;vox_pos[2]<this->nz();vox_pos[2]++){
-			cout<<vox_pos[2]<<" ";
+			cout<<" "<<vox_pos[2];
 			for(vox_pos[1]=0;vox_pos[1]<this->ny();vox_pos[1]++){
 				for(vox_pos[0]=0;vox_pos[0]<this->nx();vox_pos[0]++){
 					phys = this->origin + mat1*vox_pos;
+					other_voxel = mat3*(phys - image2->get_origin());
 
-					if(image2->is_physical_pos_within_image_3D(phys)){
-						this->set_voxel_in_physical_pos(phys, this->get_voxel_in_physical_pos(phys) + image2->get_voxel_in_physical_pos(phys));
+					if(image2->is_voxelpos_within_image_3D(other_voxel)){
+//					if(image2->is_physical_pos_within_image_3D(phys)){
+						this_voxel = mat2*(phys - this->origin);
+						this->set_voxel( this_voxel, this->get_voxel(this_voxel) + image2->get_voxel(other_voxel) );
 					}
 				}
 			}
 		}
+		cout<<endl;
+
 	break;
 	default:
 		pt_error::error("image_general<ELEMTYPE, IMAGEDIM>::combine_using_physical_pos --> COMBINE_MODE not recognized",pt_error::debug);

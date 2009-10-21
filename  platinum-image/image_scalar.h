@@ -199,6 +199,11 @@ public:
     image_binary<IMAGEDIM> *threshold_slice_wise_with_slice_max_offsets(ELEMTYPE thres_min, ELEMTYPE max_offset=-1, int dir=2, IMGBINARYTYPE true_inside_threshold=true, ELEMTYPE high=std::numeric_limits<ELEMTYPE>::max()); ///Return a image_binary where slice-voxels with values between "max(low ,val+offset)" and high gets the value true_inside_threshold.
 	void draw_line_2D(int x0, int y0, int x1, int y1, int z, ELEMTYPE value, int direction=2); ///Draw a line between (x0,y0) and (x1,y1) in plane z using color described by value. The coordinates are given on the plane orthogonal to the axis given by direction.
 	void draw_line_3D(Vector3Dint from_vox, Vector3Dint to_vox, ELEMTYPE value); 
+	void convex_hull_line_filling_3D(int dir, ELEMTYPE object_value=1); 
+	void convex_hull_line_filling_in_two_dirs_3D(int dir1, int dir2, ELEMTYPE object_value=1); 
+	void convex_hull_line_filling_inplane_3D(int dir, ELEMTYPE object_value=1); 
+
+
 	void draw_line_3D(line3D line, ELEMTYPE value); 
 	bool row_sum_threshold(int* res, ELEMTYPE low_thr, ELEMTYPE high_thr, int row_direction=0, int z_direction=2, int first_slice=-1, int last_slice=-1); ///Compute optimal split level for each slice
     void mask_out(image_binary<IMAGEDIM> *mask, IMGBINARYTYPE object_value=TRUE, ELEMTYPE blank=0); ///All voxels in the current image where the corresponding mask voxels != object_value are set to blank.

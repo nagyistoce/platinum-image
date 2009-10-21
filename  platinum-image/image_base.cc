@@ -475,6 +475,10 @@ image_base *vtkloader::read()
                         result = new image_integer<float>();
                         ((image_integer<float>*)result)->load_dataset_from_VTK_file(file_path);
                         break;
+                    case itk::ImageIOBase::DOUBLE:
+                        result = new image_integer<double>();
+                        ((image_integer<double>*)result)->load_dataset_from_VTK_file(file_path);
+                        break;
                     default:
                         pt_error::error("Load scalar VTK: unsupported component type: " + vtkIO->GetComponentTypeAsString (componentType), pt_error::warning);
                     }
@@ -767,6 +771,10 @@ image_base *dicomloader::read()
 								case itk::ImageIOBase::FLOAT:
 									result = new image_integer<float>();
 									((image_integer<float>*)result)->load_dataset_from_DICOM_fileAF(*file,seriesIdentifier);
+									break;
+								case itk::ImageIOBase::DOUBLE:
+									result = new image_integer<double>();
+									((image_integer<double>*)result)->load_dataset_from_DICOM_fileAF(*file,seriesIdentifier);
 									break;
 								default:
 									pt_error::error("dicomloader::read() --> Unsupported component type: " + dicomIO->GetComponentTypeAsString (theComponentType), pt_error::warning);

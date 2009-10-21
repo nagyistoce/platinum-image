@@ -1327,6 +1327,103 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::draw_line_3D(Vector3Dint from_vox, Vector
 }
 
 template <class ELEMTYPE, int IMAGEDIM>
+void image_scalar<ELEMTYPE, IMAGEDIM>::convex_hull_line_filling_3D(int dir, ELEMTYPE object_value)
+{
+	int first;
+	int last;
+	int sx = this->datasize[0];
+	int sy = this->datasize[1];
+	int sz = this->datasize[2];
+
+	switch(dir){
+	case 0:
+		for(int z=0; z<sz; z++){		
+			for(int y=0; y<sy; y++){
+				first=-1;
+				last=-1;
+				for(int x=0; x<sx; x++){
+					if(this->get_voxel(x,y,z) == object_value){
+						if(first==-1){
+							first = x;
+						}else{
+							last = x;
+						}
+					}
+				}
+				if(last>-1){
+					this->draw_line_2D(first,y,last,y,z,object_value);
+				}
+			}
+		}
+		break;
+	case 1:
+		for(int z=0; z<sz; z++){		
+			for(int x=0; x<sx; x++){
+				first=-1;
+				last=-1;
+				for(int y=0; y<sy; y++){
+					if(this->get_voxel(x,y,z) == object_value){
+						if(first==-1){
+							first = y;
+						}else{
+							last = y;
+						}
+					}
+				}
+				if(last>-1){
+					this->draw_line_2D(x,first,x,last,z,object_value);
+				}
+			}
+		}
+		break;
+	case 2:
+		for(int y=0; y<sy; y++){
+			for(int x=0; x<sx; x++){
+				first=-1;
+				last=-1;
+				for(int z=0; z<sz; z++){		
+					if(this->get_voxel(x,y,z) == object_value){
+						if(first==-1){
+							first = z;
+						}else{
+							last = z;
+						}
+					}
+				}
+				if(last>-1){
+					for(int z=first; z<=last; z++){	
+						this->set_voxel(x,y,z,object_value);
+					}
+				}
+			}
+		}
+		break;
+	default:
+		pt_error::error("convex_hull_line_filling_3D, erroneous direction...",pt_error::debug);
+		break;
+	}
+}
+
+template <class ELEMTYPE, int IMAGEDIM>
+void image_scalar<ELEMTYPE, IMAGEDIM>::convex_hull_line_filling_in_two_dirs_3D(int dir1, int dir2, ELEMTYPE object_value)
+{
+	this->convex_hull_line_filling_3D(dir1,object_value);
+	this->convex_hull_line_filling_3D(dir2,object_value);
+}
+
+template <class ELEMTYPE, int IMAGEDIM>
+void image_scalar<ELEMTYPE, IMAGEDIM>::convex_hull_line_filling_inplane_3D(int dir, ELEMTYPE object_value)
+{
+	if(dir==0){
+		this->convex_hull_line_filling_in_two_dirs_3D(1,2,object_value);
+	}else if(dir==1){
+		this->convex_hull_line_filling_in_two_dirs_3D(0,2,object_value);
+	}else if(dir==2){
+		this->convex_hull_line_filling_in_two_dirs_3D(0,1,object_value);
+	}
+}
+
+template <class ELEMTYPE, int IMAGEDIM>
 void image_scalar<ELEMTYPE, IMAGEDIM>::draw_line_3D(line3D line, ELEMTYPE value)
 {
 	Vector3Dint v1;

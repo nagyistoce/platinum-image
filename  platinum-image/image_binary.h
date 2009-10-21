@@ -136,9 +136,9 @@ public:
 	void dilate_3D_26Nbh(IMGBINARYTYPE object_value=TRUE); ///Morphological dilate (26 Neighbourhood)
 	void dilate_3D_26Nbh(int num_iter, IMGBINARYTYPE object_value); ///Morphological dilate (26 Neighbourhood)
 	int find_voxel_index_percent_object_content(int dir, int object_content_percent, IMGBINARYTYPE object_value=TRUE); 
-	void convex_hull_line_filling_3D(int dir, IMGBINARYTYPE object_value=TRUE); 
-	void convex_hull_line_filling_in_two_dirs_3D(int dir1, int dir2, IMGBINARYTYPE object_value=TRUE); 
-	void convex_hull_line_filling_inplane_3D(int dir, IMGBINARYTYPE object_value=TRUE); 
+//	void convex_hull_line_filling_3D(int dir, IMGBINARYTYPE object_value=TRUE); 
+//	void convex_hull_line_filling_in_two_dirs_3D(int dir1, int dir2, IMGBINARYTYPE object_value=TRUE); 
+//	void convex_hull_line_filling_inplane_3D(int dir, IMGBINARYTYPE object_value=TRUE); 
 
 	void get_num_neighbours_distribution_3D_26Nbh(vector<int> &num_nb, vector<int> &num_vox, IMGBINARYTYPE object_value=TRUE); //Returns statistics on the number of object neighbours object voxels have.
 	float get_border_volume_ratio_3D_26Nbh(int num_nb_inside_limit=17, IMGBINARYTYPE object_value=TRUE); //Returns statistics on the number of object neighbours object voxels have.
