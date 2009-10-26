@@ -992,22 +992,34 @@ ELEMTYPE histogram_1D<ELEMTYPE>::fit_two_gaussians_to_histogram_and_return_thres
 }
 
 template <class ELEMTYPE>
-void histogram_1D<ELEMTYPE>::fit_n_gaussians_to_histogram(int n, string save_histogram_file_path)
+vnl_vector<double> histogram_1D<ELEMTYPE>::fit_n_gaussians_to_histogram(int n, string save_histogram_file_path)
 {
-	unsigned short t = this->get_bucket_at_histogram_higher_percentile(0.04,true);
+	unsigned short t = this->get_bucket_at_histogram_higher_percentile(0.03,true);
 
-	for( int i = t; i< this->bucket_vector->size(); ++i)
+	for( int i =t; i<  this->bucket_vector->size(); ++i)
+	//	this->bucket_vector->pop_back();
 		this->bucket_vector->at(i) = 0;
 
+//	this->resize_to_fit_data();
 	vnl_vector<double> x = this->bucket_vector->fit_n_gaussians_to_histogram(n, save_histogram_file_path);
 
+
 	if(save_histogram_file_path != ""){
+
 		vector<gaussian> v;
 		for(int i=0; i<n; i++) {
 			v.push_back( gaussian(this->bucketpos_to_intensity(x[i*3+0]),this->bucketpos_to_intensity(x[i*3+1]),this->bucketpos_to_intensity(x[i*3+2])) );
 		}
+
 		this->save_histogram_to_txt_file(save_histogram_file_path,v);
+//		this->save_histogram_to_txt_file(
+
+
+	
+
 	}
+
+	return x;
 }
 	
 //-----------------------------
@@ -1092,8 +1104,9 @@ float histogram_1D<ELEMTYPE>::get_hist_variance() {
 	for(int i = 0; i<this->num_buckets;i++) 
 		mean  += float(bucketpos_to_intensity(i))*float(this->bucket_vector->at(i))/float(total);
 	for(int i = 0; i<this->num_buckets;i++) 
-		variance += pow(float(bucketpos_to_intensity(i)) - mean, 2) *float(this->bucket_vector->at(i));
-
+		if(bucketpos_to_intensity(i)!=0)
+			variance += pow(float(bucketpos_to_intensity(i)) - mean, 2) *float(this->bucket_vector->at(i))/float(total);
+	
 	return variance;
 }
 
