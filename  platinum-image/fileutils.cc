@@ -308,6 +308,18 @@ vector<string> remove_strings_that_conatain_any_of_these(vector<string> v, vecto
 }
 
 //------------- Dicom specific file handling ----------------------
+
+bool is_dicom_file(string path)
+{
+	itk::GDCMImageIO::Pointer dicomIO = itk::GDCMImageIO::New();
+	if(dicomIO->CanReadFile(path.c_str())) {
+		return true;
+	}
+
+	return false;
+}
+
+
 vector<string> get_dicom_files_in_dir(string dir_path, bool full_path, bool recursive_search)
 {
 	vector<string> tmp;
@@ -621,6 +633,18 @@ bool is_dicom_file_imaginary_image(string file_path)
 	return does_dicom_file_tag_contain(file_path, DCM_IMAGE_TYPE, DCM_IMAGINARY_SUBSTRING);
 }
 
+string get_elemtype_in_image_file(string file_path)
+{
+	string ret="";
+	if( is_dicom_file(file_path) ){
+		ret = get_elemtype_in_dicom_file(file_path);
+	}else if( is_vtk_file(file_path) ){
+		ret = get_elemtype_in_vtk_file(file_path);
+	}
+
+	return ret;
+}
+
 string get_elemtype_in_dicom_file(string file_path)
 {
     itk::GDCMImageIO::Pointer dicomIO = itk::GDCMImageIO::New();
@@ -668,6 +692,15 @@ string get_elemtype_in_dicom_file(string file_path)
 	}
 
 	return result;
+}
+
+bool is_vtk_file(string file_path)
+{
+    itk::VTKImageIO::Pointer vtkIO = itk::VTKImageIO::New();
+	if(vtkIO->CanReadFile(file_path.c_str())){
+		return true;
+	}
+	return false;
 }
 
 string get_elemtype_in_vtk_file(string file_path)

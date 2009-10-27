@@ -366,7 +366,7 @@ class FLTKuserIOpar_float_box : public FLTKuserIOparameter_base    //float value
     protected:
         Fl_Value_Input * control;
     public:
-        FLTKuserIOpar_float_box (const std::string name, float ma=255, float mi=0);
+        FLTKuserIOpar_float_box (const std::string name, float ma=255, float mi=0, float start_val=std::numeric_limits<float>::max());
                                                    //order of parameters reverse of expected,
                                                    //because min is more typically left at default
                                                    //than max

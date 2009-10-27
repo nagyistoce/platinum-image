@@ -984,7 +984,7 @@ void FLTKuserIOpar_float::set_value (float val)
 
 #pragma mark *** FLTKuserIOpar_float_box ***
 
-FLTKuserIOpar_float_box::FLTKuserIOpar_float_box (const std::string name, float ma, float mi) : FLTKuserIOparameter_base (INITPARWIDGETWIDTH,STDPARWIDGETHEIGHT, name)
+FLTKuserIOpar_float_box::FLTKuserIOpar_float_box (const std::string name, float ma, float mi, float start_val) : FLTKuserIOparameter_base (INITPARWIDGETWIDTH,STDPARWIDGETHEIGHT, name)
     {
     //label set by superclass constructor
     //position & width set by parent userIO later, including margin
@@ -995,7 +995,7 @@ FLTKuserIOpar_float_box::FLTKuserIOpar_float_box (const std::string name, float 
     control->maximum(ma);
     control->minimum(mi);
     control->step(0.001);
-//	control->value(default_val)
+	control->value(start_val);
 
     resizable(NULL);
 

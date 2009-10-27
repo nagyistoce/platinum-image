@@ -89,6 +89,7 @@ struct TagValueDirInfo{ //SO
 	int similarDirs;
 };
 
+bool			is_dicom_file(string path);
 vector<string>	get_dicom_files_in_dir(string dir_path, bool full_path=false, bool recursive_search=false);
 vector<string>	get_dicom_files_in_dir(string dir_path, vector<string> dcm_files, bool full_path=false, bool recursive_search=true);
 vector<string>	get_first_dicom_files_in_all_subdirs(string dir_path, bool full_path=true);
@@ -110,7 +111,10 @@ bool			does_dicom_file_tag_contain(string file_path, string tag, string content)
 bool			is_dicom_file_magnitude_image(string file_path);
 bool			is_dicom_file_real_image(string file_path);
 bool			is_dicom_file_imaginary_image(string file_path);
+string			get_elemtype_in_image_file(string file_path);
 string			get_elemtype_in_dicom_file(string file_path);
+
+bool			is_vtk_file(string path);
 string			get_elemtype_in_vtk_file(string file_path);
 
 
