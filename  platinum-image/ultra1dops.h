@@ -52,6 +52,7 @@ class ultra1dops{
 
 		static int mark_point(curve_scalar<unsigned short> *curve, int from, int to);
 		static int get_vally(curve_scalar<unsigned short> *curve, int x, int dir);
+		static bool highest_in_interval(vector<Vector3D> c, int start, int stop, unsigned short height);
 		static int count_peaks(vector<Vector3D> c, curve_scalar<unsigned short> *curve, Vector3D *peak);
 		static vector<Vector3D> simplify_the_curve(curve_scalar<unsigned short> *curve);
 

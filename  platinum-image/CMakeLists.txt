@@ -128,6 +128,7 @@ rendererVTK.h
 rendergeometry.h 
 rendermanager.h 
 ptmath.h 
+shape_calc.h
 spectrum_importer.h
 statusarea.h 
 stringmatrix.h 
@@ -207,6 +208,7 @@ rendergeometry.cc
 rendercombination.cc 
 rendermanager.cc 
 ptmath.cc 
+shape_calc.cc
 spectrum_importer.cc
 statusarea.cc 
 stringmatrix.cc 
@@ -455,6 +457,7 @@ histogram.h
 listedfactory.h 
 pt_vector.h
 ptconfig.h
+shape_calc.h
 threshold.h 
 ultra1dops.h
 
@@ -476,6 +479,7 @@ histogram.hxx
 pt_vector.cc
 ptconfig.cc
 ptmath.cc 
+shape_calc.cc
 stringmatrix.cc 
 threshold.cc
 ultra1dops.cc)

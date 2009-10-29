@@ -170,7 +170,7 @@ class image_base : public data_base
 
 		string resolve_tooltip();
 		string resolve_tooltip_image_base();
-		void helper_data_to_binary_image(){cout << "Image_base has not implemented this yet" <<endl;};
+		virtual void helper_data_to_binary_image(vector<int> vec) = 0;
 
     };
 
@@ -182,6 +182,7 @@ protected:
 public:
     imageloader(std::vector<std::string> *f);
     ~imageloader();
+	std::string read_file;
 };
 
 

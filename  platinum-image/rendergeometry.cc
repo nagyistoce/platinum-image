@@ -305,47 +305,48 @@ rendergeom_spectrum::rendergeom_spectrum():rendergeometry_base(){
 	color = new RGBvalue();
 	color->set_rgb(255,0,0);
 }
-void rendergeom_spectrum::set_borders(curve_base *the_curve_pointer, bool *y_type, int width, int height){
+void rendergeom_spectrum::set_borders(curve_base *the_curve_pointer, char x_type, bool *y_type, int width, int height){
 	double t_max, t_min, max, min;
 	double dx, dy;
-	dx = (the_curve_pointer->get_data_size());
-
+	
 	min = numeric_limits<double>::max();
 	max = -min;
+	SPECTRUM_TYPE c = x_type == 't'? SP_TIME : SP_FREQ;
+	dx = (the_curve_pointer->get_data_size());
 	//enum SPECTRUM_TYPE {SP_REAL, SP_COMPLEX, SP_MAGNITUDE, SP_PHASE, SP_FREQ, SP_TIME};
 	if(y_type[0]){
-		if((t_max = the_curve_pointer->get_max(SP_REAL)) > max)
+		if((t_max = the_curve_pointer->get_max(c, SP_REAL)) > max)
 			max = t_max;
-		if((t_min = the_curve_pointer->get_min(SP_REAL)) < min)
+		if((t_min = the_curve_pointer->get_min(c, SP_REAL)) < min)
 			min = t_min;
 	}
 	if(y_type[1]){
-		if((t_max = the_curve_pointer->get_max(SP_COMPLEX)) > max)
+		if((t_max = the_curve_pointer->get_max(c, SP_COMPLEX)) > max)
 			max = t_max;
-		if((t_min = the_curve_pointer->get_min(SP_COMPLEX)) < min)
+		if((t_min = the_curve_pointer->get_min(c, SP_COMPLEX)) < min)
 			min = t_min;
 	}
 	if(y_type[2]){
-		if((t_max = the_curve_pointer->get_max(SP_MAGNITUDE)) > max)
+		if((t_max = the_curve_pointer->get_max(c, SP_MAGNITUDE)) > max)
 			max = t_max;
-		if((t_min = the_curve_pointer->get_min(SP_MAGNITUDE)) < min)
+		if((t_min = the_curve_pointer->get_min(c, SP_MAGNITUDE)) < min)
 			min = t_min;
 	}
 	if(y_type[3]){
-		if((t_max = the_curve_pointer->get_max(SP_PHASE)) > max)
+		if((t_max = the_curve_pointer->get_max(c, SP_PHASE)) > max)
 			max = t_max;
-		if((t_min = the_curve_pointer->get_min(SP_PHASE)) < min)
+		if((t_min = the_curve_pointer->get_min(c, SP_PHASE)) < min)
 			min = t_min;
 	}
 
-
-	dy = (max - min + 1);
+	dy = (max - min);// + 1);
 	qx = (width/dx);//*zoom;
 	qy = (height/dy);//*zoom;
 	x_offset = the_curve_pointer->get_offset(); //Fixa denna som en variabel av x_type
 	x_scale = the_curve_pointer->get_scale();
 
 	start_y = min;//the_curve_pointer->get_min();
+	//cout << "min: " << min << "   max: " << max << endl;
 
 }
 void rendergeom_spectrum::set_curve(curve_base *the_curve_pointer){
@@ -354,9 +355,16 @@ void rendergeom_spectrum::set_curve(curve_base *the_curve_pointer){
 Vector3D rendergeom_spectrum::view_to_curve(int x_hat, int y_hat, int width, int height){
 	Vector3D val;
 	val[0] = round((x_hat - cx)/(qx*zoom));
-	val[1] = -((y_hat - cy - height + 1)/(qy*zoom)) + (start_y/qy);
+	//val[1] = -((y_hat - cy - height + 1)/(qy*zoom)) + (start_y/qy);
+	val[1] = -(y_hat-height-cy+1-qy*start_y)/(qy*zoom);
 	val[2] = 0;
 	return val;
+	
+	/*Vector3D val;
+	val[0] = round((x_hat - cx)/(qx*zoom));
+	val[1] = -((y_hat - cy - height + 1)/(qy*zoom)) + (start_y/qy);
+	val[2] = 0;
+	return val;*/
 }
 Vector3D rendergeom_spectrum::curve_to_view(int x, double y, int width, int height){
 	Vector3D val;

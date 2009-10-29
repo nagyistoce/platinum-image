@@ -530,6 +530,7 @@ image_base *vtkloader::read()
             }
 
 		    //file was read - remove from list
+			read_file = *it;
 	        it = files->erase(it);
         }//can read
 	else{
@@ -594,6 +595,7 @@ image_base * analyze_hdrloader_itk::read()
 			}
 
 		    //file was read - remove from list
+			read_file = *it;
 	        files->erase(it);
         }//can read
 	}//for
@@ -683,6 +685,7 @@ image_base * ximgloader::read()
 			}
 
 		    //file was read - remove from list
+			read_file = *itr;
 	        files->erase(itr);
         }
 	}
@@ -747,30 +750,37 @@ image_base *dicomloader::read()
 								case itk::ImageIOBase::UCHAR:
 									result = new image_integer<unsigned char>();
 									((image_integer<unsigned char>*)result)->load_dataset_from_DICOM_fileAF(*file,seriesIdentifier);
+									read_file = *file;//save file path
 									break;
 								case itk::ImageIOBase::CHAR:
 									result = new image_integer<char>();
 									((image_integer<char>*)result)->load_dataset_from_DICOM_fileAF(*file,seriesIdentifier);
+									read_file = *file;//save file path
 									break;
 								case itk::ImageIOBase::USHORT:
 									result = new image_integer<unsigned short>();
 									((image_integer<unsigned short>*)result)->load_dataset_from_DICOM_fileAF(*file,seriesIdentifier);
+									read_file = *file;//save file path
 									break;
 								case itk::ImageIOBase::SHORT:
 									result = new image_integer<short>();
 									((image_integer<short>*)result)->load_dataset_from_DICOM_fileAF(*file,seriesIdentifier);
+									read_file = *file;//save file path
 									break;
 								case itk::ImageIOBase::UINT:
 									result = new image_integer<unsigned int>();
 									((image_integer<unsigned int>*)result)->load_dataset_from_DICOM_fileAF(*file,seriesIdentifier);
+									read_file = *file;//save file path
 									break;
 								case itk::ImageIOBase::INT:
 									result = new image_integer<int>();
 									((image_integer<int>*)result)->load_dataset_from_DICOM_fileAF(*file,seriesIdentifier);
+									read_file = *file;//save file path
 									break;
 								case itk::ImageIOBase::FLOAT:
 									result = new image_integer<float>();
 									((image_integer<float>*)result)->load_dataset_from_DICOM_fileAF(*file,seriesIdentifier);
+									read_file = *file;//save file path
 									break;
 								case itk::ImageIOBase::DOUBLE:
 									result = new image_integer<double>();
@@ -786,21 +796,25 @@ image_base *dicomloader::read()
 								case itk::ImageIOBase::UCHAR:
 									result = new image_integer<unsigned char>();
 									((image_integer<unsigned char>*)result)->load_dataset_from_these_DICOM_files(*files);
+									read_file = "";//save file path
 									return result;
 									break;
 								case itk::ImageIOBase::USHORT:
 									result = new image_integer<unsigned short>();
 									((image_integer<unsigned short>*)result)->load_dataset_from_these_DICOM_files(*files);
+									read_file = "";//save file path
 									return result;
 									break;
 								case itk::ImageIOBase::SHORT:
 									result = new image_integer<short>();
 									((image_integer<short>*)result)->load_dataset_from_these_DICOM_files(*files);
+									read_file = "";//save file path
 									return result;
 									break;
 								case itk::ImageIOBase::FLOAT:
 									result = new image_integer<float>();
 									((image_integer<float>*)result)->load_dataset_from_these_DICOM_files(*files);
+									read_file = "";//save file path
 									return result;
 									break;
 								default:
@@ -814,6 +828,7 @@ image_base *dicomloader::read()
 //								case itk::ImageIOBase::FLOAT:
 									result = new image_complex<float>();
 									((image_complex<float>*)result)->load_complex_dataset_from_these_DICOM_files(*files);
+									read_file = "";//save file path
 									return result;
 //									break;
 //								}
@@ -1240,6 +1255,7 @@ image_base * analyze_hdrloader::read()
 
 				//file was read - remove from list
 	//            files->erase (files->begin());
+				read_file = *it;//save file path
 				files->erase(it);
 				}//exists
 			}//pos
@@ -1330,6 +1346,7 @@ image_base *analyze_objloader::read()
 				newImage->name(img_name);
 
 	//			files->erase (files->begin());
+				read_file = *it;//save file path
 				files->erase(it);
 				}//obj file exists
 			}//pos
@@ -1347,7 +1364,17 @@ void image_base::try_loader(std::vector<std::string> *f) //! helper for image_ba
 		do{
 			new_image = loader.read();
 			if(new_image != NULL){ 
-				datamanagement.add(new_image); 
+				cout << "About to load ad_data for " << ((imageloader)loader).read_file << endl;
+				datamanagement.add(new_image);
+				std::string ad_path;
+				ad_path = ((imageloader)loader).read_file;
+				size_t stop = ad_path.find_last_of(".");
+				if(stop != string::npos && ad_path != ""){
+					ad_path = ad_path.substr(0,stop).append(".pad");
+					std::cout << "Trying to load: " << ad_path << std::endl;
+					new_image->read_helper_data_from_file(ad_path);
+				}
+				//RN ad_insert
 			}
 		} 
 		while(new_image !=NULL && !f->empty());
@@ -1426,6 +1453,7 @@ image_base *niftiloader::read()
 			}
 			//file was read - remove from list
 			//files->erase(files->begin());
+			read_file = *it;//save file path
 			files->erase(it);
 		}//can read
 	}//for

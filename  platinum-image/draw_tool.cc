@@ -108,6 +108,14 @@ void draw_tool::handle(viewport_event &event)
 					start = myRenderer->view_to_world(event.mouse_pos_local()[0], event.mouse_pos_local()[1],fp->w(),fp->h());
 					cout << "location: " << start[0] << " " << start[1] << " " << start[2] << endl; 
 					drawed = true;
+					if(draw_type == 'p'){//No need for double start-stop when point
+						data_base * base = myRenderer->the_rc->top_image<data_base>();
+						draw_data(event, fp);
+						draw_type = 'x';
+						drawed = false;
+						remove_data = false;
+						free.clear();
+					}
 				}else if(draw_type != 'x' && drawed){
 					data_base * base = myRenderer->the_rc->top_image<data_base>();
 					if(remove_data){
@@ -168,7 +176,7 @@ void draw_tool::draw_data(viewport_event &event, FLTK_Event_pane *fp){
 			break;
 		case 'p':
 			cout << "adding point" << endl;
-			base->helper_data->add_point(stop);
+			base->helper_data->add_point(start);
 			break;
 		case 'r':
 			cout << "adding rectangle" << endl;

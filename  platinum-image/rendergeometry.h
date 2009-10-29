@@ -128,7 +128,7 @@ class rendergeom_spectrum: public rendergeometry_base
 {
 	public:
         rendergeom_spectrum();
-		void set_borders(curve_base *the_curve_pointer, bool* y_type, int width, int height); //
+		void set_borders(curve_base *the_curve_pointer, char x_type, bool* y_type, int width, int height); //
 		void set_curve(curve_base *the_curve_pointer);
 		//int transform(int x, double y, int row_length, int col_length);
 		Vector3D view_to_curve(int x_hat, int y_hat, int width, int height);

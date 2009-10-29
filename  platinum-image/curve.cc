@@ -21,10 +21,12 @@
 
 
 
-curve_base::curve_base(string name) : data_base(get_supported_renderers())
+curve_base::curve_base(string name, bool real) : data_base(get_supported_renderers())
 {
     //start empty
-    widget = new datawidget<curve_base>(this, name);
+	if(real)
+		widget = new datawidget<curve_base>(this, name);
+		
 	modified = false;
 }
 
@@ -38,3 +40,12 @@ vector<RENDERER_TYPE> curve_base::get_supported_renderers(){
 curve_base::~curve_base() {}
 
 void curve_base::redraw() {}
+
+
+curve_complex_base::curve_complex_base(string name) : curve_base(name, false)
+{
+	this->widget = new datawidget<curve_complex_base>(this, name);
+    //start empty
+}
+
+curve_complex_base::~curve_complex_base() {}

@@ -80,6 +80,8 @@ class image_storage : public image_base
     public:
         virtual ~image_storage();
 
+		virtual void helper_data_to_binary_image(vector<int> vec) = 0;
+
         virtual float get_max_float() const;
 		virtual float get_min_float() const;
 		virtual float get_max_float_safe()const {return 0;};	//checks if stats==NULL first, not done normally for better performance 

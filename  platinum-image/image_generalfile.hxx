@@ -556,6 +556,16 @@ void image_general<ELEMTYPE, IMAGEDIM>::save_to_VTK_file(const std::string file_
 
     try{
         writer->Update();
+		/*save helper data if any exist*/
+		if(!this->helper_data->data.empty()){
+			std::string helper_data_path;
+			size_t found = file_path.find_last_of(".");
+			if(found != string::npos){
+				helper_data_path = file_path.substr(0,found);
+				helper_data_path.append(".pad");
+				this->save_helper_data_to_file(helper_data_path);
+			}
+		}
         }
     catch (itk::ExceptionObject &ex){
         pt_error::error("Exception thrown saving file (" +file_path + ")", pt_error::warning);
@@ -626,6 +636,16 @@ void image_general<ELEMTYPE, IMAGEDIM>::save_to_DCM_file(const std::string file_
 
     try{
         writer->Update();
+		/*save helper data if any exist*/
+		if(!this->helper_data->data.empty()){
+			std::string helper_data_path;
+			size_t found = file_path.find_last_of(".");
+			if(found != string::npos){
+				helper_data_path = file_path.substr(0,found);
+				helper_data_path.append(".pad");
+				this->save_helper_data_to_file(helper_data_path);
+			}
+		}
     }catch (itk::ExceptionObject &ex){
         pt_error::error("Exception thrown saving file (" +file_path + ")", pt_error::warning);
 		std::cout<<ex<<std::endl;
@@ -875,8 +895,170 @@ void image_general<ELEMTYPE, IMAGEDIM>::save_to_NIFTI_file(const std::string fil
 		std::cout<<ex<<std::endl;
     }
 }
+template <class ELEMTYPE, int IMAGEDIM>
+void image_general<ELEMTYPE, IMAGEDIM>::helper_data_to_binary_image(int index){
+	image_binary<IMAGEDIM> *binary = new image_binary<IMAGEDIM>(this);
+	binary->fill(0);
+	write_additional_data(binary, i);
+	datamanagement.add(binary,"binary",true);
+}
+template <class ELEMTYPE, int IMAGEDIM>
+void image_general<ELEMTYPE, IMAGEDIM>::helper_data_to_binary_image(vector<int> indexes){
+	image_binary<IMAGEDIM> *binary = new image_binary<IMAGEDIM>(this);
+	binary->fill(0);
+	cout << "Adding index:";
+	for(int i = 0; i < indexes.size(); i++){
+		cout << " " << indexes.at(i) << endl;
+		write_additional_data(binary, indexes.at(i));
+	}
+	cout << endl;
+	datamanagement.add(binary,"binary",true);
+}
+template <class ELEMTYPE, int IMAGEDIM>
+void image_general<ELEMTYPE, IMAGEDIM>::helper_data_to_binary_image(ADDITIONAL_TYPE type){
+	image_binary<IMAGEDIM> *binary = new image_binary<IMAGEDIM>(this);
+	binary->fill(0);
+	for(int i = 0; i < helper_data->data.size(); i++){
+		if(helper_data->data.at(i)->type == type)
+			write_additional_data(binary, i);
+	}
+	datamanagement.add(binary,"binary",true);
+}
+template <class ELEMTYPE, int IMAGEDIM>
+void image_general<ELEMTYPE, IMAGEDIM>::write_additional_data(image_binary<IMAGEDIM> *bin_image, int i){
+	bool fill = i<0;
+	i = abs(i)-1; //added 1 so that 0 can have fill to
+	additional_data_base* base = helper_data->data.at(i);
+	ADDITIONAL_TYPE type;
+	type = base->type;
+	vector<Vector3D> vec, free, temp;
+	Vector3D p1, p2, p3,p4;
+	float radius;
+	switch(type){
+		case AT_POINT:
+			vec.push_back(world_to_voxel((dynamic_cast<point_data*>(base))->p));
+			break;
+		case AT_LINE:
+			p1 = world_to_voxel((dynamic_cast<line_data*>(base))->start);
+			p2 = world_to_voxel((dynamic_cast<line_data*>(base))->stop);
+			vec = shape_calc::calc_line_3d(p1,p2);
+			break;
+		case AT_RECT:
+			p1 = world_to_voxel((dynamic_cast<rect_data*>(base))->c1);
+			p2 = world_to_voxel((dynamic_cast<rect_data*>(base))->c2);
+			p3 = world_to_voxel((dynamic_cast<rect_data*>(base))->c3);
+			p4 = world_to_voxel((dynamic_cast<rect_data*>(base))->c4);
+			vec = shape_calc::calc_rect_3d(p1,p2,p3,p4);
+			break;
+		case AT_CIRCLE://Different from the others due to the radius calculation
+			p1 = (dynamic_cast<circle_data*>(base))->c;
+			p2 = (dynamic_cast<circle_data*>(base))->n;
+			radius = (dynamic_cast<circle_data*>(base))->radius;
+			cout << "radius:" << radius << endl;
+			free = shape_calc::calc_cirlce_3d(p1,p2,radius);
+			if(free.size() >=2){
+				p1 = world_to_voxel(free.at(0));
+				for(int q = 1; q < free.size(); q++){//connect the dots
+					p2 = world_to_voxel(free.at(q));
+					temp = shape_calc::calc_line_3d(p1,p2);
+					vec.insert(vec.end(),temp.begin(), temp.end());
+					p1 = p2;
+				}	
+			}
+			break;
+		case AT_FREEHAND:
+			free = (dynamic_cast<freehand_data*>(base))->p;
+			if(free.size() >=2){
+				p1 = world_to_voxel(free.at(0));
+				for(int q = 1; q < free.size(); q++){//connect the dots
+					p2 = world_to_voxel(free.at(q));
+					temp = shape_calc::calc_line_3d(p1,p2);
+					vec.insert(vec.end(),temp.begin(), temp.end());
+					p1 = p2;
+				}
+				//temp = shape_calc::calc_line_3d(p1,world_to_voxel(free.at(0))); //connect end points
+				//vec.insert(vec.end(),temp.begin(), temp.end());
+			}
+			break;
+		default:
+			break;
 
+	}
+	// = helper_data->data.at(i)->get_all_points();
+	int count = 0;
+	int x = datasize [0];
+	int y = datasize[1];
+	int z = datasize[2];
+	cout << "vec size: " << vec.size() << endl;
+	if(!fill){
+		for(int i = 0; i < vec.size(); i++){
+			Vector3D point = vec.at(i);//world_to_voxel(vec.at(i));
+			if(point[0]>=0 && point[0] < x && point[1]>=0 && 
+				point[1] < y && point[2]>=0 && point[2] < z ){
+				//add voxel to image
+				bin_image->set_voxel(point,1);
+				count++;
+			}
+		}
+	}else if(fill){
+		bin_image->fill_region_2d(vec, 1);
+	}
+	cout << "written nr: " << count << endl;
+		//binary->set_voxel(vec.at(i)[0], vec.at(i)[1], vec.at(i)[2]);
+}
+template <class ELEMTYPE, int IMAGEDIM>
+void image_general<ELEMTYPE, IMAGEDIM>::fill_region_2d(vector<Vector3D> border, ELEMTYPE fill_val){
+	
+	image_binary<3> *bin_image = new image_binary<3>(datasize[0],datasize[1],1);
+	bin_image->fill(0);
+	//additional_data_base* base = helper_data->data.at(i);
+	//base->calc_data();
+	//vector<Vector3D> border = base->points_to_draw;
+	for(int i = 0; i <border.size(); i++){
+		bin_image->set_voxel(border.at(i)[0],border.at(i)[1],0,1);
+	}
+	int z = border.front()[2]; //requires the object to be in the xy plane
+	bin_image->fill_holes_2D(2,1);
 
+	for(int x = 0; x <datasize[0]; x++){
+		for(int y = 0; y<datasize[1]; y++){
+			if(bin_image->get_voxel(x,y) == 1){
+				this->set_voxel(x,y,z,fill_val);
+			}
+		}
+	}
+	/*vector<Vector3D> queue;
+	queue.push_back(start_seed);
+	vector<vector<bool> > visit;
+	for(int i = 0; i < datasize[0];i++){
+		vector<bool> v;
+		v.assign(datasize[1],false);
+		visit.push_back(v);
+	}
+	while(!queue.empty()){
+		Vector3D p = queue.front();
+		this->set_voxel(p,value);
+		if(this->get_voxel(p[0]+1,p[1],p[2]) != value && !visit.at(p[0]+1).at(p[1]))
+			queue.push_back(create_Vector3D(p[0]+1,p[1],p[2]));
+
+		if(this->get_voxel(p[0]-1,p[1],p[2]) != value && !visit.at(p[0]-1).at(p[1]))
+			queue.push_back(create_Vector3D(p[0]-1,p[1],p[2]));
+
+		if(this->get_voxel(p[0],p[1]-1,p[2]) != value && !visit.at(p[0]).at(p[1]-1))
+			queue.push_back(create_Vector3D(p[0],p[1]-1,p[2]));
+
+		if(this->get_voxel(p[0],p[1]+1,p[2]) != value && !visit.at(p[0]).at(p[1]+1)){
+			queue.push_back(create_Vector3D(p[0],p[1]+1,p[2]));
+		}
+		visit.at(p[0]+1).at(p[1]) = true;
+		visit.at(p[0]-1).at(p[1]) = true;
+		visit.at(p[0]).at(p[1]+1) = true;
+		visit.at(p[0]).at(p[1]-1) = true;
+
+		queue.erase(queue.begin(),queue.begin()+1);
+		//cout <<"queue size: " << queue.size() << endl;
+	}*/
+}
 /*
 template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::load_dataset_from_VTK_file(string file_path)

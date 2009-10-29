@@ -535,7 +535,7 @@ void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_imag
 void rendererMPR::draw_additional_data(image_base* the_image_pointer, rendergeom_image* rg,  uchar *pixels, int rgb_sx, int rgb_sy){
 	std::vector<int> col;
 	col.push_back(255);
-	col.push_back(255);
+	col.push_back(0);
 	col.push_back(0);
 
 	for(int i = 0; i < the_image_pointer->helper_data->data.size(); i++){
@@ -552,8 +552,6 @@ void rendererMPR::draw_additional_data(image_base* the_image_pointer, rendergeom
 			for(int j = 0; j < vals.size(); j++){
 				int pix_addr;
 				vector<int> point = world_to_view(rg, rgb_sx, rgb_sy, vals.at(i));
-				point[0] = round(point[0]);
-				point[1] = round(point[1]);
 				if(point[0] <= rgb_sx && point[0] >= 0 && point[1] <= rgb_sy && point[1] >= 0 ){
 					pix_addr = (point[1]*rgb_sx + point[0])*RGB_pixmap_bpp;
 					pixels[pix_addr] = col[0];
@@ -933,7 +931,7 @@ void rendererMPR::color_coded_line(uchar *pixels, int sx, int sy, int a, int b, 
 {
 	// Line algorithm
 	// http://www.cprogramming.com/tutorial/tut3.html
-	cout << "dist" << start_distance << "  " << end_distance << endl;
+	//cout << "dist" << start_distance << "  " << end_distance << endl;
 
 	long u, s, v, d1x, d1y, d2x, d2y, m, n;
 	int  i;
@@ -974,7 +972,7 @@ void rendererMPR::color_coded_line(uchar *pixels, int sx, int sy, int a, int b, 
 				pixels[RGB_pixmap_bpp * (a + sx * b) + BADDR] = color[2];
 			}else if(dist >0.01 && up){
 				pixels[RGB_pixmap_bpp * (a + sx * b) + RADDR] = 255;
-				pixels[RGB_pixmap_bpp * (a + sx * b) + GADDR] = 0;
+				pixels[RGB_pixmap_bpp * (a + sx * b) + GADDR] = 255;
 				pixels[RGB_pixmap_bpp * (a + sx * b) + BADDR] = 0;
 			}else if (dist <-0.01 && down){
 				pixels[RGB_pixmap_bpp * (a + sx * b) + RADDR] = 0;

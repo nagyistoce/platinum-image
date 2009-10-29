@@ -59,6 +59,87 @@ bool spectrum_importer::read_header(string filepath){
 	return true;
 }
 
+/*
+ * The Vax conversion routines require that this copyright notice is included.
+ *
+ Copyright(c) 1982 Association of Universities for Research in Astronomy Inc.
+
+ The FOCAS software is publicly available, but is NOT in the public domain.
+ The difference is that copyrights granting rights for unrestricted use and
+ redistribution have been placed on all of the software to identify its authors.
+ You are allowed and encouraged to take this software and use it as you wish,
+ subject to the restrictions outlined below.
+
+ Permission to use, copy, modify, and distribute this software and its
+ documentation is hereby granted without fee, provided that the above
+ copyright notice appear in all copies and that both that copyright notice
+ and this permission notice appear in supporting documentation, and that
+ references to the Association of Universities for Research in Astronomy
+ Inc. (AURA), the National Optical Astronomy Observatories (NOAO), or the
+ Faint Object Classification and Analysis System (FOCAS) not be used in
+ advertising or publicity pertaining to distribution of the software without
+ specific, written prior permission from NOAO.  NOAO makes no
+ representations about the suitability of this software for any purpose.  It
+ is provided "as is" without express or implied warranty.
+
+ NOAO DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL NOAO
+ BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
+ OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN 
+ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+inline short int vax2s(short int le_short)
+{
+	union	{
+		short	bs;
+		char	bc[2];
+	} bsbuf;
+	char	chold;
+
+	bsbuf.bs = le_short;
+	chold = bsbuf.bc[0];
+	bsbuf.bc[0] = bsbuf.bc[1];
+	bsbuf.bc[1] = chold;
+
+	return (bsbuf.bs);
+}
+
+// Vax float to IEEE 32-bit float
+inline float vax2f(unsigned char le_flt[4])
+{
+	union {
+		unsigned char bytes[4];
+		float  ff;
+		short fs[2];
+		struct {				/* VAX F-floating */
+			unsigned int sign:1;
+			unsigned int exponent:8;
+			unsigned int mantissa:23;
+		} v;
+	} vaxbuf;
+	float	ieeebuf;
+
+	vaxbuf.bytes[0] = le_flt[3];
+	vaxbuf.bytes[1] = le_flt[2];
+	vaxbuf.bytes[2] = le_flt[1];
+	vaxbuf.bytes[3] = le_flt[0];
+
+	vaxbuf.fs[0] = vax2s (vaxbuf.fs[0]);
+	vaxbuf.fs[1] = vax2s (vaxbuf.fs[1]);
+
+	// this doesn't appear to be doing the right thing - so I took it out - GMR
+	//if (vaxbuf.v.exponent < 3) 		/* prevent underflow */ {
+	//			ieeebuf = 0.0;
+	//			std::cout << std::endl << "underflow detected - result is zero";
+	//		}
+	//		else
+	ieeebuf = vaxbuf.ff / 4.0;
+
+	return (ieeebuf);
+}
+
+
 void spectrum_importer::read_data(string filepath){
 	string::size_type i = filepath.find_last_of(".");
 	string end = filepath.substr(i);
@@ -79,21 +160,20 @@ void spectrum_importer::read_data(string filepath){
 		for(int i = 0; i < head->get_value("rows"); i++){
 			ptc_vector<float> *c = new ptc_vector<float>(head->get_value("samples"));
 			c->clear();
-			float real, comp;
+
+			float real_ieee, comp_ieee;
 			for(int j = 0; j < head->get_value("samples"); j++){
-				myfile.read( (char *)(&real), sizeof(real) );
-				myfile.read( (char *)(&comp), sizeof(comp) );
-				//myfile >> real >> comp;
-			//	out << real << " " << comp << "\n";
-				if(my_isnan(real)){
-					real = 0;
-					cout << "NAN!!!!" << endl;
-				}
-				if(my_isnan(comp)){
-					comp = 0;
-					cout << "NAN!!!!" << endl;
-				}
-				c->push_back(complex<float>(real,comp));
+				unsigned char real_part_vax[4] = {0};
+				unsigned char imag_part_vax[4] = {0};
+
+				myfile.read((char*)real_part_vax, 4);
+				myfile.read((char*)imag_part_vax, 4);
+				
+				real_ieee = vax2f(real_part_vax);
+				comp_ieee = vax2f(imag_part_vax);	
+				
+				c->push_back(complex<float>(real_ieee,comp_ieee));//In the original code there was -comp_ieee here for some reason
+				//v1.push_back(real);
 			}
 			curves.push_back(c);
 		}
@@ -101,6 +181,20 @@ void spectrum_importer::read_data(string filepath){
 		//out.close();
 		myfile.close();
 	}
+}
+
+void spectrum_importer::swapWords(float *word)
+{
+
+	char	*p = (char *)word;
+	char	aux;
+	aux = p[0];
+	p[0] = p[3];
+	p[3] = aux;
+	aux = p[1];
+	p[1] = p[2];
+	p[2] = aux;
+	p += 4;
 }
 
 header::header(){

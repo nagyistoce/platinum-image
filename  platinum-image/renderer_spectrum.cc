@@ -155,7 +155,6 @@ void renderer_spectrum::render_position(unsigned char *rgb, int rgb_sx, int rgb_
 //render orthogonal slices using memory-order scanline
 void renderer_spectrum::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_spectrum *rg, rendercombination *rc)
 {
-	cout << "Here we go!"  << endl;
     if(rc->empty()){       //*** no images: exit ***
         return;
 	}
@@ -170,89 +169,84 @@ void renderer_spectrum::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeo
 
 
 	bool first = true;
-	cout << "going in!"  << endl;
 	for(rendercombination::iterator pairItr = rc->begin();pairItr != rc->end();pairItr++){//den sista klammern ska flyttas lÂngt ner 
-        curve_base *the_curve_pointer = NULL;
+        curve_complex_base *the_curve_pointer = NULL;
 		pt_error::error_if_null(pairItr->pointer,"Rendered data object is NULL");//Crash here when closing an image
-        the_curve_pointer = dynamic_cast<curve_base *> (pairItr->pointer);
+        the_curve_pointer = dynamic_cast<curve_complex_base *> (pairItr->pointer);
 		bool OKrender = the_curve_pointer != NULL && the_curve_pointer->is_supported(renderer_type());
-		cout << "inside"  << endl;
         if(OKrender){
-			cout << "Rendering!"  << endl;
 			RGBvalue *curve_color = the_curve_pointer->get_color();
 			char x_type = ((renderer_spectrum*)rendermanagement.get_renderer(rendermanagement.renderer_from_combination(rc->get_id())))->x_type;
 			bool *y_type = ((renderer_spectrum*)rendermanagement.get_renderer(rendermanagement.renderer_from_combination(rc->get_id())))->y_type;
 
 			//Maste finnas nat battre anrop an detta man kan gora
 			bool my_own_geom = rendermanagement.get_renderer(rendermanagement.renderer_from_combination(rc->get_id()))->is_my_geom(rg->get_id());
+
+			//TODO ta ut en ptc_vector här???
+
 			if(first && my_own_geom){ //Det ska vara min egna geom for att gora detta!
-				rg->set_borders(the_curve_pointer, y_type, rgb_sx, rgb_sy);
+				rg->set_borders(the_curve_pointer, x_type, y_type, rgb_sx, rgb_sy);
 				first = false;
+				cout << "Phase shift: " << the_curve_pointer->phase_shift.imag() << endl;
 			}
 			rg->set_curve(the_curve_pointer);
 			char line_type = the_curve_pointer->get_line();
 			//char x_type = the_curve_pointer->get_x_type();
 			vector<double> x_vector;
 			vector<vector<double> > y_vector;
+			SPECTRUM_TYPE s_type = x_type == 'f' ? SP_FREQ : SP_TIME;
+			
+			/*Fill the vector with y values*/
+			if(y_type[0]){
+				//Draw real curve
+				vector<double> y_val;
+				for(int i = 0; i < the_curve_pointer->get_data_size(); i++)
+					y_val.push_back(rg->curve_to_view(2,the_curve_pointer->get_real(i,s_type), rgb_sx, rgb_sy)[1]); //remains to do curve_to_vie		
+				y_vector.push_back(y_val);
+			}
+			if(y_type[1]){
+				//Draw complex
+				vector<double> y_val;
+				for(int i = 0; i < the_curve_pointer->get_data_size(); i++)
+					y_val.push_back(rg->curve_to_view(2,the_curve_pointer->get_imag(i,s_type), rgb_sx, rgb_sy)[1]); //remains to do curve_to_vie		
+				y_vector.push_back(y_val);
+			}
+			if(y_type[2]){
+				//Draw magnitude
+				vector<double> y_val;
+				for(int i = 0; i < the_curve_pointer->get_data_size(); i++)
+					y_val.push_back(rg->curve_to_view(2,the_curve_pointer->get_magnitude(i,s_type), rgb_sx, rgb_sy)[1]); //remains to do curve_to_vie		
+				y_vector.push_back(y_val);
+			}
+			if(y_type[3]){
+				//Draw phase
+				vector<double> y_val;
+				for(int i = 0; i < the_curve_pointer->get_data_size(); i++)
+					y_val.push_back(rg->curve_to_view(2,the_curve_pointer->get_phase(i,s_type), rgb_sx, rgb_sy)[1]); //remains to do curve_to_vie		
+				y_vector.push_back(y_val);
+				
+			}
 
-			if(x_type = 'f'){
+			/*Fill the vector with cvalues for x*/
+			if(x_type == 'f'){
 				//Fill x_vec with frequency stuff
+				//vector<Vector2D> freq = the_curve_pointer->get_freq();
 				for(int i = 0; i < the_curve_pointer->get_data_size(); i++){
 					x_vector.push_back(rg->curve_to_view(i, 0, rgb_sx, rgb_sy)[0]);
 				}
-				cout << "filling freq!"  << endl;
+				//cout << "filling freq!"  << endl;
 			}else if(x_type == 't'){
 				//fill with time stuff
 				for(int i = 0; i < the_curve_pointer->get_data_size(); i++){
 					x_vector.push_back(rg->curve_to_view(i, 0, rgb_sx, rgb_sy)[0]);
 				}
-				cout << "filling time!"  << endl;
+				//cout << "filling time!"  << endl;
 			}else{
 				for(int i = 0; i < the_curve_pointer->get_data_size(); i++){
 					x_vector.push_back(rg->curve_to_view(i, 0, rgb_sx, rgb_sy)[0]);
 				}
 			}
 
-			if(y_type[0]){
-				//Draw real curve
-				vector<double> y_val;
-				cout << "data_size: " << the_curve_pointer->get_data_size() << endl;
-				for(int i = 0; i < the_curve_pointer->get_data_size(); i++){
-					y_val.push_back(rg->curve_to_view(i,the_curve_pointer->get_data(i), rgb_sx, rgb_sy)[1]); //remains to do curve_to_view
-				}
-				y_vector.push_back(y_val);
-			}
-			if(y_type[1]){
-				//Draw complex
-				vector<double> y_val;
-				for(int i = 0; i < the_curve_pointer->get_data_size(); i++){
-					y_val.push_back(rg->curve_to_view(2,the_curve_pointer->get_complex(i), rgb_sx, rgb_sy)[1]); //remains to do curve_to_view
-				}
-				y_vector.push_back(y_val);
-			}
-			if(y_type[2]){
-				//Draw magnitude
-				vector<double> y_val;
-				for(int i = 0; i < the_curve_pointer->get_data_size(); i++){
-					y_val.push_back(rg->curve_to_view(2,the_curve_pointer->get_magnitude(i), rgb_sx, rgb_sy)[1]); //remains to do curve_to_view
-				}
-				y_vector.push_back(y_val);
-			}
-			if(y_type[3]){
-				//Draw phase
-				vector<double> y_val;
-				for(int i = 0; i < the_curve_pointer->get_data_size(); i++){
-					y_val.push_back(rg->curve_to_view(2,the_curve_pointer->get_phase(i), rgb_sx, rgb_sy)[1]); //remains to do curve_to_view
-				}
-				y_vector.push_back(y_val);
-			}
-
-			//Kolla om curve_pointer ‰r uppdaterad h‰r
-		   /* Om uppdaterad
-			*
-			*/
-			
-			
 			int pix_addr = 0;
 			double data  = 0.0;
 			int size = the_curve_pointer->get_data_size();
@@ -287,17 +281,11 @@ void renderer_spectrum::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeo
 						x1 = round(x_vector.at(min_bound));
 						y1 = round(y_vector.at(j).at(min_bound));
 						for(int i = min_bound+1; i<max_bound; i++){
-							/*if(i == 388){
-								cout << "Innan! " << y_vector.at(j).at(i-1) << endl;
-								cout << "Nu jävlar! " << y_vector.at(j).at(i) << endl;
-								cout << "Efter! " << y_vector.at(j).at(i+1) << endl;
-							}*/
 							y2 = round(y_vector.at(j).at(i));
 							x2 = round(x_vector.at(i));
 							draw_line(pixels, rgb_sx, rgb_sy, x1, y1, x2, y2, color);
 							x1 = x2;
 							y1 = y2;
-							//cout << "draw: " << i  << "/" << (max_bound-1) << endl;
 						}
 					}
 					break;

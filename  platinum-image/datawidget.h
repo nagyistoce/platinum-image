@@ -36,6 +36,7 @@
 #include <FL/Fl_Pack.H>
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Value_Input.H>
+#include <FL/Fl_Value_Slider.H> 
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Check_Button.H>
 #include <FL/Fl_Menu_Button.H>
@@ -85,6 +86,7 @@ protected:
     const static Fl_Menu_Item the_base_items[];
     const static Fl_Menu_Item the_image_base_items[];
     const static Fl_Menu_Item the_curve_items[];
+	const static Fl_Menu_Item the_complex_curve_items[];
     const static Fl_Menu_Item the_point_collection_items[];
     const static Fl_Menu_Item *remove_mi;		//mi = menu item
     const static Fl_Menu_Item *save_vtk_mi;
@@ -98,6 +100,8 @@ protected:
 	FLTKgeom_base *geom_widget;
 	static void edit_geometry_callback(Fl_Widget *callingwidget, void *);
 	static void edit_curve_geometry_callback(Fl_Widget *callingwidget, void *);
+	static void additional_data_callback(Fl_Widget *callingwidget, void *);
+	static void edit_shift_callback(Fl_Widget *callingwidget, void *);
 
 public:
     static void change_name_callback(Fl_Widget *callingwidget, void *thisdatawidget);
@@ -118,6 +122,8 @@ public:
     bool from_file() const;
 
 	void show_hide_edit_geometry(char param = 'i');
+	void edit_shift();
+	void additional_data();
 
 	void set_tooltip(string s);
     };
@@ -125,6 +131,13 @@ public:
 template <class DATATYPE>
 class datawidget:public datawidget_base
 {};
+
+template <>
+class datawidget<curve_complex_base>:public datawidget_base
+{
+public:
+    datawidget(curve_complex_base *p, std::string n);
+};
 
 template <>
 class datawidget<curve_base>:public datawidget_base
@@ -222,7 +235,14 @@ public:
 	bool turned_on();
 };
 
-
+class FLTKSlide : public Fl_Group {
+protected:
+	Fl_Value_Slider *slide;
+	static void slide_cb(Fl_Widget *w, void*);
+public:
+	FLTKSlide(int x=0, int y=0, int w=30, int h=50, const char *sx=0, float min = 0, float max = 10, float step = 1);
+	float get_value();
+};
 //--------------------------------
 class FLTKMatrix3D : public Fl_Group {
 protected:
@@ -287,6 +307,36 @@ public:
 	static void button_update_cb(Fl_Widget *w, void*);
 	static void button2_update_cb(Fl_Widget *w, void*);
 	static void check_update_cb(Fl_Widget *w, void*);
+	//const Matrix3D get_start() const;
+};
+
+
+class FLTKhelper_data : public FLTKgeom_base{
+protected:
+	FLTKButton* submit;
+	FLTKButton* fill;
+	FLTKButton* remove;
+	vector<FLTKCheckButton*> data;
+	vector<FLTKCheckButton*> fill_check;
+	//Matrix3D start;
+	
+public:
+	FLTKhelper_data(int id, int x=0, int y=0, int w=260, int h=60);
+	static void button_update_cb(Fl_Widget *w, void*);
+	static void button_remove_cb(Fl_Widget *w, void*);
+	//const Matrix3D get_start() const;
+};
+
+class FLTKShift : public FLTKgeom_base{
+protected:
+	FLTKSlide* phase;
+	FLTKButton* amares;
+	//Matrix3D start;
+	
+public:
+	FLTKShift(int id, int x=0, int y=0, int w=260, int h=60);
+	static void phase_cb(Fl_Widget *w, void*);
+	static void amares_cb(Fl_Widget *w, void*);
 	//const Matrix3D get_start() const;
 };
 

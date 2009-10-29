@@ -30,8 +30,10 @@ void additional_data::read_all_data_from_file(string file){
 	int nr_items;
 	ADDITIONAL_TYPE type;
 	int t;
+	int nr_free;
 	Vector3D vec1, vec2, vec3, vec4;
 	float r1, r2, a;
+	vector<Vector3D> free_vec;
 	string s;
 
 	ifstream myfile(file.c_str());
@@ -72,6 +74,14 @@ void additional_data::read_all_data_from_file(string file){
 				case AT_GAUSS:
 					myfile >> r1 >> r2 >> a;
 					add_gauss(r1, r2, a);
+				case AT_FREEHAND:
+					myfile >> nr_free;
+					for(int a = 0; a <nr_free; a++){
+						myfile >> vec1[0] >> vec1[1] >> vec1[2];
+						free_vec.push_back(vec1);
+					}
+					add_freehand(free_vec);
+					break;
 				default:
 					break;
 			}
@@ -106,7 +116,7 @@ void additional_data::add_freehand(vector<Vector3D> p){
 /* -------------------------------------------- */
 
 additional_data_base::additional_data_base(){
-	
+	fill = false;
 }
 /*void additional_data_base::draw_it(vector<Vector3D> points_to_draw, unsigned char* pixels, int width, int height, rendergeometry_base* rg, RENDERER_TYPE type){
 	int pix_addr;
@@ -162,7 +172,11 @@ void point_data::calc_data(){
 	//this->draw_it(points_to_draw, pixels, width, height, rg, type);
 	
 }
-
+vector<Vector3D> point_data::get_all_points(){
+	vector<Vector3D> vec;
+	vec.push_back(create_Vector3D(round(p[0]),round(p[1]),round(p[2])));
+	return vec;
+}
 
 /* -------------------------------------------- */
 /* -------------------------------------------- */
@@ -224,7 +238,11 @@ void circle_data::calc_data(){
 	//this->draw_it(points_to_draw, pixels, width, height, rg, type);
 	
 }
-
+vector<Vector3D> circle_data::get_all_points(){
+	shape_calc::calc_cirlce_3d(c, n, radius);
+	vector<Vector3D> vec;
+	return vec;
+}
 
 /* -------------------------------------------- */
 /* -------------------------------------------- */
@@ -248,6 +266,14 @@ void line_data::calc_data(){
 
 	//this->draw_it(points_to_draw, pixels, width, height, rg, type);
 }
+
+vector<Vector3D> line_data::get_all_points(){
+	vector<Vector3D> vec;
+	vec = shape_calc::calc_line_3d(start, stop);
+//	vec.push_back(p);
+	return vec;
+}
+
 /* -------------------------------------------- */
 /* -------------------------------------------- */
 
@@ -275,6 +301,31 @@ void rect_data::calc_data(){
 	points_to_draw.push_back(c1); //have to close the rectangle
 	//this->draw_it(points_to_draw, pixels, width, height, rg, type);
 }
+
+vector<Vector3D> rect_data::get_all_points(){
+	vector<Vector3D> vec;
+	vector<Vector3D> temp;
+
+	vec = shape_calc::calc_line_3d(c1, c2);
+	vec.pop_back(); //else we get double points here...
+	
+	temp = shape_calc::calc_line_3d(c2, c3);
+	temp.pop_back();
+	vec.insert(vec.end(),temp.begin(),temp.end());
+	temp.clear();
+
+	temp = shape_calc::calc_line_3d(c3, c4);
+	temp.pop_back();
+	vec.insert(vec.end(),temp.begin(),temp.end());
+	temp.clear();
+
+	temp = shape_calc::calc_line_3d(c4, c1);
+	temp.pop_back();
+	vec.insert(vec.end(),temp.begin(),temp.end());
+
+	temp.clear();
+	return vec;
+}
 /* -------------------------------------------- */
 /* -------------------------------------------- */
 
@@ -293,7 +344,12 @@ void text_data::calc_data(){
 	points_to_draw.clear();
 	points_to_draw.push_back(p);
 }
-
+vector<Vector3D> text_data::get_all_points(){
+	vector<Vector3D> vec;
+	vec.push_back(p);
+//	vec.push_back(p);
+	return vec;
+}
 
 gauss_data::gauss_data(float mean, float std, float amplitude) : additional_data_base(){
 		omega = std;
@@ -333,13 +389,34 @@ void gauss_data::calc_data(){
 	//this->draw_it(points_to_draw, pixels, width, height, rg, type);
 }
 
-
+vector<Vector3D> gauss_data::get_all_points(){
+	vector<Vector3D> vec;
+	
+//	vec.push_back(p);
+	return vec;
+}
 /* -------------------------------------------- */
 /* -------------------------------------------- */
 
 freehand_data::freehand_data(vector<Vector3D> c) : additional_data_base(){
 		p = c;
 		type = AT_FREEHAND;
+
+		if(p.size()<2)
+			return;
+
+		Vector3D stop, start;
+		stop = p.back();
+		start = p.front();
+		Vector3D diff = (stop - start);
+		float n = max( max(abs(diff[0]),abs(diff[1])), abs(diff[2]) );
+		Vector3D delta;
+		delta[0] = float(diff[0])/(n+1.0);
+		delta[1] = float(diff[1])/(n+1.0);
+		delta[2] = float(diff[2])/(n+1.0);
+		for(float i=0;i<n+1;i++){
+			p.push_back(create_Vector3D(start[0]+delta[0]*i, start[1]+delta[1]*i, start[2]+delta[2]*i));
+		}
 }
 
 void freehand_data::write_data(ofstream &myfile){
@@ -354,9 +431,17 @@ void freehand_data::calc_data(){
 	//vector<Vector3D> points_to_draw;
 	points_to_draw.clear();
 //	int pix_addr;
+	for(int x = 0; x < p.size(); x++)
+		points_to_draw.push_back(p.at(x));
 	
-	for(int i = 0; i < p.size(); i++)
-		points_to_draw.push_back(p.at(i));
+
 	//this->draw_it(points_to_draw, pixels, width, height, rg, type);
 	
+}
+vector<Vector3D> freehand_data::get_all_points(){
+	vector<Vector3D> vec;
+	for(int i = 0; i< p.size(); i++){
+		vec.push_back(create_Vector3D(round(p.at(i)[0]), round(p.at(i)[1]), round(p.at(i)[2])));
+	}
+	return vec;
 }

@@ -25,7 +25,7 @@ ultrasound_importer::ultrasound_importer(string file){
 	read_file(file);
 	file.substr(0, 2);
 	name = file.substr(file.find_last_of('/')+1);
-	ecode = name;
+	ecode = name.substr(0,name.find_first_of(' '));
 	/*if(name.at(0) == '0'){
 		ecode = "E" + name.substr(0,8);
 	}else{

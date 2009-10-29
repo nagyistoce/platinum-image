@@ -102,6 +102,20 @@ int ultra1dops::get_vally(curve_scalar<unsigned short> *curve, int x, int dir){
 	return min[0];
 }
 
+/*Checks so that there are no higer peaks in half left of the adventita*/
+bool ultra1dops::highest_in_interval(vector<Vector3D> c, int start, int stop, unsigned short height){
+	int index = c.size()-1;
+	while(index >= 0 && c.at(index)[0] > start){
+		if(c.at(index)[0] < stop){
+			if(c.at(index)[1] > height)
+				return false;
+
+		}
+		index--;
+	}
+	return true;
+}
+
 int ultra1dops::count_peaks(vector<Vector3D> c, curve_scalar<unsigned short> *curve, Vector3D *peak){
 	int peaks = 0;
 	Vector3D bottom;
@@ -122,7 +136,7 @@ int ultra1dops::count_peaks(vector<Vector3D> c, curve_scalar<unsigned short> *cu
 	int start = 0;
 	for(int i = c.size()-1; i>= 0; i --){
 		if(start - c[i][0] > max_dist){
-				return peaks;
+			return peaks;
 		}
 		if(c[i][1] > min_thresh && is_max(c,i)){
 			start = c[i][0];
@@ -157,10 +171,34 @@ vector<Vector3D> ultra1dops::simplify_the_curve(curve_scalar<unsigned short> *cu
 		}
 		p.push_back(m);
 	}
+	int max_c, min_c;
+	double min_m, max_m;
+	min_m = max_m = 0;
+	min_c = max_c = 0;
+	for(int t = 1; t < p.size()-1; t++){
+		if(is_max(p,t)){
+			max_m+=p.at(t)[1];
+			max_c++;
+		}
+		else if(is_min(p,t)){
+			min_m+=p.at(t)[1];
+			min_c++;
+		}
+	}
+	min_m = min_m / min_c;
+	max_m = max_m / max_c;
+
+	int mean = (max_m+min_m)/2;
 	vector<Vector3D> keep;
 	keep.push_back(p[0]);
 	for(int a = 1; a < p.size()-1; a++){
-		if(is_max(p,a) || is_min(p,a)){	
+		if(is_max(p,a)){
+			if(p[a][1] < mean){
+				p[a][1] = 0; //Fix this boundary!
+			}
+			keep.push_back(p[a]);
+		}else if(is_min(p,a)){//Add all minimas as zero;
+			p[a][1] = 0;
 			keep.push_back(p[a]);
 		}
 		

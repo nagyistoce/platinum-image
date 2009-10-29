@@ -75,6 +75,8 @@ class renderer_spectrum : public renderer_curve_base
         
 		char x_type;
 		bool y_type[4];
+		complex<double> phase_shift;
+		double time_shift;
 
         virtual std::string find_typekey() const
             {return typekey();}

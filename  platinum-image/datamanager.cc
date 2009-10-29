@@ -230,8 +230,6 @@ void datamanager::connect_additional_data_callback(Fl_Widget *callingwidget, voi
 	std::cout << "Yatta! Additional data connected :D " << std::endl;
 }
 
-
-
 void datamanager::save_dcm_callback(Fl_Widget *callingwidget, void * thisdatamanager)
 {
     datawidget_base * the_datawidget=(datawidget_base *)(callingwidget->user_data());

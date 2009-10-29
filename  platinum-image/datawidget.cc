@@ -72,6 +72,18 @@ void datawidget_base::edit_curve_geometry_callback(Fl_Widget *callingwidget, voi
     the_datawidget->show_hide_edit_geometry('c');
 }
 
+void datawidget_base::additional_data_callback(Fl_Widget *callingwidget, void *){
+	datawidget_base * the_datawidget=(datawidget_base *)(callingwidget->user_data());
+//	cout<<"the_datawidget->get_data_id()="<<the_datawidget->get_data_id()<<endl;
+    the_datawidget->additional_data();
+}
+
+void datawidget_base::edit_shift_callback(Fl_Widget *callingwidget, void *){
+    datawidget_base * the_datawidget=(datawidget_base *)(callingwidget->user_data());
+//	cout<<"the_datawidget->get_data_id()="<<the_datawidget->get_data_id()<<endl;
+    the_datawidget->edit_shift();
+}
+
 const Fl_Menu_Item datawidget_base::the_base_items[] = {
  {"Remove", 0,  (Fl_Callback*)datamanager::removedata_callback, (void*)(&datamanagement), 0, FL_NORMAL_LABEL, 0, 14, 0},
  {"Duplicate", 0,  0, 0, 1, FL_NORMAL_LABEL, 0, 14, 0},
@@ -85,6 +97,7 @@ const Fl_Menu_Item datawidget_base::the_image_base_items[] = {
  {"Save histogram", 0,  (Fl_Callback*)datamanager::save_hist_callback, (void*)(&datamanagement), 0, FL_NORMAL_LABEL, 0, 14, 0},
  {"Save additional data", 0,  (Fl_Callback*)datamanager::save_additional_data_callback, (void*)(&datamanagement), 0, FL_NORMAL_LABEL, 0, 14, 0},
  {"Connect additional data", 0,  (Fl_Callback*)datamanager::connect_additional_data_callback, (void*)(&datamanagement), 0, FL_NORMAL_LABEL, 0, 14, 0},
+ {"Show additional data", 0, (Fl_Callback*)datawidget_base::additional_data_callback,0,0, FL_NORMAL_LABEL, 0, 14, 0},
  {"Toggle additional data", 0, (Fl_Callback*)datamanager::toggle_additional_data, (void*)(&datamanagement),0, FL_NORMAL_LABEL, 0, 14, 0},
  {"Geometry Edit(Show/Hide)", 0, (Fl_Callback*)datawidget_base::edit_geometry_callback,0,0, FL_NORMAL_LABEL, 0, 14, 0},
  {0,0,0,0,0,0,0,0,0}
@@ -100,6 +113,19 @@ const Fl_Menu_Item datawidget_base::the_curve_items[] = {
  {0,0,0,0,0,0,0,0,0},
  {0,0,0,0,0,0,0,0,0}
 };
+
+const Fl_Menu_Item datawidget_base::the_complex_curve_items[] = {
+ {"Remove", 0,  (Fl_Callback*)datamanager::removedata_callback, (void*)(&datamanagement), 0, FL_NORMAL_LABEL, 0, 14, 0},
+ {"Save additional data", 0,  (Fl_Callback*)datamanager::save_additional_data_callback, (void*)(&datamanagement), 0, FL_NORMAL_LABEL, 0, 14, 0},
+ {"Save curve", 0,  (Fl_Callback*)datamanager::save_curve_callback, (void*)(&datamanagement), 0, FL_NORMAL_LABEL, 0, 14, 0},
+ {"Connect additional data", 0,  (Fl_Callback*)datamanager::connect_additional_data_callback, (void*)(&datamanagement), 0, FL_NORMAL_LABEL, 0, 14, 0},
+ {"Shifts", 0, (Fl_Callback*)datawidget_base::edit_shift_callback,0,0, FL_NORMAL_LABEL, 0, 14, 0},
+ {"Property Edit(Show/Hide)", 0, (Fl_Callback*)datawidget_base::edit_curve_geometry_callback,0,0, FL_NORMAL_LABEL, 0, 14, 0},
+ {0,0,0,0,0,0,0,0,0},
+ {0,0,0,0,0,0,0,0,0},
+ {0,0,0,0,0,0,0,0,0}
+};
+
 
 const Fl_Menu_Item datawidget_base::the_point_collection_items[] = {
  {"Remove", 0,  (Fl_Callback*)datamanager::removedata_callback, (void*)(&datamanagement), 0, FL_NORMAL_LABEL, 0, 14, 0},
@@ -235,6 +261,28 @@ bool datawidget_base::from_file() const
     return fromFile;
     }
 
+void datawidget_base::additional_data(){
+	int h = datamanagement.get_data(data_id)->helper_data->data.size();
+
+	if(geom_widget==NULL){
+		geom_widget = new FLTKhelper_data(data_id,0,0,260,h*20 +20); //RN fix
+		extras->add(geom_widget);
+		geom_widget->show();
+	}else{
+		if(geom_widget->visible()){
+			geom_widget->hide();
+		}else{
+			extras->remove(geom_widget);
+			geom_widget = new FLTKhelper_data(data_id,0,0,260,h*20 +20); //RN fix
+			extras->add(geom_widget);
+			//rebuild first
+			geom_widget->show();
+		}
+	}
+
+	geom_widget->parent()->parent()->parent()->parent()->redraw();
+}
+
 void datawidget_base::show_hide_edit_geometry(char param)
 {
 	if(geom_widget==NULL){
@@ -243,6 +291,24 @@ void datawidget_base::show_hide_edit_geometry(char param)
 		}else{
 			geom_widget = new FLTKgeom_image(data_id);
 		}
+		extras->add(geom_widget);
+		geom_widget->show();
+	}else{
+		if(geom_widget->visible()){
+			geom_widget->hide();
+		}else{
+			geom_widget->show();
+		}
+	}
+	
+	geom_widget->parent()->parent()->parent()->parent()->redraw();
+}
+
+void datawidget_base::edit_shift()
+{
+	if(geom_widget==NULL){
+		geom_widget = new FLTKShift(data_id);
+
 		extras->add(geom_widget);
 		geom_widget->show();
 	}else{
@@ -377,7 +443,13 @@ void datawidget<image_base>::cb_show_hide_tfunction(Fl_Widget* callingwidget, vo
 }
 
 
+#pragma mark datawidget<curve_complex_base>
 
+datawidget<curve_complex_base>::datawidget(curve_complex_base *p, std::string n): datawidget_base(p,n)
+{
+    data_menu_button->menu(the_complex_curve_items);
+	geom_widget = NULL;
+}
 
 #pragma mark datawidget<curve_base>
 
@@ -575,7 +647,39 @@ bool FLTKCheckButton::turned_on(){
 	bool on = butt->value() ? 1 : 0;
 	return on;
 }
+/*----------------------------------------------------------*/
 
+FLTKSlide::FLTKSlide(int x, int y, int w, int h, const char *sx, float min, float max, float step):Fl_Group(x,y,w,h)
+{
+	int dh = int(float(h)/2.0);
+	const int margin = 15;
+	
+	slide = new Fl_Value_Slider(x + margin, y, w - margin, dh-2, sx);
+	slide->callback(slide_cb);//	slide->when(FL_WHEN_CHANGED);
+	slide->minimum(min);
+	slide->maximum(max);
+	slide->step(step);
+	slide->value(0);
+	((Fl_Widget*)slide)->type((uchar)FL_HOR_NICE_SLIDER);
+	slide->align(Fl_Align(FL_ALIGN_LEFT));
+	slide->selection_color((Fl_Color)1);
+	slide->labelsize(12);
+	end();
+}	
+
+float FLTKSlide::get_value()
+{
+	return slide->value();
+}
+/*------------------------------------------------------------*/
+void FLTKSlide::slide_cb(Fl_Widget *w, void*)
+{
+//	cout<<"vector_cb(Fl_Widget *w, void*)"<<endl;
+	FLTKSlide* b = (FLTKSlide*)w->parent();
+	b->do_callback(b);
+}
+
+/*----------------------------------------------------------*/
 
 //-----------------------------
 FLTKMatrix3D::FLTKMatrix3D(Matrix3D m, int x, int y, int w, int h):Fl_Group(x,y,w,h)
@@ -834,3 +938,132 @@ void FLTKgeom_curve::check_update_cb(Fl_Widget *w, void*)
 
 //	static void orient_update_cb(Fl_Widget *w, void*);
 
+FLTKhelper_data::FLTKhelper_data(int id, int x, int y, int w, int h):FLTKgeom_base(id,x,y,w,h){
+	
+	const int slice_w = 20.0/60.0*w;
+
+	int h_coord = h*3/4;
+	int button_increase = 20;
+	int x_val = 0;
+	
+	
+	vector<additional_data_base*> h_data = datamanagement.get_image<data_base>(data_id)->helper_data->data;
+	h_coord = h/(h_data.size()+1);
+	int count = 0;
+	for(int i = 0; i < h_data.size(); i++){
+		ADDITIONAL_TYPE type = h_data.at(i)->type;
+		switch(type){
+			case AT_POINT:
+				//data.push_back(new FLTKCheckButton(x+x_val+slice_w, y+button_increase*count, 30, h_coord, "Point"));
+				data.push_back(new FLTKCheckButton(x+5, y+button_increase*count, 30, h_coord, "Point"));
+				fill_check.push_back(new FLTKCheckButton(x+5+slice_w, y+button_increase*count, 30, h_coord, "fill"));
+				//data.back()->callback(check_update_cb);
+				count++;
+				break;
+			case AT_LINE:
+				data.push_back(new FLTKCheckButton(x+5, y+button_increase*count, 30, h_coord, "Line"));
+				fill_check.push_back(new FLTKCheckButton(x+5+slice_w, y+button_increase*count, 30, h_coord, "fill"));
+				//data.back()->callback(check_update_cb);
+				count++;
+				break;
+			case AT_CIRCLE:
+				data.push_back(new FLTKCheckButton(x+5, y+button_increase*count, 30, h_coord, "Circ"));
+				fill_check.push_back(new FLTKCheckButton(x+5+slice_w, y+button_increase*count, 30, h_coord, "fill"));
+				//data.back()->callback(check_update_cb);
+				count++;
+				break;
+			case AT_RECT:
+				data.push_back(new FLTKCheckButton(x+5, y+button_increase*count, 30, h_coord, "Rect"));
+				fill_check.push_back(new FLTKCheckButton(x+5+slice_w, y+button_increase*count, 30, h_coord, "fill"));
+				//data.back()->callback(check_update_cb);
+				count++;
+				break;
+			case AT_FREEHAND:
+				data.push_back(new FLTKCheckButton(x+5, y+button_increase*count, 30, h_coord, "Free"));
+				fill_check.push_back(new FLTKCheckButton(x+5+slice_w, y+button_increase*count, 30, h_coord, "fill"));
+				//data.back()->callback(check_update_cb);
+				count++;
+				break;
+			default:
+				break;
+		}
+	}
+	submit = new FLTKButton(x+5, y+button_increase*count, 100, h_coord, "Binary");
+	submit->callback(button_update_cb);
+
+	remove = new FLTKButton(x+5+slice_w, y+button_increase*count, 100, h_coord, "Remove");
+	remove->callback(button_remove_cb);
+
+	resizable(NULL);
+}
+void FLTKhelper_data::button_update_cb(Fl_Widget *w, void*)
+{
+	FLTKButton *v = (FLTKButton*)w;
+	FLTKhelper_data *g = (FLTKhelper_data*)v->parent();
+	image_base* image =  datamanagement.get_image<image_base>(g->data_id);
+	vector<int> res;
+	for(int i = 0; i < g->data.size(); i++){
+		if(g->data.at(i)->turned_on()){
+			if(g->fill_check.at(i)->turned_on())//negative if fill
+				res.push_back(-(i+1));
+			else
+				res.push_back(i+1);
+		}
+	}
+	image->helper_data_to_binary_image(res);
+	//datamanagement.add(image->helper_data_to_binary_image(res),"binary",true);
+//	std::cout << "made binary image" << std::endl;
+	datamanagement.data_has_changed(g->data_id);
+}
+void FLTKhelper_data::button_remove_cb(Fl_Widget *w, void*)
+{
+	FLTKButton *v = (FLTKButton*)w;
+	FLTKhelper_data *g = (FLTKhelper_data*)v->parent();
+	image_base* image =  datamanagement.get_image<image_base>(g->data_id);
+	int start = g->data.size()-1;
+	if(start < 0 )//No additional data
+		return;
+	for(int i = start; i >=0; i--){
+		if(g->data.at(i)->turned_on()){
+			image->helper_data->data.erase(image->helper_data->data.begin()+i);
+		}
+	}
+	g->hide();
+	//std::cout << "deleted some additional data" << std::endl;
+	datamanagement.data_has_changed(g->data_id);
+}
+
+FLTKShift::FLTKShift(int id, int x, int y, int w, int h):FLTKgeom_base(id,x,y,w,h){
+	
+	const int slice_w = 20.0/60.0*w;
+
+	int h_coord = h*3/4;
+	int button_increase = h_coord/2;
+	
+	
+	
+	phase = new FLTKSlide(x+slice_w, y, slice_w*2, h_coord, "phase", -180, 180,1);
+	phase->callback(phase_cb);
+
+	amares =new FLTKButton(x+slice_w, y+20, 100, h_coord, "Amares");
+	amares->callback(amares_cb);
+
+	resizable(NULL);
+}
+
+void FLTKShift::phase_cb(Fl_Widget *w, void*)
+{
+	FLTKSlide *v = (FLTKSlide*)w;
+	FLTKShift *g = (FLTKShift*)v->parent();
+	datamanagement.get_image<curve_complex_base>(g->data_id)->phase_shift.imag(sin(v->get_value()*(pt_PI/180)));//radians
+	datamanagement.get_image<curve_complex_base>(g->data_id)->phase_shift.real(cos(v->get_value()*(pt_PI/180)));//radians
+	datamanagement.data_has_changed(g->data_id);
+}
+void FLTKShift::amares_cb(Fl_Widget *w, void*)
+{
+	cout << "Now performing amares" << endl;
+	/*FLTKSlide *v = (FLTKSlide*)w;
+	FLTKShift *g = (FLTKShift*)v->parent();
+	datamanagement.get_image<curve_complex_base>(g->data_id)->time_shift = v->get_value();
+	datamanagement.data_has_changed(g->data_id);*/
+}

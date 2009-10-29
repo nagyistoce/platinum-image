@@ -75,6 +75,7 @@ template<int IMAGEDIM>
 #include "global.h"
 #include "color.h"
 #include "bruker.h"
+#include "shape_calc.h"
 
 template<class ELEMTYPE, int IMAGEDIM = 3>
 class image_general : public image_storage <ELEMTYPE >
@@ -327,6 +328,13 @@ class image_general : public image_storage <ELEMTYPE >
         void save_to_DCM_file_series(const std::string file_path, const bool useCompression = true, const bool anonymize = true);
 		void save_to_raw_file(const std::string file_path, bool save_image_info_txt_file=false);
         void save_to_NIFTI_file(const std::string file_path); //JK test
+
+		void helper_data_to_binary_image(int index);
+		void helper_data_to_binary_image(vector<int> indexes);
+		void helper_data_to_binary_image(ADDITIONAL_TYPE type);
+		void write_additional_data(image_binary<IMAGEDIM> *image, int i);
+		void fill_region_2d(vector<Vector3D> border, ELEMTYPE fill_val);
+
 //        void save_to_TIF_file_series_3D(const std::string file_path_base, int dir=2, int from_slice=-1, int to_slice=-1);
 //		void save_uchar2D_to_TIF_file(const std::string file_path_base, const std::string slice="0");
         void save_regular_slices_to_VTK_file(const std::string file_path, int start_slc=1, int jump_num_slc=2, int dir=2, const bool useCompression = false);

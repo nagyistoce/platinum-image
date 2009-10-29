@@ -48,6 +48,7 @@ public:
 	bool read_header(string name);
 	void read_data(string name);
 	inline bool my_isnan(double x){ return x != x;};
+	void swapWords(float *word);
 	
 	bool loaded;
 	string name;
