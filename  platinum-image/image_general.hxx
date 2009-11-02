@@ -2633,7 +2633,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::set_image_geometry(float ox,float oy,flo
 	this->origin[2]=oz;
 	this->set_voxel_size(dx,dy,dz);
 	this->orientation.SetIdentity();
-	this->(fi_z,fi_y,fi_x);
+	this->rotate_orientation(fi_z,fi_y,fi_x);
 }
 
 template <class ELEMTYPE, int IMAGEDIM>

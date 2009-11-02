@@ -638,10 +638,10 @@ template<class ELEMTYPE>
 void curve_complex<ELEMTYPE>::save_curve_to_file(std::string s) const{
 	ofstream myfile(s.c_str());
 	if(myfile.is_open()){
-		myfile << my_data->size() << "\n";
+		myfile << time->size() << "\n";
 		myfile << get_offset() << " " << get_scale() << "\n";
-		for(int i = 0; i < my_data->size(); i++){
-			myfile << get_real(i) <<  " " << get_complex(i) << "\n";
+		for(int i = 0; i < time->size(); i++){
+			myfile << get_real(i) <<  " " << get_imag(i) << "\n";
 		}
 		myfile.close();
 		
@@ -724,8 +724,8 @@ vnl_vector<vcl_complex<ELEMTYPE> > curve_complex<ELEMTYPE>::flip_halves(vnl_vect
 }
 
 
-
-
+template<class ELEMTYPE>
+class amares_cost_function;
 
 /*Does an AMARES optimization and returns the amplitudes of the peaks found*/
 template<class ELEMTYPE>

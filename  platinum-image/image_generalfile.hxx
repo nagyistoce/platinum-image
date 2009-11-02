@@ -25,6 +25,8 @@
 //    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "fileutils.h"
+#include "datamanager.h"
+extern datamanager datamanagement;
 
 template <class VOXTYPE, template <class,int=3 > class IMGCLASS>
 void try_allocate (image_base* &i,unsigned int voxel_type, std::vector<std::string> files, long width, long height, bool bigEndian, long headerSize, Vector3D voxelSize)
@@ -906,7 +908,7 @@ template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::helper_data_to_binary_image(int index){
 	image_binary<IMAGEDIM> *binary = new image_binary<IMAGEDIM>(this);
 	binary->fill(0);
-	write_additional_data(binary, i);
+	write_additional_data(binary, index);
 	datamanagement.add(binary,"binary",true);
 }
 template <class ELEMTYPE, int IMAGEDIM>
@@ -925,8 +927,8 @@ template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::helper_data_to_binary_image(ADDITIONAL_TYPE type){
 	image_binary<IMAGEDIM> *binary = new image_binary<IMAGEDIM>(this);
 	binary->fill(0);
-	for(int i = 0; i < helper_data->data.size(); i++){
-		if(helper_data->data.at(i)->type == type)
+	for(int i = 0; i < (this->helper_data)->data.size(); i++){
+		if((this->helper_data)->data.at(i)->type == type)
 			write_additional_data(binary, i);
 	}
 	datamanagement.add(binary,"binary",true);
@@ -935,7 +937,7 @@ template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::write_additional_data(image_binary<IMAGEDIM> *bin_image, int i){
 	bool fill = i<0;
 	i = abs(i)-1; //added 1 so that 0 can have fill to
-	additional_data_base* base = helper_data->data.at(i);
+	additional_data_base* base = (this->helper_data)->data.at(i);
 	ADDITIONAL_TYPE type;
 	type = base->type;
 	vector<Vector3D> vec, free, temp;
@@ -943,18 +945,18 @@ void image_general<ELEMTYPE, IMAGEDIM>::write_additional_data(image_binary<IMAGE
 	float radius;
 	switch(type){
 		case AT_POINT:
-			vec.push_back(world_to_voxel((dynamic_cast<point_data*>(base))->p));
+			vec.push_back(this->world_to_voxel((dynamic_cast<point_data*>(base))->p));
 			break;
 		case AT_LINE:
-			p1 = world_to_voxel((dynamic_cast<line_data*>(base))->start);
-			p2 = world_to_voxel((dynamic_cast<line_data*>(base))->stop);
+			p1 = this->world_to_voxel((dynamic_cast<line_data*>(base))->start);
+			p2 = this->world_to_voxel((dynamic_cast<line_data*>(base))->stop);
 			vec = shape_calc::calc_line_3d(p1,p2);
 			break;
 		case AT_RECT:
-			p1 = world_to_voxel((dynamic_cast<rect_data*>(base))->c1);
-			p2 = world_to_voxel((dynamic_cast<rect_data*>(base))->c2);
-			p3 = world_to_voxel((dynamic_cast<rect_data*>(base))->c3);
-			p4 = world_to_voxel((dynamic_cast<rect_data*>(base))->c4);
+			p1 = this->world_to_voxel((dynamic_cast<rect_data*>(base))->c1);
+			p2 = this->world_to_voxel((dynamic_cast<rect_data*>(base))->c2);
+			p3 = this->world_to_voxel((dynamic_cast<rect_data*>(base))->c3);
+			p4 = this->world_to_voxel((dynamic_cast<rect_data*>(base))->c4);
 			vec = shape_calc::calc_rect_3d(p1,p2,p3,p4);
 			break;
 		case AT_CIRCLE://Different from the others due to the radius calculation

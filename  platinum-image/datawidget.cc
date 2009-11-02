@@ -1055,8 +1055,9 @@ void FLTKShift::phase_cb(Fl_Widget *w, void*)
 {
 	FLTKSlide *v = (FLTKSlide*)w;
 	FLTKShift *g = (FLTKShift*)v->parent();
-	datamanagement.get_image<curve_complex_base>(g->data_id)->phase_shift.imag(sin(v->get_value()*(pt_PI/180)));//radians
-	datamanagement.get_image<curve_complex_base>(g->data_id)->phase_shift.real(cos(v->get_value()*(pt_PI/180)));//radians
+	//datamanagement.get_image<curve_complex_base>(g->data_id)->phase_shift.imag(sin(v->get_value()*(pt_PI/180)));//radians
+	//datamanagement.get_image<curve_complex_base>(g->data_id)->phase_shift.real(cos(v->get_value()*(pt_PI/180)));//radians
+	datamanagement.get_image<curve_complex_base>(g->data_id)->phase_shift = exp(complex<double>(0,v->get_value()*(pt_PI/180)));//radians
 	datamanagement.data_has_changed(g->data_id);
 }
 void FLTKShift::amares_cb(Fl_Widget *w, void*)
