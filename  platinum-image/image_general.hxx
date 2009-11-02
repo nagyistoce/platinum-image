@@ -722,7 +722,25 @@ unsigned short image_general<ELEMTYPE, IMAGEDIM>::nz() const
 }
 
 template <class ELEMTYPE, int IMAGEDIM>
-unsigned short image_general<ELEMTYPE, IMAGEDIM>::get_size_by_dim_and_dir(int dim, int direction)
+unsigned short image_general<ELEMTYPE, IMAGEDIM>::nu(int dir) const
+{
+	return get_size_by_dim_and_dir(0,dir);
+}
+
+template <class ELEMTYPE, int IMAGEDIM>
+unsigned short image_general<ELEMTYPE, IMAGEDIM>::nv(int dir) const
+{
+	return get_size_by_dim_and_dir(1,dir);
+}
+
+template <class ELEMTYPE, int IMAGEDIM>
+unsigned short image_general<ELEMTYPE, IMAGEDIM>::nw(int dir) const
+{
+	return get_size_by_dim_and_dir(2,dir);
+}
+
+template <class ELEMTYPE, int IMAGEDIM>
+unsigned short image_general<ELEMTYPE, IMAGEDIM>::get_size_by_dim_and_dir(int dim, int direction) const
     {
 		return get_size_by_dim((dim+direction+1)%IMAGEDIM);
     }

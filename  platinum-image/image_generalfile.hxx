@@ -460,6 +460,13 @@ void image_general<ELEMTYPE, IMAGEDIM>::load_dataset_from_these_DICOM_files(vect
 //	this->print_geometry();
 }
 
+template <class ELEMTYPE, int IMAGEDIM>
+void image_general<ELEMTYPE, IMAGEDIM>::load_dataset_from_DICOM_file(string fileName) {
+	vector<string> fileNames;
+	fileNames.push_back(fileName);
+	load_dataset_from_these_DICOM_files(fileNames);
+}
+
 
 template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::load_dataset_from_all_DICOM_files_in_dir(std::string dir_path)

@@ -239,7 +239,11 @@ class image_general : public image_storage <ELEMTYPE >
         unsigned short nx() const;
         unsigned short ny() const;
         unsigned short nz() const;
-        unsigned short get_size_by_dim_and_dir(int dim, int direction); //! get size in direction orthogonal to direction arg
+		unsigned short nu(int dir) const;
+		unsigned short nv(int dir) const;
+		unsigned short nw(int dir) const;
+
+        unsigned short get_size_by_dim_and_dir(int dim, int direction) const; //! get size in direction orthogonal to direction arg
         Vector3D get_size();
         
         bool same_size (image_base * other);				//test whether other image has same voxel dimensions
@@ -317,6 +321,7 @@ class image_general : public image_storage <ELEMTYPE >
         void load_dataset_from_DICOM_fileAF(std::string file_path,std::string seriesIdentifier);//"itk-dcm"
 //        virtual void load_dataset_from_these_DICOM_files(vector<string> filenames);
 		void load_dataset_from_these_DICOM_files(vector<string> filenames);
+		void load_dataset_from_DICOM_file(string fileName);
 		void load_dataset_from_all_DICOM_files_in_dir(std::string dir_path);
 		void load_dataset_from_regular_DICOM_files_in_dir(std::string dir_path, int jump_num_files = 2);
 
