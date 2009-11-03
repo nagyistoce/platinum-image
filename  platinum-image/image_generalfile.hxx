@@ -927,7 +927,7 @@ template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::helper_data_to_binary_image(ADDITIONAL_TYPE type){
 	image_binary<IMAGEDIM> *binary = new image_binary<IMAGEDIM>(this);
 	binary->fill(0);
-	for(int i = 0; i < (this->helper_data)->data.size(); i++){
+	for(int i = 0; i < this->helper_data->data.size(); i++){
 		if((this->helper_data)->data.at(i)->type == type)
 			write_additional_data(binary, i);
 	}
@@ -937,7 +937,7 @@ template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::write_additional_data(image_binary<IMAGEDIM> *bin_image, int i){
 	bool fill = i<0;
 	i = abs(i)-1; //added 1 so that 0 can have fill to
-	additional_data_base* base = (this->helper_data)->data.at(i);
+	additional_data_base* base = this->helper_data->data.at(i);
 	ADDITIONAL_TYPE type;
 	type = base->type;
 	vector<Vector3D> vec, free, temp;
