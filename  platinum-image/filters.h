@@ -27,7 +27,10 @@
 #ifndef __filters__
 #define __filters__
 
+#include <iostream>
+#include <limits>	//for example...  numeric_limits<float>
 #include <vnl/vnl_matrix.h>
+#include "ptmath.h"
 
 
 class filter_base
@@ -124,5 +127,7 @@ class filter_square_wave_1d : public filter_linear
 public:
 	filter_square_wave_1d(int dir=2, int num_high1=2, int num_low=2, int num_high2=2);
 };
+
+
 
 #endif

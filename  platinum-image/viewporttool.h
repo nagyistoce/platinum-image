@@ -147,6 +147,7 @@ public:
     static const std::string name ();
     static void init (); //initialize controls in statusArea
     virtual void handle(viewport_event &);
+	void update_interactive_message(viewport_event &event);
 };
 
 

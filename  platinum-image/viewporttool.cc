@@ -629,6 +629,31 @@ void cursor_tool::init()
     controls->end();
 }
 
+void cursor_tool::update_interactive_message(viewport_event &event)
+{
+//    std::vector<int> mouse = event.mouse_pos_local();
+    int *mouse = event.mouse_pos_local();
+   
+    FLTK_Event_pane *fp = event.get_FLTK_Event_pane();
+
+	numbers.str("");
+    //get coords and update statusfield
+    Vector3D pos;
+    pos = myRenderer->view_to_voxel(mouse[0], mouse[1],fp->w(),fp->h());
+    if (pos[0]<0) //negative coordinates signify outside of   //(positive and negative) bounds
+    {
+    userIOmanagement.interactive_message();
+	}
+	else{
+		for(int d = 0;d < 3;d++){
+			pos[d] = floor(pos[d]);
+		}
+        numbers << "Voxel " << pos;
+        userIOmanagement.interactive_message(numbers.str());
+     }
+
+}
+
 void cursor_tool::handle(viewport_event &event)
 {
 //    std::vector<int> mouse = event.mouse_pos_local();
@@ -700,7 +725,33 @@ void cursor_tool::handle(viewport_event &event)
     
         //event.resize_point(selection[0],selection[1]);
         }
-    
+ 
+	if (event.type() == pt_event::key)
+        {
+        event.grab();
+              if (event.key_combo(pt_event::pageup_key))
+				{
+                    event.grab();
+					move_voxels( 0, 0, -1 );
+					update_interactive_message(event);
+				}
+				
+                if (event.key_combo(pt_event::pagedown_key))
+				{
+                    event.grab();
+					move_voxels( 0, 0, 1 );
+					update_interactive_message(event);
+				} 
+
+				if (event.handled())
+				{
+                    fp->needs_rerendering();
+					//RN This is added because all viewports that use this edited rg should be updated
+					viewmanagement.refresh_viewports_from_geometry(myRenderer->geometry_id());
+				}
+		}
+
+
     if (event.type() == pt_event::hover ) //|| event.type() == pt_event::scroll)
         {
         event.grab();

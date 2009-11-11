@@ -342,10 +342,10 @@ vector<string>	get_dicom_files_in_dir(string dir_path, vector<string> tmp_dcm_fi
 	itk::GDCMImageIO::Pointer dicomIO = itk::GDCMImageIO::New();
 
 	for(int i=0;i<all_files.size();i++)	{
-//		cout<<"*i="<<i<<" "<<all_files[i]<<endl;
+		cout<<"*i="<<i<<" "<<all_files[i]<<endl;
 		if(dicomIO->CanReadFile(all_files[i].c_str()))
 		{
-//			cout<<"****dcm***"<<endl;
+			cout<<"****dcm***"<<endl;
 			dcm_files.push_back(all_files[i]);
 		}
 	}
@@ -400,6 +400,18 @@ string get_second_dicom_file_in_dir(string dir_path, bool full_path)
 		return v[1];
 	}
 	return "";
+}
+
+vector<string> get_dicom_files_in_dir(string dir_path, int first, int every_no, bool full_path)
+{
+	vector<string> v = get_dicom_files_in_dir(dir_path, full_path);
+	vector<string> selected;
+	for(int i=first; i<v.size(); i+=every_no){
+		selected.push_back(v[i]);
+	}
+	cout<<"v.size()="<<v.size()<<endl;
+	cout<<"selected.size()="<<selected.size()<<endl;
+	return selected;
 }
 
 vector<string> get_dicom_files_with_dcm_tag_value(vector<string> files, string dcm_tag, string tag_val)

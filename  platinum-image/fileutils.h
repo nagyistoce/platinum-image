@@ -95,6 +95,8 @@ vector<string>	get_dicom_files_in_dir(string dir_path, vector<string> dcm_files,
 vector<string>	get_first_dicom_files_in_all_subdirs(string dir_path, bool full_path=true);
 string			get_first_dicom_file_in_dir(string dir_path, bool full_path=false);
 string			get_second_dicom_file_in_dir(string dir_path, bool full_path=false); //can for example be used for loading image 2 in dual echo sequences...
+vector<string>	get_dicom_files_in_dir(string dir_path, int first, int every_no, bool full_path=true);
+
 vector<string>	get_dicom_files_with_dcm_tag_value(vector<string> files, string dcm_tag, string tag_val);
 int				get_number_of_dicom_files_in_dir(string dir_path);
 string			get_dicom_tag_value(string file_path, string dcm_tag, bool remove_garbage_char=true);

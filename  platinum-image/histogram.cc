@@ -237,7 +237,7 @@ void histogram_2D::calculate_from_image_data(int new_num_buckets)
 
     readytorender=false;
 
-    image_base * vol_v= datamanagement.get_image<image_base>(threshold.id[1]); //TODO_R HaR!!!!!
+	image_base * vol_v= datamanagement.get_image<image_base>(threshold.id[1]); //TODO_R HaR!!!!!
     image_base * vol_h= datamanagement.get_image<image_base>(threshold.id[0]); //TODO_R HaR!!!!!
 
     if (vol_v != NULL && vol_h != NULL)

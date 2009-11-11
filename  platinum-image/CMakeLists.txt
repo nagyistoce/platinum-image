@@ -171,7 +171,7 @@ error.cc
 event.cc 
 fcm.cc
 fileutils.cc 
-filters.hxx
+filters.cc
 FLTKuserIOparameters.cc 
 FLTKutilities.cc 
 FLTKviewport.cc 
@@ -475,7 +475,7 @@ ${WIN32_DIRENT_SRC}
 error.cc 
 fcm.cc
 fileutils.cc 
-filters.hxx
+filters.cc
 FLTKutilities.cc 
 graph.hxx
 histogram.cc 
