@@ -23,10 +23,11 @@
 #include "image_binary.h"
 #include "image_label.hxx"
 
-
+/*
 template <int IMAGEDIM>
 image_binary<IMAGEDIM>::image_binary(int w, int h, int d, IMGBINARYTYPE *ptr):image_label<IMAGEDIM>(w, h, d, ptr)
 {}
+*/
 /*
 template<int IMAGEDIM>
 template<class SOURCETYPE>

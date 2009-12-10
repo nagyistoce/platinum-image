@@ -311,8 +311,8 @@ void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_imag
                     fill_x_end=fill_x_start+1;
 
                     //get actual value in data, this has been scaled to fit the range of unsigned char
-//					if( the_image_pointer->is_voxelpos_within_image_3D(vox) ){
-					if( vox[0]>0&&vox[1]>0&&vox[2]>0 && vox[0]<the_image_pointer->get_size_by_dim(0)&&vox[1]<the_image_pointer->get_size_by_dim(1)&&vox[2]<the_image_pointer->get_size_by_dim(2) ){
+					if( the_image_pointer->is_voxelpos_within_image_3D(vox) ){
+//					if( vox[0]>0&&vox[1]>0&&vox[2]>0 && vox[0]<the_image_pointer->get_size_by_dim(0)&&vox[1]<the_image_pointer->get_size_by_dim(1)&&vox[2]<the_image_pointer->get_size_by_dim(2) ){
 
                         if(blend_mode == RENDER_THRESHOLD){
                             float t_value[2];
@@ -329,7 +329,6 @@ void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_imag
                                 threshold_value = (sqrt(powf((t_value[0]-((threshold->high[0]+threshold->low[0])/2.0))/((threshold->high[0]-threshold->low[0])/(threshold->high[1]-threshold->low[1])),2.0)+powf(t_value[1]-((threshold->high[1]+threshold->low[1])/2.0),2.0) ) <= (threshold->high[1]+threshold->low[1])/2.0);
 							}
 						}
-
 
                         else{ 
 							the_image_pointer->get_display_voxel(value,vox[0],vox[1],vox[2]); //TODO kolla vad denna gor egentligen

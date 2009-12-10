@@ -86,6 +86,7 @@ class image_general : public image_storage <ELEMTYPE >
 	
     protected:
         image_general<ELEMTYPE, IMAGEDIM>(int w, int h, int d, ELEMTYPE *ptr = NULL);
+        image_general<ELEMTYPE, IMAGEDIM>(vector<int> sizes, ELEMTYPE *ptr = NULL);
 
         unsigned short datasize[IMAGEDIM]; //image size (ITK denotes this "size")
         
@@ -115,7 +116,7 @@ class image_general : public image_storage <ELEMTYPE >
 		template <class sourceType>
 			void set_parameters(image_general<sourceType, IMAGEDIM> *from_image);         //clone parameters from another image
 
-		image_base * alike (imageDataType);
+		image_base* alike(imageDataType);
 
         image_general(ELEMTYPE * inData, unsigned long inDataNumElems, long width, long height, Vector3D voxelSize);
         //create image from pre-loaded raw data
@@ -130,6 +131,7 @@ class image_general : public image_storage <ELEMTYPE >
         //      element of vector. Reads all files (directories ignored) in argument dir. 
 
         void initialize_dataset(int w, int h, int d);                           //overloading from image_base
+        void initialize_dataset(vector<int> sizes, ELEMTYPE *ptr);
         void initialize_dataset(int w, int h, int d, ELEMTYPE *ptr);          //load might happen outside class
         void initialize_dataset_same_size(image_general<ELEMTYPE, IMAGEDIM> *size_template);          //load might happen outside class
 
@@ -207,8 +209,10 @@ class image_general : public image_storage <ELEMTYPE >
 		ELEMTYPE* get_voxel_pointer_by_dir(int u, int v, int w, int direction=2);
 
         histogram_1D<ELEMTYPE>* get_histogram_from_masked_region_3D(image_binary<3>* mask, int num_buckets=1000);
+        histogram_1D<ELEMTYPE>* get_histogram_with_num_buckets(int num_buckets);
 
         void set_voxel(int x, int y, int z, ELEMTYPE voxelvalue);
+        void set_voxel(int x, int y, int z, int w, ELEMTYPE voxelvalue);
         void set_voxel(Vector3D coord_pos, ELEMTYPE voxelvalue);
         void set_voxels(vector<Vector3D> coords, ELEMTYPE voxelvalue);
         void set_voxel_in_physical_pos(Vector3D phys_pos, ELEMTYPE voxelvalue);

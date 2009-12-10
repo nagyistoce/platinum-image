@@ -100,6 +100,8 @@ public:
 
     image_scalar(): image_general<ELEMTYPE, IMAGEDIM>(){set_scalar_parameters();};
     image_scalar(int w, int h, int d, ELEMTYPE *ptr = NULL):image_general<ELEMTYPE, IMAGEDIM>(w, h, d, ptr) {set_scalar_parameters();};
+    image_scalar(vector<int> sizes, ELEMTYPE *ptr = NULL):image_general<ELEMTYPE, IMAGEDIM>(sizes, ptr) {set_scalar_parameters();};
+
     image_scalar(itk::SmartPointer< itk::OrientedImage<ELEMTYPE, IMAGEDIM > > &i):image_general<ELEMTYPE, IMAGEDIM>(i) {set_scalar_parameters();}
     //copy constructor
     template<class SOURCETYPE>
@@ -118,7 +120,7 @@ public:
     ELEMTYPE get_num_values();
 	ELEMTYPE get_max() const;
 	ELEMTYPE get_min() const;
-	float get_mean_intensity();
+//	float get_mean_intensity();
 	histogram_1D<ELEMTYPE>* get_histogram();
 	histogram_1D<ELEMTYPE>* get_histogram_new_with_same_num_buckets_as_intensities();
 	virtual void stats_refresh(bool min_max_refresh=false);
@@ -219,7 +221,7 @@ public:
     void save_histogram_to_txt_file(const std::string filename, gaussian *g=NULL, bool reload_hist_from_image=false, const std::string separator=";");
 	void save_histogram_to_txt_file(const std::string filename, image_binary<3> *mask_im, int num_buckets = 1000);
 
-    image_scalar<unsigned short, 3>* create2Dhistogram_3D(image_scalar<ELEMTYPE, IMAGEDIM> *second_image, bool remove_zero_intensity=false, int num_buckets_a=-1, int num_buckets_b=-1, image_binary<IMAGEDIM>* mask=NULL); 
+    image_scalar<unsigned short,3>* create2Dhistogram_3D(image_scalar<ELEMTYPE, IMAGEDIM> *second_image, bool remove_zero_intensity=false, int num_buckets_a=-1, int num_buckets_b=-1, image_binary<IMAGEDIM>* mask=NULL); 
 
 	//the resulting histogram volume will have the intensities of first/second in the x/y directions.
 	//The z direction will gives the different 2D-histograms in the specified direction "hist_slc_dir"
@@ -306,7 +308,7 @@ public:
 	Vector3D get_pos_of_max_grad_mag_in_region_voxel ( Vector3D center, Vector3D radius, GRAD_MAG_TYPE type );
 
 	void scale_slice_by_factor_3d(int dir, float factor, int slice);
-	float scale_slice_average_to_3d(int dir, ELEMTYPE new_average, int slice); //returns slice_scale_factor
+	float scale_slice_average_to_3d(int dir, ELEMTYPE new_average, int slice, image_binary<IMAGEDIM>* mask=NULL); //returns slice_scale_factor
 
 	float get_mean_from_slice_3d(int dir, int slice, image_binary<IMAGEDIM>* mask=NULL);
 //	ELEMTYPE get_mean_from_5nbh(int x, int y, int z, int dir=2);

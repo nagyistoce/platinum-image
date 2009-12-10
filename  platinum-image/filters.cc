@@ -286,7 +286,7 @@ filter_LoG_1d::filter_LoG_1d(int dir, float sigma_in_pixels, unsigned int num_el
 
 filter_gaussian::filter_gaussian(int size, int dir, float std_dev, int center)
 {	if (size%2==0) {cout << "WARNING: Creating gaussian filter with kernel of even size";}
-	if (std_dev<0) {std_dev=sqrt(float(2))*float(size)/float(5);}
+	if (std_dev<=0) {std_dev=sqrt(float(2))*float(size)/float(5);}
 	if (center<-1000) {center=size/2;}
 
 	float *w = new float[size];

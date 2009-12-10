@@ -514,6 +514,9 @@ void sfcm::calc_mean_nbh_dist_image_4NBH()
 				}
 			}//x
 		}//y
+		for(int j=0;j<ny();j=j+ny()-1){
+
+		}
 	}//z
 	this->average_nbh_dist_mean /= n_pix();
 	this->mean_nbh_dist_image->data_has_changed();

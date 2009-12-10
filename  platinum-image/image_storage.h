@@ -109,6 +109,8 @@ class image_storage : public image_base
 		void add_value_to_all_voxels(ELEMTYPE value, image_storage<IMGBINARYTYPE>* mask=NULL);
         void scale(ELEMTYPE new_min=0, ELEMTYPE new_max=255);   
 		void scale_by_factor(float factor, ELEMTYPE old_center=0, ELEMTYPE new_center=0, image_storage<IMGBINARYTYPE>* mask=NULL);
+		void scale_by_logx_transform(image_storage<IMGBINARYTYPE>* mask=NULL);
+		void scale_by_x_logx_transform(image_storage<IMGBINARYTYPE>* mask=NULL);
 		void scale_intervall(ELEMTYPE from_min_val, ELEMTYPE from_max_val, ELEMTYPE to_min_val, ELEMTYPE to_max_val);
 		void map_values(ELEMTYPE map_from=1, ELEMTYPE map_to=255, ELEMTYPE result_value=255);
 		void map_negative_values(ELEMTYPE to_value=0);

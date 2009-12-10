@@ -41,13 +41,13 @@ ELEMTYPE image_scalar<ELEMTYPE, IMAGEDIM>::get_min() const
 {
     return stats->min();
 }
-
+/*
 template <class ELEMTYPE, int IMAGEDIM>
 float image_scalar<ELEMTYPE, IMAGEDIM>::get_mean_intensity()
 {
-    return stats->get_mean_intensity();
+    return stats->get_mean_intensity(); //does not do what we want it too.... yet...
 }
-
+*/
 
 template <class ELEMTYPE, int IMAGEDIM>
 template <class sourceType>
@@ -1016,7 +1016,7 @@ image_scalar<ELEMTYPE, IMAGEDIM>* image_scalar<ELEMTYPE, IMAGEDIM>::get_subvolum
 
 	for (int u=0; u<usize; u++){
 		for (int v=0; v<vsize; v++){
-			res->set_voxel_by_dir(u,v,0, this->get_voxel_by_dir(u,v,slice,dir), dir);
+			res->set_voxel(u,v,0, this->get_voxel_by_dir(u,v,slice,dir));
 		}
 	}
 	return res;
@@ -3604,13 +3604,13 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::save_to_TIF_file_series_3D(const std::str
 	if(to_slice>=0){
 		s_end = to_slice;
 	}else{
-		s_end = this->get_size_by_dim(dir);
+		s_end = this->get_size_by_dim(dir)-1;
 	}
 		
 	image_scalar<ELEMTYPE, IMAGEDIM> *slc;
 //	image_general<unsigned char,3> *slc2;
 	image_scalar<unsigned char,3> *slc2;
-	for(int s=s_start; s<s_end; s++){
+	for(int s=s_start; s<=s_end; s++){
 		slc = this->get_subvolume_from_slice_rotated_3D(s,dir);
 		slc->scale(); //0...256
 		slc->data_has_changed(true);
@@ -3618,10 +3618,10 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::save_to_TIF_file_series_3D(const std::str
 		sprintf(buf,"%04i",s);
 		slc2 = new image_scalar<unsigned char,3>(slc);
 		slc2->save_uchar2D_to_TIF_file(file_path_base, string(buf));
-		datamanagement.add(slc,"slc");
-		datamanagement.add(slc2,"slc2");
-//		delete slc;
-//		delete slc2;
+//		datamanagement.add(slc,"slc");
+//		datamanagement.add(slc2,"slc2");
+		delete slc;
+		delete slc2;
 	}
 }
 
@@ -3709,7 +3709,7 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::scale_slice_by_factor_3d(int dir, float f
 }
 
 template <class ELEMTYPE, int IMAGEDIM>
-float image_scalar<ELEMTYPE, IMAGEDIM>::scale_slice_average_to_3d(int dir, ELEMTYPE new_average, int slice) 
+float image_scalar<ELEMTYPE, IMAGEDIM>::scale_slice_average_to_3d(int dir, ELEMTYPE new_average, int slice, image_binary<IMAGEDIM>* mask) 
 {
 	if(dir<0 || dir>2) {
 		pt_error::error("Direction dir must be between 0 and 2 in scale_slice_by_factor_3d", pt_error::debug);
@@ -3718,16 +3718,19 @@ float image_scalar<ELEMTYPE, IMAGEDIM>::scale_slice_average_to_3d(int dir, ELEMT
 		pt_error::error("Slice out of bounds in scale_slice_average_to_3d",pt_error::debug); 
 	}
 
-	ELEMTYPE mean_local = this->get_mean_from_slice_3d(dir,slice);
-	float factor = float(new_average)/float(mean_local);
-	cout<<"mean_loacal="<<mean_local<<endl;
-	cout<<"factor="<<factor<<endl;
+	ELEMTYPE mean_local = this->get_mean_from_slice_3d(dir,slice, mask);
+	float factor = 0;
 
-	for(int v=0; v<this->get_size_by_dim_and_dir(1,dir); v++){
-		for(int u=0; u<this->get_size_by_dim_and_dir(0,dir); u++){
-			this->set_voxel_by_dir(u,v,slice, ELEMTYPE(float(this->get_voxel_by_dir(u,v,slice,dir)*factor)));
+	if(mean_local!=0){
+		factor = float(new_average)/float(mean_local);
+		cout<<"slice="<<slice<<" (mean_local="<<mean_local<<" factor="<<factor<<")\t"<<endl;
+		for(int v=0; v<this->get_size_by_dim_and_dir(1,dir); v++){
+			for(int u=0; u<this->get_size_by_dim_and_dir(0,dir); u++){
+				this->set_voxel_by_dir(u,v,slice, ELEMTYPE(float(this->get_voxel_by_dir(u,v,slice,dir)*factor)),dir);
+			}
 		}
 	}
+
 	return factor;
 }
 

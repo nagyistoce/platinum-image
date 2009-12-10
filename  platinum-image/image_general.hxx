@@ -275,6 +275,12 @@ image_general<ELEMTYPE, IMAGEDIM>::image_general(int w, int h, int d, ELEMTYPE *
     }
 
 template <class ELEMTYPE, int IMAGEDIM>
+image_general<ELEMTYPE, IMAGEDIM>::image_general(vector<int> sizes, ELEMTYPE *ptr) : image_storage<ELEMTYPE >()
+    {
+    initialize_dataset(sizes,ptr);
+    }
+
+template <class ELEMTYPE, int IMAGEDIM>
 image_general<ELEMTYPE, IMAGEDIM>::image_general(const string filepath, const string name)
 {
 	this->load_file_to_this(filepath);
@@ -302,7 +308,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::initialize_dataset(int w, int h, int d, 
     
     //dimension-independent loop that may be lifted outside this function
     this->num_elements=1;
-    for (unsigned short i = 0; i < IMAGEDIM; i++) 
+    for (unsigned short i=0; i<IMAGEDIM; i++) 
         {
         this->num_elements *= datasize[i];
         }
@@ -327,6 +333,39 @@ void image_general<ELEMTYPE, IMAGEDIM>::initialize_dataset(int w, int h, int d, 
     set_parameters();
 	}
 
+template <class ELEMTYPE, int IMAGEDIM>
+void image_general<ELEMTYPE, IMAGEDIM>::initialize_dataset(vector<int> sizes, ELEMTYPE *ptr)
+{
+	for(int i=0;i<IMAGEDIM;i++){
+	    datasize[i] = sizes[i];
+	}
+    voxel_size.Fill(1);
+	this->set_slice_orientation("undefined");
+    
+    //dimension-independent loop that may be lifted outside this function
+    this->num_elements=1;
+	for(unsigned short i=0; i<IMAGEDIM; i++){
+        this->num_elements *= datasize[i];
+	}
+	
+	if(this->imagepointer()!=NULL){
+		cout<<"initialize_dataset--> this->deallocate()... to avoid memory loss..."<<endl;
+		this->deallocate();
+	}else{
+		cout<<"initialize_dataset--> ... pointer was already NULL..."<<endl;
+	}
+
+    this->set_imagepointer( new ELEMTYPE[this->num_elements] );
+
+	if(ptr!=NULL){ //memcpy is bad karma! Use copy_data(in, out) whenever you know your (input) datatype!
+        memcpy(this->imagepointer(),ptr,sizeof(ELEMTYPE)*this->num_elements);
+        data_has_changed(true);
+	}
+        
+    set_parameters();
+}
+
+       
 
 template <class ELEMTYPE, int IMAGEDIM>
 template <class LOADERTYPE>
@@ -2054,6 +2093,15 @@ void image_general<ELEMTYPE, IMAGEDIM>::set_voxel(Vector3D coord_pos, ELEMTYPE v
     }
 
 template <class ELEMTYPE, int IMAGEDIM>
+void image_general<ELEMTYPE, IMAGEDIM>::set_voxel(int x, int y, int z, int w, ELEMTYPE voxelvalue)
+{
+	if(x<0||x>=datasize[0] || y<0||y>=datasize[1] || z<0||z>=datasize[2])
+		{cout<<"set_voxel--> strange index... x="<<x<<" y=.... datasize=("<<datasize[0]<<","<<datasize[1]<<","<<datasize[2]<<","<<datasize[3]<<")"<<endl;}
+
+    this->dataptr[x + datasize[0]*y + datasize[0]*datasize[1]*z + datasize[0]*datasize[1]*datasize[2]*w] = voxelvalue;
+}
+
+template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::set_voxels(vector<Vector3D> coords, ELEMTYPE voxelvalue)
     {
 		for(int i=0;i<coords.size();i++){
@@ -2139,6 +2187,13 @@ histogram_1D<ELEMTYPE>* image_general<ELEMTYPE, IMAGEDIM>::get_histogram_from_ma
 
 	histogram_1D<ELEMTYPE> *stats_masked = new histogram_1D<ELEMTYPE>(this, tmp, num_buckets);
 	return stats_masked;
+}
+
+template <class ELEMTYPE, int IMAGEDIM>
+histogram_1D<ELEMTYPE>* image_general<ELEMTYPE, IMAGEDIM>::get_histogram_with_num_buckets(int num_buckets)
+{
+	histogram_1D<ELEMTYPE> *stats2 = new histogram_1D<ELEMTYPE>(this, num_buckets);
+	return stats2;
 }
 
 

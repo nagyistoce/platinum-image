@@ -39,7 +39,8 @@ template<int IMAGEDIM = 3>
 class image_binary : public image_label <IMAGEDIM>
     {
 public:
-	image_binary(int w, int h, int d, IMGBINARYTYPE *ptr = NULL);
+	image_binary(int w, int h, int d, IMGBINARYTYPE *ptr = NULL):image_label<IMAGEDIM>(w, h, d, ptr)
+	{}
 
 	template<class SOURCETYPE>
     image_binary(image_general<SOURCETYPE, IMAGEDIM> * old_image, bool copyData = true) : image_label<IMAGEDIM>(old_image, copyData)//!copy constructor

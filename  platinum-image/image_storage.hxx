@@ -392,6 +392,46 @@ void image_storage<ELEMTYPE >::scale_by_factor(float factor, ELEMTYPE old_center
 }
 
 template <class ELEMTYPE >
+void image_storage<ELEMTYPE >::scale_by_logx_transform(image_storage<IMGBINARYTYPE>* mask){
+	typename image_storage<ELEMTYPE>::iterator itr = this->begin();
+	if (mask!=NULL) {
+		typename image_storage<IMGBINARYTYPE>::iterator mask_itr = mask->begin();
+		while (itr != this->end()) {
+			if (*mask_itr) {*itr = pt_log<ELEMTYPE>(*itr,ZERO_HANDLING_SET_ZERO);}
+			++itr;
+			++mask_itr;
+		}
+		pt_error::error_if_false(itr == this->end() && mask_itr == mask->end(),"Binary mask size didn't match image size when scaling by factor",pt_error::serious);
+	}else {
+		while (itr != this->end()) {
+		*itr = pt_log<ELEMTYPE>(*itr,ZERO_HANDLING_SET_ZERO);
+		++itr;
+		}
+	}
+}
+
+template <class ELEMTYPE >
+void image_storage<ELEMTYPE >::scale_by_x_logx_transform(image_storage<IMGBINARYTYPE>* mask){
+	typename image_storage<ELEMTYPE>::iterator itr = this->begin();
+	if (mask!=NULL) {
+		typename image_storage<IMGBINARYTYPE>::iterator mask_itr = mask->begin();
+		while (itr != this->end()) {
+			if (*mask_itr) {*itr = *itr * pt_log<ELEMTYPE>(*itr,ZERO_HANDLING_SET_ZERO);}
+			++itr;
+			++mask_itr;
+		}
+		pt_error::error_if_false(itr == this->end() && mask_itr == mask->end(),"Binary mask size didn't match image size when scaling by factor",pt_error::serious);
+	}else {
+		while (itr != this->end()) {
+		*itr = *itr * pt_log<ELEMTYPE>(*itr,ZERO_HANDLING_SET_ZERO);
+		++itr;
+		}
+	}
+}
+
+
+
+template <class ELEMTYPE >
 void image_storage<ELEMTYPE >::scale_intervall(ELEMTYPE from_min_val, ELEMTYPE from_max_val, ELEMTYPE to_min_val, ELEMTYPE to_max_val)
 {
 	typename image_storage<ELEMTYPE>::iterator itr = this->begin();
