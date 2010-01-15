@@ -21,7 +21,7 @@
 
 
 
-curve_base::curve_base(string name, bool real) : data_base(get_supported_renderers())
+curve_base::curve_base(string name, bool real) : data_base(NULL, get_supported_renderers())
 {
     //start empty
 	if(real)

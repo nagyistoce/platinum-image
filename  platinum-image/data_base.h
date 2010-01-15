@@ -53,9 +53,12 @@ class data_base
 
         void name_from_path(std::string filepath);   //sets image name from name portion of path
     
+		data_base(data_base *const source=NULL, vector<RENDERER_TYPE> supported=vector<RENDERER_TYPE>());
+/*
 		data_base(vector<RENDERER_TYPE> supported);
 		data_base();
 		data_base(data_base * const, vector<RENDERER_TYPE> supported);
+*/
 		//data_base(const data_base & source);		// copy constructor
 
     public:

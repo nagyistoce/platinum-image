@@ -19,7 +19,7 @@
 //#include "point_base.h"
 #include "datawidget.h"
 
-point_collection::point_collection() : data_base(get_supported_renderers())
+point_collection::point_collection() : data_base(NULL,get_supported_renderers())
 {
     //start empty
     widget = new datawidget<point_collection>(this, "Untitled point_collection");

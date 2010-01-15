@@ -32,6 +32,7 @@
 #define PLATINUM_MINOR_VER 1
 
 #define TESTMODE	//JK test mode --> "dcm_import_button"
+//#define CHECK_ALREADY_LOADED_FILES	//JK (to allow loading och pd-t2 volumes for example)
 
 #define FLTK_LABEL_SIZE 14
 #define FLTK_SMALL_LABEL 11

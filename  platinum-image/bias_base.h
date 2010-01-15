@@ -40,7 +40,7 @@
 
 //Take note: the purpose of the base class is to allow access to instances in a
 //template-unaware fashion. Hence the base class cannot be templated.
-
+/*
 class bias_base : public data_base
 //class bias_base
     {
@@ -60,5 +60,6 @@ class bias_base : public data_base
         virtual void save_to_VTK_file(const std::string, const bool useCompression = true);
 
     };
+*/
 
 #endif

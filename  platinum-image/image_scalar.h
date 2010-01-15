@@ -332,6 +332,7 @@ public:
 	void load_dataset_from_VTK_file(std::string file_path);
     void save_to_TIF_file_series_3D(const std::string file_path_base, int dir=2, int from_slice=-1, int to_slice=-1);
 	void save_uchar2D_to_TIF_file(const std::string file_path_base, const std::string slice="0");
+	void save_projection_to_8bit_tif_file(const std::string file_path_base, int dir, PROJECTION_MODE PROJ=PROJ_MAX);
 
 
 

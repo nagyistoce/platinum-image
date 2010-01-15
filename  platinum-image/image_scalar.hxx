@@ -3643,6 +3643,15 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::save_uchar2D_to_TIF_file(const std::strin
 //	this->clear_itk_porting();
 }
 
+template <class ELEMTYPE, int IMAGEDIM>
+void image_scalar<ELEMTYPE, IMAGEDIM>::save_projection_to_8bit_tif_file(const std::string file_path_base, int dir, PROJECTION_MODE PROJ)
+{
+//	cout<<"save_projection_to_8bit_tif_file..."<<endl;
+	image_scalar<ELEMTYPE,3> *mip = this->create_projection_3D(dir, PROJ); //PROJ_MAX, PROJ_MEAN, PROJ_MIN 
+	mip->save_to_TIF_file_series_3D(file_path_base,2,0,0);
+	delete mip;
+}
+
 
 
 template <class ELEMTYPE, int IMAGEDIM>

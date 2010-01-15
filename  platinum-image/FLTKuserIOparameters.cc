@@ -1149,7 +1149,7 @@ FLTKuserIOpar_stringlist::FLTKuserIOpar_stringlist (const std::string name, std:
 	Fl_Menu_Item* menuitems = (Fl_Menu_Item*)malloc((strlist.size()+1)*sizeof(Fl_Menu_Item));
 	for (int i = 0; i<strlist.size(); i++) {
 		init_fl_menu_item(menuitems[i]);
-		menuitems[i].label(strlist[i].c_str());
+		menuitems[i].label(strdup(strlist[i].c_str()));
 		menuitems[i].flags=FL_MENU_RADIO;
 		menuitems[i].callback(set_string_static_callback, this);
 	}

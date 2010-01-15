@@ -68,17 +68,45 @@ const string data_base::name() const
     return ( "(untitled)" );
     }
 
+data_base::data_base(data_base *const source, vector<RENDERER_TYPE> supported)
+    {
+	ID = data_next_ID++;
+//	cout<<"data_base, new ID="<<ID<<endl;
+
+	widget = NULL;
+	draw_additional_data = false;
+
+//    pt_error::error_if_null(source,"Attempting to copyconstruct data object from NULL object");
+
+	if(source == NULL){
+		from_file(false);
+		helper_data = new additional_data();
+		meta = metadata();
+	}else{
+		from_file(source->from_file());
+		helper_data = source->helper_data;
+		meta = source->meta;
+	}
+
+	if(supported.size()==0){
+		supported_renderers.push_back(RENDERER_MPR); //Defaults to MPR, but for clarity this should not be used!
+	}else{
+		supported_renderers = supported;
+	}
+
+    }
+/*
 data_base::data_base(vector<RENDERER_TYPE> support)
     {
-		supported_renderers = support;
+	supported_renderers = support;
     ID = data_next_ID++;
     widget = NULL;
     from_file(false);
 	helper_data = new additional_data();
-	draw_additional_data= false;
-
+	draw_additional_data = false;
 	meta = metadata();
     }
+
 data_base::data_base()
     {
 	supported_renderers.push_back(RENDERER_MPR); //Defaults to MPR, but for clarity this should not be used!
@@ -90,9 +118,10 @@ data_base::data_base()
 	meta = metadata();
     }
 
-data_base::data_base (data_base * const source, vector<RENDERER_TYPE> support)
+data_base::data_base(data_base * const source, vector<RENDERER_TYPE> support)
     {
     pt_error::error_if_null(source,"Attempting to copyconstruct data object from NULL object");
+
 	supported_renderers = support;
     ID = data_next_ID++;
     widget = NULL;
@@ -101,6 +130,7 @@ data_base::data_base (data_base * const source, vector<RENDERER_TYPE> support)
 	draw_additional_data = false;
 	meta = source->meta;
     }
+*/
 /*
 data_base::data_base(const data_base & source)
 {

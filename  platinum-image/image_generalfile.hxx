@@ -904,6 +904,8 @@ void image_general<ELEMTYPE, IMAGEDIM>::save_to_NIFTI_file(const std::string fil
 		std::cout<<ex<<std::endl;
     }
 }
+
+
 template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::helper_data_to_binary_image(int index){
 	image_binary<IMAGEDIM> *binary = new image_binary<IMAGEDIM>(this);

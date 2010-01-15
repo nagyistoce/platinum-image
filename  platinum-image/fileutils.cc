@@ -173,6 +173,11 @@ bool file_exists (string file_path)
 
 bool dir_exists (string file_path)
 {
+	//on windows... a trailing slash "/" has to be removed... 
+	#if defined _WIN32
+		remove_string_ending(file_path, "/");
+	#endif
+
     struct stat fileStats;
     
     if (stat(file_path.c_str(), &fileStats) == 0)
@@ -342,10 +347,10 @@ vector<string>	get_dicom_files_in_dir(string dir_path, vector<string> tmp_dcm_fi
 	itk::GDCMImageIO::Pointer dicomIO = itk::GDCMImageIO::New();
 
 	for(int i=0;i<all_files.size();i++)	{
-		cout<<"*i="<<i<<" "<<all_files[i]<<endl;
+//		cout<<"*i="<<i<<" "<<all_files[i]<<endl;
 		if(dicomIO->CanReadFile(all_files[i].c_str()))
 		{
-			cout<<"****dcm***"<<endl;
+//			cout<<"****dcm***"<<endl;
 			dcm_files.push_back(all_files[i]);
 		}
 	}

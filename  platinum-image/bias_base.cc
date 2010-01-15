@@ -21,7 +21,7 @@
 
 using namespace std;
 
-
+/*
 //bias_base::bias_base():data_base()
 //    {
 //		set_parameters();
@@ -38,6 +38,7 @@ vector<RENDERER_TYPE> bias_base::get_supported_renderers(){
 	vec.push_back(RENDERER_MIP);
 	return vec;
 }
+*/
 /*
 bias_base::bias_base(bias_base* const b):data_base(b)
     {
@@ -49,7 +50,7 @@ bias_base::bias_base(bias_base* const b):data_base(b)
     }
 */
 
-
+/*
 
 void bias_base::redraw()
 {
@@ -67,3 +68,4 @@ void bias_base::save_to_DCM_file(const std::string, const bool useCompression, c
 void bias_base::save_to_VTK_file(const std::string, const bool useCompression)
 {
 }
+*/

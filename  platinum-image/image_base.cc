@@ -38,7 +38,7 @@ extern datamanager datamanagement;
 extern rendermanager rendermanagement;
 extern viewmanager viewmanagement;
 
-image_base::image_base():data_base(get_supported_renderers())
+image_base::image_base():data_base(NULL,get_supported_renderers())
     {set_parameters();}
 
 image_base::image_base(image_base* const s):data_base(s, get_supported_renderers())
@@ -734,11 +734,15 @@ image_base *dicomloader::read()
 
 					//if this series ID and TE already has been loaded ---> don't load... 
 //					cout<<"*********** check already loaded... *********************"<<endl;
-					already_loaded = is_file_already_loaded(*file);
+					#ifdef CHECK_ALREADY_LOADED_FILES
+						already_loaded = is_file_already_loaded(*file);
+					#endif
 
 					if(!already_loaded){
-						loaded_series.push_back(seriesIdentifier);
-						loaded_TEs.push_back(get_dicom_tag_value(*file,DCM_TE));
+						#ifdef CHECK_ALREADY_LOADED_FILES
+							loaded_series.push_back(seriesIdentifier);
+							loaded_TEs.push_back(get_dicom_tag_value(*file,DCM_TE));
+						#endif
 
 						itk::ImageIOBase::IOPixelType pixelType=dicomIO->GetPixelType();
 						itk::ImageIOBase::IOComponentType theComponentType = dicomIO->GetComponentType();
