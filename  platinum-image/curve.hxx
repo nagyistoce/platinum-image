@@ -730,7 +730,7 @@ class amares_cost_function;
 /*Does an AMARES optimization and returns the amplitudes of the peaks found*/
 template<class ELEMTYPE>
 void curve_complex<ELEMTYPE>::amares(string prior_knowledge, int nr_sinusoids){
-	vector<vector<double> > starting_vals;
+	/*vector<vector<double> > starting_vals;
 
 
 	starting_vals = read_starting_vals(prior_knowledge);
@@ -752,7 +752,7 @@ void curve_complex<ELEMTYPE>::amares(string prior_knowledge, int nr_sinusoids){
 
 	vnl_vector<double> x = amares_start_vals(starting_vals.at(0), starting_vals.at(1), y,time->size(), nr_sinusoids);
 	//cout<<"x="<<x<<endl;
-	amoeba_optimizer.minimize(cost,x);
+	amoeba_optimizer.minimize(cost,x);*/
 }
 
 template<class ELEMTYPE>
@@ -761,7 +761,7 @@ vector<vector<double> > curve_complex<ELEMTYPE>::read_starting_vals(string prior
 	string path = prior_knowledge.substr(0,i);
 	path = path + ".sv";
 	vector<vector<double> > result;
-	vector<double> freq;
+	/*vector<double> freq;
 	vector<double> d;
 	double val;
 	double ds;
@@ -826,7 +826,7 @@ vector<vector<double> > curve_complex<ELEMTYPE>::read_starting_vals(string prior
 	}
 	myfile.close();
 	result.push_back(freq);
-	result.push_back(d);
+	result.push_back(d);*/
 	return result;
 }
 
@@ -834,7 +834,7 @@ vector<vector<double> > curve_complex<ELEMTYPE>::read_starting_vals(string prior
 template<class ELEMTYPE>
 vnl_vector<double> curve_complex<ELEMTYPE>::amares_start_vals(vector<double> f, vector<double> d, vnl_vector<ELEMTYPE> y, int N, int K){
 
-	vnl_matrix<ELEMTYPE> grep(N*2,K);
+	/*vnl_matrix<ELEMTYPE> grep(N*2,K);
 	vnl_vector<ELEMTYPE> I;
 
 	vector<double> t(N); //This needs to be calcualted!!!
@@ -849,17 +849,17 @@ vnl_vector<double> curve_complex<ELEMTYPE>::amares_start_vals(vector<double> f, 
 
 	vnl_matrix<ELEMTYPE> pseudo_grep = vnl_matrix_inverse<ELEMTYPE>(grep.transpose()*grep)*grep.transpose();
 
-	I = pseudo_grep*y;
+	I = pseudo_grep*y;*/
 
 	vnl_vector<double> x(K*4);
 	//TODO read these from file or something!!!
-	for(int i = 0; i < K; i++){
+	/*for(int i = 0; i < K; i++){
 		x[i*4+0] = f[i];
 		x[i*4+1] = d[i];
-		x[i*4+3] = sqrt(pow(I[i*2],2)+pow(I[i*2+1],2)); //a
+		//x[i*4+3] = sqrt(pow(I[i*2],2)+pow(I[i*2+1],2)); //add this later. quick compile error fix!
 		x[i*4+2] = acos(I[i*2]/x[i*4+3]);
 		
-	}
+	}*/
 	return x;
 }
 
@@ -888,7 +888,7 @@ template<class ELEMTYPE>
 double amares_cost_function<ELEMTYPE>::f(vnl_vector<double> const &x)
 {
 	//d = 0 f = 1 p = 2
-	vnl_matrix<ELEMTYPE> grep(N*2,K);
+	/*vnl_matrix<ELEMTYPE> grep(N*2,K);
 	vnl_vector<ELEMTYPE> I(K);
 	vnl_vector<ELEMTYPE> res_vec;//(N*2);
 	vector<double> t(N); //This needs to be calcualted!!!
@@ -910,9 +910,10 @@ double amares_cost_function<ELEMTYPE>::f(vnl_vector<double> const &x)
 	res_vec = y - grep*I;
 	double res = 0;
 	for(int i = 0; i<2*N; i++){
-		res+= pow(res_vec[i],2);
+		//res+= pow(res_vec[i],2); //add this later. quick compile error fix!
 	}
-	return sqrt(res);
+	return sqrt(res);*/
+	return 0; //remove when uncommenting
 
 }
 

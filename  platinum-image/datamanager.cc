@@ -300,6 +300,13 @@ void datamanager::save_hist_callback(Fl_Widget *callingwidget, void * thisdatama
 	pt_config::write("latest_path",path_parent(chooser.value(1)));
 }
 
+void datamanager::add_hist_callback(Fl_Widget *callingwidget, void * thisdatamanager)
+{
+    datawidget_base * the_datawidget=(datawidget_base *)(callingwidget->user_data());
+    int image_index=((datamanager*)thisdatamanager)->find_data_index(the_datawidget->get_data_id());
+	((datamanager*)thisdatamanager)->dataItems[image_index]->make_histogram_curve();
+}
+
 
 
 void datamanager::add(image_base *im, string name, bool data_changed, string slc_orient)
@@ -339,11 +346,13 @@ void datamanager::add(image_base *im, string name, bool data_changed, string slc
 }
 
 /* Added support for curve */
-void datamanager::add(curve_base *curve){
+void datamanager::add(curve_base *curve, string name){
 	
 	pt_error::error_if_false(dataItems.size() < DATA_VECTOR_MAX,"Error when adding curve: number of data items in datamanager exceeds IMAGEVECTORMAX",pt_error::fatal);
     
     if(pt_error::error_if_null(curve,"Can't add curve to datamanager, pointer is NULL",pt_error::serious) != NULL){
+		if(name != "")
+			curve->name("name");
         dataItems.push_back(curve);
         curve->activate();
 		//viewmanagement.show_in_empty_viewport(curve->get_id()); anvander image_base specifika saker i nulaget...

@@ -1840,6 +1840,10 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::save_histogram_to_txt_file(const std::str
 {
 	this->stats->save_histogram_to_txt_file(filename,0,false,separator);
 }
+template <class ELEMTYPE, int IMAGEDIM>
+void image_scalar<ELEMTYPE, IMAGEDIM>::make_histogram_curve(){
+	datamanagement.add(this->stats->get_curve_for_rendering(),name() + " hist");
+}
 
 
 template <class ELEMTYPE, int IMAGEDIM>

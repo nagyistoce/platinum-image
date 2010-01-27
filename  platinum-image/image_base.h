@@ -167,6 +167,7 @@ class image_base : public data_base
 		virtual float get_phys_span_in_dir(Vector3D dir) = 0; //needed for example when setting upp view_ports "center3d_and_fit"
 
 		virtual void save_histogram_to_txt_file(const std::string filename, const std::string separator=";");
+		virtual void make_histogram_curve();
 
 		string resolve_tooltip();
 		string resolve_tooltip_image_base();

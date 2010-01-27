@@ -111,10 +111,11 @@ class datamanager
         static void save_dcm_callback(Fl_Widget *, void *);
         static void save_vtk_callback(Fl_Widget *, void *);
         static void save_hist_callback(Fl_Widget *, void *);
+		static void add_hist_callback(Fl_Widget *, void *);
 
         void add(image_base *im, string name="", bool data_changed=false, string slc_orient="");           //add image to vector, notify other managers
 //		void add(image_base &v);			//JK-test
-		void add(curve_base *curve);
+		void add(curve_base *curve, string name="");
 		void add(point_collection * v); 
 
 		// Use delete_data() to remove data (data_base::~data_base() calls remove_data() after the allcoated data is removed)

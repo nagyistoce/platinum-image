@@ -78,6 +78,7 @@ SET (PLATINUM_SOURCE_FILES
 additional_data.h
 bias_base.h
 bias_field.h
+brainops.h
 bruker.h 
 color.h 
 colormap.h 
@@ -155,6 +156,7 @@ Utilities/vtkFl/vtkFlRenderWindowInteractor.h
 additional_data.cc
 bias_base.cc
 bias_field.hxx
+brainops.cc
 bruker.cc 
 color.cc 
 colormap.cc 
@@ -448,6 +450,7 @@ statusarea.cc)
 SOURCE_GROUP(Helpers FILES 
 bias_base.h
 bias_field.h
+brainops.h
 bruker.h 
 color.h 
 colormap.h 
@@ -467,6 +470,7 @@ ultra1dops.h
 
 bias_base.cc
 bias_field.hxx
+brainops.cc
 bruker.cc 
 color.cc 
 colormap.cc 

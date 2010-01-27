@@ -361,7 +361,10 @@ void image_base::save_histogram_to_txt_file(const std::string filename, const st
     {
         pt_error::pt_error ("Attempt to save_histogram_to_txt_file on a image_base object",pt_error::warning);
     }
-
+void image_base::make_histogram_curve()
+    {
+        pt_error::pt_error ("Attempt to add histogram on a image_base object",pt_error::warning);
+    }
 
 Vector3D image_base::world_to_voxel( const Vector3D & wpos ) const
 {

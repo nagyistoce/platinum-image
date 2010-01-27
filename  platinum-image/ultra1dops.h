@@ -49,6 +49,7 @@ class ultra1dops{
 		static bool is_min(vector<Vector3D> p, int i);
 
 		static void calc_intensity_histogram(pt_vector<unsigned short> *curve);
+		static void scale_peaks(curve_scalar<unsigned short> *curve, Vector3D *peaks);
 
 		static int mark_point(curve_scalar<unsigned short> *curve, int from, int to);
 		static int get_vally(curve_scalar<unsigned short> *curve, int x, int dir);
@@ -57,8 +58,10 @@ class ultra1dops{
 		static vector<Vector3D> simplify_the_curve(curve_scalar<unsigned short> *curve);
 
 		static int straighten_the_peaks(us_scan * scan, int intima, int adventitia);
+		static int straighten_the_peaks2(us_scan * scan, int intima, int adventitia);
 		static void shift(vector<pts_vector<unsigned short>*> curve, pts_vector<int> *s);
 		static void recalculate_mean_curve(us_scan * scan);
+		static void recalculate_weighted_mean_curve(us_scan * scan, vector<int> weight);
 		static vector<gaussian> fit_gaussian_curve_and_calculate(curve_scalar<unsigned short> *curve, int intima, int adventitia);
 
 		static Vector3D find_steep_slope_and_calculate(curve_scalar<unsigned short> *curve, int intima, int adventitia);

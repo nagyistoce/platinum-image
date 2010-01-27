@@ -218,6 +218,7 @@ public:
 
 	ELEMTYPE get_intensity_at_lower_percentile(float percentile, bool ignore_zero_intensity);
     void save_histogram_to_txt_file(const std::string filename, const std::string separator=";");
+	void make_histogram_curve();
     void save_histogram_to_txt_file(const std::string filename, gaussian *g=NULL, bool reload_hist_from_image=false, const std::string separator=";");
 	void save_histogram_to_txt_file(const std::string filename, image_binary<3> *mask_im, int num_buckets = 1000);
 

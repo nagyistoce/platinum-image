@@ -32,6 +32,35 @@ bool ultra1dops::is_min(vector<Vector3D> p, int i){
 	return true;
 }
 
+void ultra1dops::scale_peaks(curve_scalar<unsigned short> *curve, Vector3D *peaks){
+	double max_dist = (pt_config::read<double>("max_dist_between_peaks",CURVE_CONF_PATH)/curve->get_scale())/2;
+	
+	int l_b = std::max(0,(int)(peaks[1][0] - max_dist));
+	int r_b = std::min(curve->get_data_size()-1, (int)(peaks[0][0] + max_dist));
+	int c_b = (l_b + r_b)/2;
+
+	//adventitia peak
+	double min = 70000, max = 0;
+	for(int i = l_b; i <= c_b; i++){
+		max = std::max(curve->get_data(i), max);
+		min = std::min(curve->get_data(i), min);
+	}
+	for(int i = l_b; i <= c_b; i++){
+		curve->my_data->at(i) = ((curve->my_data->at(i) - min)/(max-min))*numeric_limits<unsigned short>::max();
+	}
+
+	//intima peak
+	min = 70000;
+	max = 0;
+	for(int i = c_b; i <= r_b; i++){
+		max = std::max(curve->get_data(i), max);
+		min = std::min(curve->get_data(i), min);
+	}
+	for(int i = c_b; i <= r_b; i++){
+		curve->my_data->at(i) = ((curve->my_data->at(i) - min)/(max-min))*numeric_limits<unsigned short>::max();
+	}
+}
+
 void ultra1dops::calc_intensity_histogram(pt_vector<unsigned short> *curve){
 	//int nr_buckets = 50;
 	int nr_buckets = numeric_limits<unsigned short>::max()+1;
@@ -215,6 +244,15 @@ void ultra1dops::recalculate_mean_curve(us_scan * scan){
 		}
 	}
 }
+void ultra1dops::recalculate_weighted_mean_curve(us_scan * scan, vector<int> weight){
+	scan->mean_vector->assign(scan->rows.at(0)->size(),0);
+
+	for(int i = 0; i< scan->rows.size(); i ++){
+		for(int j = 0; j<scan->rows.at(i)->size(); j++){
+			scan->mean_vector->at(j) = scan->mean_vector->at(j) + ((scan->rows.at(i)->at(j) - scan->mean_vector->at(j))/(i+1))*weight.at(i);
+		}
+	}
+}
 
 void ultra1dops::shift(vector<pts_vector<unsigned short>*> curve, pts_vector<int> *s){
 	for(int i = 0; i < s->size(); i++){
@@ -231,8 +269,64 @@ void ultra1dops::shift(vector<pts_vector<unsigned short>*> curve, pts_vector<int
 		}
 	}
 }
-
 int ultra1dops::straighten_the_peaks(us_scan * scan, int intima, int adventitia){
+	pts_vector<int> *s = new pts_vector<int>(0);
+	pts_vector<unsigned short> *mean = scan->mean_vector;
+
+	s->assign(scan->rows.size(),0);
+	int search_area = pt_config::read<double>("scope_for_maximum_diff",CURVE_CONF_PATH)/scan->rows.at(0)->x_res;
+	int min_x, min_diff;
+	int x_start , x_stop;
+	int width, diff;
+
+	x_start = adventitia - search_area*2;
+	x_stop = intima + search_area*2;
+
+	width = (intima + search_area)-(adventitia - search_area);
+	if(x_start < 0 || x_stop >= scan->rows.at(0)->size()){
+		return -1;
+	}
+	for(int i = 0; i < scan->rows.size(); i++){
+		min_x = -1;
+		min_diff = std::numeric_limits<int>::max();
+		for(int x = x_start; x < x_start+search_area*2; x++){
+			diff = 0;
+			for(int a = 0; a < width; a++){
+				diff +=  abs(mean->at(x_start+search_area+a) - scan->rows.at(i)->at(x+a));
+			}
+			if(diff < min_diff){
+				min_diff = diff;
+				min_x = x-(x_start+search_area);
+			}
+		}
+		s->at(i) = min_x;
+	}
+	curve_scalar<int> *s_c = new curve_scalar<int>(0,"shift",0,0.04);
+	shift(scan->rows, s);
+	s_c->my_data = s;
+	datamanagement.add(s_c);
+
+	int mean_int = 0;
+	vector<int> weight;
+	weight.assign(scan->rows.size(),0);
+	for(int i = (adventitia - search_area); i < (adventitia - search_area)+width; i++){
+		mean_int+=mean->at(i);
+	}
+	for(int i = 0; i < scan->rows.size(); i++){
+		for(int b = (adventitia - search_area); b < (adventitia - search_area)+width; b++){
+			weight.at(i)+=scan->rows.at(i)->at(b);
+		}
+		if(weight.at(i)< 0.5*mean_int)
+			weight.at(i) = 0;
+		else
+			weight.at(i) = 1;
+	}
+	recalculate_weighted_mean_curve(scan,weight);
+	return 1;
+}
+
+
+int ultra1dops::straighten_the_peaks2(us_scan * scan, int intima, int adventitia){
 	double mass, pos;//, cog;
 	pts_vector<double> *s = new pts_vector<double>(0);
 	int search_area = pt_config::read<double>("scope_for_maximum_diff",CURVE_CONF_PATH)/scan->rows.at(0)->x_res;
@@ -270,7 +364,6 @@ int ultra1dops::straighten_the_peaks(us_scan * scan, int intima, int adventitia)
 			A += area.at(i);
 			dx += s->at(i)*area.at(i);
 		}
-		//s_m->push_back(round(dx/A));
 		s_m->push_back(round(dx/A));
 	}
 	s_m->insert(s_m->begin(), s_m->at(0));
@@ -278,29 +371,8 @@ int ultra1dops::straighten_the_peaks(us_scan * scan, int intima, int adventitia)
 	s_m->push_back(round(s->at(s->size()-2)));
 	s_m->push_back(round(s->at(s->size()-1)));
 
-	//cout << endl;
-	/*curve_scalar<int> *diff = new curve_scalar<int>(0, "diff", 0, 1);
-	extern datamanager datamanagement;
-	datamanagement.add(diff);
-	diff->my_data = s_m;*/
-
 	shift(scan->rows, s_m);
 	recalculate_mean_curve(scan);
-	/*check if correct */
-/*	double max_int, min_int, mean_int;
-	double t_val;
-	max_int = scan->rows.at(0)->at(intima);
-	min_int = max_int;
-	mean_int = max_int;
-	for(int i = 1; i < scan->rows.size(); i++){
-		t_val = (double) scan->rows.at(i)->at(intima);
-		min_int = t_val < min_int ? t_val : min_int;
-		max_int = t_val > max_int ? t_val : max_int;
-		mean_int = mean_int + ((t_val - mean_int)/(i+1));
-	}
-	if(max_int-mean_int > mean_int-min_int){
-		return 1;
-	}*/
 	return 1;
 }
 

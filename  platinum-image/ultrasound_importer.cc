@@ -143,7 +143,7 @@ void ultrasound_importer::read_file(string filepath){
 	int line_offset = 102; //verifyed
 
 	//string filepath = userIOmanagement.get_parameter<string>(userIO_ID,0);
-	if(filepath.empty()){
+	if(filepath.empty() ||filepath.find("man.pt") != string::npos){
 		return;
 	}
 	long pos_ = 0;

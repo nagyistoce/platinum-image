@@ -216,6 +216,11 @@ void data_base::save_histogram_to_txt_file(const std::string filename, const std
         pt_error::pt_error ("Attempt to save_histogram_to_txt_file on a data_base object",pt_error::warning);
     }
 
+void data_base::make_histogram_curve()
+    {
+        pt_error::pt_error ("Attempt to add_histogram on a data_base object",pt_error::warning);
+    }
+
 
 	
 string data_base::resolve_tooltip()

@@ -528,6 +528,7 @@ void image_storage<ELEMTYPE >::combine(image_storage<ELEMTYPE2> *const image2, C
 	if(this->same_size(image2)){
 	    typename image_storage<ELEMTYPE>::iterator i = this->begin();
 	    typename image_storage<ELEMTYPE2>::iterator i2 = image2->begin();
+	//	float i_max, i_min, i2_max, i2_min;
 
 		switch(mode)
         {
