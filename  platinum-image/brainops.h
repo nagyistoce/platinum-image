@@ -23,6 +23,7 @@
 #include "image_binary.hxx"
 #include "string.h"
 #include "datamanager.h"
+#include "filters.h"
 
 using namespace std;
 
@@ -30,7 +31,9 @@ class brainops{
     private:
 	public:
 		static void remove_bg(vector<image_scalar<unsigned short,3>* > brain);
+		static image_binary<3>* get_CSF(vector<image_scalar<unsigned short,3>* > brain);
 		static void bridge_burner(vector<image_scalar<unsigned short,3>* > brain, float t_min = 0.53, float t_max = 1.35, float t_grad = 0.36, float p = 2.7, float g = 6.4);
+		static void morph(vector<image_scalar<unsigned short,3>* > brain, float t_min = 0.53, float t_max = 1.35);
 		static void PLRG(vector<image_scalar<unsigned short,3>* > brain){};
 };
 
