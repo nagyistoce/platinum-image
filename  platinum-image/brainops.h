@@ -29,12 +29,18 @@ using namespace std;
 
 class brainops{
     private:
+		
 	public:
-		static void remove_bg(vector<image_scalar<unsigned short,3>* > brain);
+		static image_binary<3>* get_ventricles(vector<image_scalar<unsigned short,3>* > brain);
 		static image_binary<3>* get_CSF(vector<image_scalar<unsigned short,3>* > brain);
-		static void bridge_burner(vector<image_scalar<unsigned short,3>* > brain, float t_min = 0.53, float t_max = 1.35, float t_grad = 0.36, float p = 2.7, float g = 6.4);
-		static void morph(vector<image_scalar<unsigned short,3>* > brain, float t_min = 0.53, float t_max = 1.35);
-		static void PLRG(vector<image_scalar<unsigned short,3>* > brain){};
+		static void remove_bg(vector<image_scalar<unsigned short,3>* > brain);
+
+		static image_scalar<float,3>* get_csf_probability_map(vector<image_scalar<unsigned short,3>* > brain);
+		static image_scalar<float,3>* get_ventricle_distance_map(image_scalar<float,3>* csf_prob);
+		static image_binary<3>* grow(image_scalar<unsigned short,3>* T1w, vector<Vector3D> seeds,float threshold, float max_diff);
+		static image_binary<3>* get_grown_shell(image_scalar<float,3>* csf, image_scalar<float,3>* distance_from_ventricles);
+		static float chance_of_error(image_binary<3>* shell);
+		static void extract_brain_with_shell(vector<image_scalar<unsigned short,3>* > brain, image_binary<3>* shell);
 };
 
 #endif __brainops__

@@ -1912,6 +1912,125 @@ image_integer<short, IMAGEDIM>* image_binary<IMAGEDIM>::distance_chessboard_3D(b
 }
 
 template <int IMAGEDIM>
+image_integer<short, IMAGEDIM>* image_binary<IMAGEDIM>::distance_path_to_border_3D(bool edge_is_object, IMGBINARYTYPE object_value){
+	image_integer<short, IMAGEDIM>* output = new image_integer<short,IMAGEDIM> (this,false);
+	image_binary<IMAGEDIM>* filled = new image_binary<IMAGEDIM>(this);
+	filled->dilate_2D(30);
+	filled->erode_2D(30);
+	filled->fill_holes_2D(0);
+	filled->fill_holes_2D(1);
+	filled->fill_holes_2D(2);
+	filled->largest_object_3D();
+	vector<Vector3D> points;
+	vector<Vector3D> temp;
+
+	image_binary<IMAGEDIM>* rim = new image_binary<IMAGEDIM>(filled);
+	//filled->erode_2D();
+	//rim->combine(filled,COMB_SUB);
+	rim->outline_3D();
+
+	datamanagement.add(rim,"Rim",true);
+	datamanagement.add(filled,"Filled",true);
+
+	//Create vector 3 in array;
+	int max_x=this->get_size_by_dim(0);
+	int max_y=this->get_size_by_dim(1);
+	int max_z=this->get_size_by_dim(2);
+	for(int x = 0; x < max_x; x++){
+		for(int y = 0; y < max_y; y++){
+			for(int z = 0; z < max_z; z++){
+				if(rim->get_voxel(x,y,z) == 1){
+					output->set_voxel(x,y,z,3);
+					points.push_back(create_Vector3D(x,y,z));
+				}else if(this->get_voxel(x,y,z) == 1){
+					output->set_voxel(x,y,z,std::numeric_limits<short>::max());
+					temp.push_back(create_Vector3D(x,y,z));
+				}else{
+					output->set_voxel(x,y,z,-1);
+				}
+			}
+		}
+	}
+	points.insert(points.end(),temp.begin(),temp.end());
+	//It is now set up for dijkstra.
+	dijkstra_image_version(output,points);
+	return output;
+}
+template <int IMAGEDIM>
+void image_binary<IMAGEDIM>::dijkstra_update(image_integer<short, IMAGEDIM>* dist, Vector3D v, short alt){
+	if(alt < dist->get_voxel(v) && dist->get_voxel(v)!= -1){
+		dist->set_voxel(v,alt);
+	}
+}
+
+template <int IMAGEDIM>
+void image_binary<IMAGEDIM>::dijkstra_image_version(image_integer<short, IMAGEDIM>* dist, vector<Vector3D> Q){
+	vector<Vector3D> v;
+	short dist_u;
+	int last_m = 3;
+	int start_size = Q.size();
+	while(!Q.empty()){
+		cout << "Process: " << start_size-Q.size() << " / "<< start_size <<endl;
+		short m = dist->get_voxel(Q[0]);
+		int min_i = 0;
+		
+		short temp;
+		for(int i = 1; i < Q.size(); i++){
+			if((temp =dist->get_voxel(Q[i])) < m){
+				min_i = i;
+				m = temp;
+			}
+			if(m == last_m)
+				break;
+		}
+		cout << "dist: " << m << endl;
+		last_m = m;
+		Vector3D u = Q[min_i];
+		Q.erase(Q.begin()+ min_i,Q.begin()+min_i+1);
+		if((dist_u = dist->get_voxel(u)) == std::numeric_limits<short>::max()){//No reachable voxels left
+			return;
+		}
+		short alt;
+		alt = dist_u + 3;
+		dijkstra_update(dist, create_Vector3D(u[0]+1,u[1],u[2]),alt);
+		dijkstra_update(dist, create_Vector3D(u[0]-1,u[1],u[2]),alt);
+		dijkstra_update(dist, create_Vector3D(u[0],u[1]+1,u[2]),alt);
+		dijkstra_update(dist, create_Vector3D(u[0],u[1]-1,u[2]),alt);
+		dijkstra_update(dist, create_Vector3D(u[0],u[1],u[2]+1),alt);
+		dijkstra_update(dist, create_Vector3D(u[0],u[1],u[2]-1),alt);
+
+		alt = dist_u + 4;
+		dijkstra_update(dist, create_Vector3D(u[0]-1,u[1]-1,u[2]),alt);
+		dijkstra_update(dist, create_Vector3D(u[0]-1,u[1]+1,u[2]),alt);
+		dijkstra_update(dist, create_Vector3D(u[0]+1,u[1]+1,u[2]),alt);
+		dijkstra_update(dist, create_Vector3D(u[0]+1,u[1]-1,u[2]),alt);
+
+		dijkstra_update(dist, create_Vector3D(u[0]+1,u[1],u[2]-1),alt);
+		dijkstra_update(dist, create_Vector3D(u[0]-1,u[1],u[2]-1),alt);
+		dijkstra_update(dist, create_Vector3D(u[0],u[1]+1,u[2]-1),alt);
+		dijkstra_update(dist, create_Vector3D(u[0],u[1]-1,u[2]-1),alt);
+		
+		dijkstra_update(dist, create_Vector3D(u[0]+1,u[1],u[2]+1),alt);
+		dijkstra_update(dist, create_Vector3D(u[0]-1,u[1],u[2]+1),alt);
+		dijkstra_update(dist, create_Vector3D(u[0],u[1]+1,u[2]+1),alt);
+		dijkstra_update(dist, create_Vector3D(u[0],u[1]-1,u[2]+1),alt);
+
+		alt = dist_u + 5;
+		dijkstra_update(dist, create_Vector3D(u[0]-1,u[1]-1,u[2]-1),alt);
+		dijkstra_update(dist, create_Vector3D(u[0]-1,u[1]+1,u[2]-1),alt);
+		dijkstra_update(dist, create_Vector3D(u[0]+1,u[1]+1,u[2]-1),alt);
+		dijkstra_update(dist, create_Vector3D(u[0]+1,u[1]-1,u[2]-1),alt);
+
+		dijkstra_update(dist, create_Vector3D(u[0]-1,u[1]-1,u[2]+1),alt);
+		dijkstra_update(dist, create_Vector3D(u[0]-1,u[1]+1,u[2]+1),alt);
+		dijkstra_update(dist, create_Vector3D(u[0]+1,u[1]+1,u[2]+1),alt);
+		dijkstra_update(dist, create_Vector3D(u[0]+1,u[1]-1,u[2]+1),alt);
+
+	}
+}
+
+
+template <int IMAGEDIM>
 image_label<3>* image_binary<IMAGEDIM>::label_connected_objects_3D(IMGBINARYTYPE object_value)
 {
 	int u,v,w;
