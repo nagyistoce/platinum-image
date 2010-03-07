@@ -1912,7 +1912,7 @@ image_integer<short, IMAGEDIM>* image_binary<IMAGEDIM>::distance_chessboard_3D(b
 }
 
 template <int IMAGEDIM>
-image_integer<short, IMAGEDIM>* image_binary<IMAGEDIM>::distance_path_to_border_3D(bool edge_is_object, IMGBINARYTYPE object_value){
+vector<image_integer<short, IMAGEDIM>* > image_binary<IMAGEDIM>::distance_path_to_border_3D(bool edge_is_object, IMGBINARYTYPE object_value){
 	image_integer<short, IMAGEDIM>* output = new image_integer<short,IMAGEDIM> (this,false);
 	image_binary<IMAGEDIM>* filled = new image_binary<IMAGEDIM>(this);
 	filled->dilate_2D(30);
@@ -1951,82 +1951,112 @@ image_integer<short, IMAGEDIM>* image_binary<IMAGEDIM>::distance_path_to_border_
 			}
 		}
 	}
-	points.insert(points.end(),temp.begin(),temp.end());
+	points.insert(points.begin(),temp.begin(),temp.end());
 	//It is now set up for dijkstra.
-	dijkstra_image_version(output,points);
-	return output;
-}
-template <int IMAGEDIM>
-void image_binary<IMAGEDIM>::dijkstra_update(image_integer<short, IMAGEDIM>* dist, Vector3D v, short alt){
-	if(alt < dist->get_voxel(v) && dist->get_voxel(v)!= -1){
-		dist->set_voxel(v,alt);
-	}
+	vector<image_integer<short,IMAGEDIM>* > ret;
+	ret.push_back(output);
+	ret.push_back(dijkstra_image_version(output,points));
+
+	
+	return ret;
 }
 
 template <int IMAGEDIM>
-void image_binary<IMAGEDIM>::dijkstra_image_version(image_integer<short, IMAGEDIM>* dist, vector<Vector3D> Q){
+int image_binary<IMAGEDIM>::partition_quicksort(image_integer<short, IMAGEDIM>* dist, vector<Vector3D> &Q, int top, int bottom){
+int x = dist->get_voxel(Q[top]);
+int i = top - 1;
+int j = bottom + 1;
+Vector3D temp;
+	do{
+		do{
+			j--;
+		}while (x >dist->get_voxel(Q[j]));
+
+		do{
+			i++;
+		} while (x <dist->get_voxel(Q[i]));
+
+		if (i < j){ 
+			temp = Q[i];   
+			Q[i] = Q[j];
+			Q[j] = temp;
+		}
+	}while (i < j);    
+	return j;           // returns middle subscript  
+}
+
+template <int IMAGEDIM>
+void image_binary<IMAGEDIM>::sort_queue(image_integer<short, IMAGEDIM>* dist, vector<Vector3D> &Q, int top, int bottom){
+	//Quicksort
+     int middle;
+     if (top < bottom)
+    {
+          middle = partition_quicksort(dist, Q, top, bottom);
+          sort_queue(dist, Q, top, middle);   // sort first section
+          sort_queue(dist, Q, middle+1, bottom);    // sort second section
+     }
+	return;
+}
+
+template <int IMAGEDIM>
+bool image_binary<IMAGEDIM>::dijkstra_update(image_integer<short, IMAGEDIM>* dist, int x, int y, int z, short alt){
+	if(alt < dist->get_voxel(x,y,z)){
+		dist->set_voxel(x,y,z,alt);
+		return true;
+	}
+	return false;
+}
+
+//Start with a vector with smallest distance last in array.
+template <int IMAGEDIM>
+image_integer<short,IMAGEDIM>* image_binary<IMAGEDIM>::dijkstra_image_version(image_integer<short, IMAGEDIM>* dist, vector<Vector3D> Q){
 	vector<Vector3D> v;
 	short dist_u;
-	int last_m = 3;
+	image_integer<short,IMAGEDIM>* parent_map = new image_integer<short,IMAGEDIM>(dist,false);
+	parent_map->fill(-1);
+	int current_m = 3;
 	int start_size = Q.size();
+
+	int x_change[26] = {1,-1, 0, 0,0, 0,   -1,-1,1, 1,   1,-1, 0, 0,   1,-1,0, 0,  -1,-1, 1, 1,  -1,-1,1, 1};
+	int y_change[26] = {0, 0, 1,-1,0, 0,   -1, 1,1,-1,   0, 0, 1,-1,   0, 0,1,-1,  -1, 1, 1,-1,  -1, 1,1,-1};
+	int z_change[26] = {0, 0, 0, 0,1,-1,    0, 0,0, 0,  -1,-1,-1,-1,   1, 1,1, 1,  -1,-1,-1,-1,   1, 1,1, 1};
+	int alt_c[26] =    {3, 3, 3, 3,3, 3,	4, 4,4, 4,	 4, 4, 4, 4,   4, 4,4, 4,	5, 5, 5, 5,   5, 5,5, 5};
+	NEIGHBOUR_DIR par[26]={N_PCC,N_NCC,N_CPC,N_CNC,N_CCP,N_CCN
+								,N_NNC,N_NPC,N_PPC,N_PNC
+								,N_PCN,N_NCN,N_CPN,N_CNP
+								,N_PCP,N_NCP,N_CPP,N_CNP
+								,N_NNN,N_NPN,N_PPN,N_PNN
+								,N_NNP,N_NPP,N_PPP,N_PNP};
+
 	while(!Q.empty()){
-		cout << "Process: " << start_size-Q.size() << " / "<< start_size <<endl;
-		short m = dist->get_voxel(Q[0]);
-		int min_i = 0;
 		
-		short temp;
-		for(int i = 1; i < Q.size(); i++){
-			if((temp =dist->get_voxel(Q[i])) < m){
-				min_i = i;
-				m = temp;
-			}
-			if(m == last_m)
-				break;
-		}
-		cout << "dist: " << m << endl;
-		last_m = m;
-		Vector3D u = Q[min_i];
-		Q.erase(Q.begin()+ min_i,Q.begin()+min_i+1);
-		if((dist_u = dist->get_voxel(u)) == std::numeric_limits<short>::max()){//No reachable voxels left
-			return;
-		}
-		short alt;
-		alt = dist_u + 3;
-		dijkstra_update(dist, create_Vector3D(u[0]+1,u[1],u[2]),alt);
-		dijkstra_update(dist, create_Vector3D(u[0]-1,u[1],u[2]),alt);
-		dijkstra_update(dist, create_Vector3D(u[0],u[1]+1,u[2]),alt);
-		dijkstra_update(dist, create_Vector3D(u[0],u[1]-1,u[2]),alt);
-		dijkstra_update(dist, create_Vector3D(u[0],u[1],u[2]+1),alt);
-		dijkstra_update(dist, create_Vector3D(u[0],u[1],u[2]-1),alt);
+		Vector3D u = Q.back();
+		if(dist->get_voxel(u) != current_m){
+			cout << "Sorting list" << endl;
+			sort_queue(dist, Q, 0 , Q.size()-1);
+			cout << "List sorted" << endl;
+			u = Q.back();
+			current_m = dist->get_voxel(u);
 
-		alt = dist_u + 4;
-		dijkstra_update(dist, create_Vector3D(u[0]-1,u[1]-1,u[2]),alt);
-		dijkstra_update(dist, create_Vector3D(u[0]-1,u[1]+1,u[2]),alt);
-		dijkstra_update(dist, create_Vector3D(u[0]+1,u[1]+1,u[2]),alt);
-		dijkstra_update(dist, create_Vector3D(u[0]+1,u[1]-1,u[2]),alt);
+			cout << "Process: " << start_size-Q.size() << " / "<< start_size <<endl;
+			cout << "Dist: " << current_m << endl;
+		}
+		Q.pop_back();
+		dist_u = current_m;
 
-		dijkstra_update(dist, create_Vector3D(u[0]+1,u[1],u[2]-1),alt);
-		dijkstra_update(dist, create_Vector3D(u[0]-1,u[1],u[2]-1),alt);
-		dijkstra_update(dist, create_Vector3D(u[0],u[1]+1,u[2]-1),alt);
-		dijkstra_update(dist, create_Vector3D(u[0],u[1]-1,u[2]-1),alt);
+		if(dist_u == std::numeric_limits<short>::max()){//No reachable voxels left
+			return parent_map;
+		}
 		
-		dijkstra_update(dist, create_Vector3D(u[0]+1,u[1],u[2]+1),alt);
-		dijkstra_update(dist, create_Vector3D(u[0]-1,u[1],u[2]+1),alt);
-		dijkstra_update(dist, create_Vector3D(u[0],u[1]+1,u[2]+1),alt);
-		dijkstra_update(dist, create_Vector3D(u[0],u[1]-1,u[2]+1),alt);
 
-		alt = dist_u + 5;
-		dijkstra_update(dist, create_Vector3D(u[0]-1,u[1]-1,u[2]-1),alt);
-		dijkstra_update(dist, create_Vector3D(u[0]-1,u[1]+1,u[2]-1),alt);
-		dijkstra_update(dist, create_Vector3D(u[0]+1,u[1]+1,u[2]-1),alt);
-		dijkstra_update(dist, create_Vector3D(u[0]+1,u[1]-1,u[2]-1),alt);
-
-		dijkstra_update(dist, create_Vector3D(u[0]-1,u[1]-1,u[2]+1),alt);
-		dijkstra_update(dist, create_Vector3D(u[0]-1,u[1]+1,u[2]+1),alt);
-		dijkstra_update(dist, create_Vector3D(u[0]+1,u[1]+1,u[2]+1),alt);
-		dijkstra_update(dist, create_Vector3D(u[0]+1,u[1]-1,u[2]+1),alt);
-
+		//short alt;
+		//alt = dist_u + 3;
+		for(int i = 0; i <26; i++){
+			if(dijkstra_update(dist, u[0]+x_change[i],u[1]+y_change[i],u[2]+z_change[i],dist_u+alt_c[i]))
+				parent_map->set_voxel(u[0]+x_change[i],u[1]+y_change[i],u[2]+z_change[i],par[i]);
+		}
 	}
+	return parent_map;
 }
 
 

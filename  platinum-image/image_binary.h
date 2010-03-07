@@ -131,9 +131,11 @@ public:
 	image_integer<short, IMAGEDIM> * distance_345_3D(bool edge_is_object=false, IMGBINARYTYPE object_value=TRUE); ///Compute 345 chamfer distance map. If edge_is_object=true then everything outside the image is regarded to be object voxels.
 	image_integer<short, IMAGEDIM>* distance_chessboard_3D(bool edge_is_object=false, IMGBINARYTYPE object_value=TRUE); ///Compute chessboard distance map. If edge_is_object=true then everything outside the image is regarded to be object voxels.
 	//TODO: create distancetransform where weights are given as argument (3,4,5)... can then be used to weight spatial resolution....
-	image_integer<short, IMAGEDIM> * distance_path_to_border_3D(bool edge_is_object=false, IMGBINARYTYPE object_value=TRUE);
-	void dijkstra_update(image_integer<short, IMAGEDIM>* dist, Vector3D Q, short alt);
-	void dijkstra_image_version(image_integer<short, IMAGEDIM>* dist, vector<Vector3D> Q);
+	vector<image_integer<short, IMAGEDIM>* > distance_path_to_border_3D(bool edge_is_object=false, IMGBINARYTYPE object_value=TRUE);
+	int partition_quicksort(image_integer<short, IMAGEDIM>* dist, vector<Vector3D> &Q, int top, int bottom);
+	void sort_queue(image_integer<short, IMAGEDIM>* dist,vector<Vector3D> &Q, int top, int bottom);
+	bool dijkstra_update(image_integer<short, IMAGEDIM>* dist, int x, int y, int  z, short alt);
+	image_integer<short,IMAGEDIM>* dijkstra_image_version(image_integer<short, IMAGEDIM>* dist, vector<Vector3D> Q);
 
 
 	void erode_3D_26Nbh(IMGBINARYTYPE object_value=TRUE); ///Morphological erode (26 Neighbourhood)
