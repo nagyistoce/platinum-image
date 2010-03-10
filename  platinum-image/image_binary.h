@@ -131,7 +131,7 @@ public:
 	image_integer<short, IMAGEDIM> * distance_345_3D(bool edge_is_object=false, IMGBINARYTYPE object_value=TRUE); ///Compute 345 chamfer distance map. If edge_is_object=true then everything outside the image is regarded to be object voxels.
 	image_integer<short, IMAGEDIM>* distance_chessboard_3D(bool edge_is_object=false, IMGBINARYTYPE object_value=TRUE); ///Compute chessboard distance map. If edge_is_object=true then everything outside the image is regarded to be object voxels.
 	//TODO: create distancetransform where weights are given as argument (3,4,5)... can then be used to weight spatial resolution....
-	vector<image_integer<short, IMAGEDIM>* > distance_path_to_border_3D(bool edge_is_object=false, IMGBINARYTYPE object_value=TRUE);
+	vector<image_integer<short, IMAGEDIM>* > distance_path_to_border_3D(image_binary<IMAGEDIM>* rim); //rim is the outer border of the object which are the goal points (distance = 0)
 	int partition_quicksort(image_integer<short, IMAGEDIM>* dist, vector<Vector3D> &Q, int top, int bottom);
 	void sort_queue(image_integer<short, IMAGEDIM>* dist,vector<Vector3D> &Q, int top, int bottom);
 	bool dijkstra_update(image_integer<short, IMAGEDIM>* dist, int x, int y, int  z, short alt);

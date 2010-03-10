@@ -1912,25 +1912,10 @@ image_integer<short, IMAGEDIM>* image_binary<IMAGEDIM>::distance_chessboard_3D(b
 }
 
 template <int IMAGEDIM>
-vector<image_integer<short, IMAGEDIM>* > image_binary<IMAGEDIM>::distance_path_to_border_3D(bool edge_is_object, IMGBINARYTYPE object_value){
+vector<image_integer<short, IMAGEDIM>* > image_binary<IMAGEDIM>::distance_path_to_border_3D(image_binary<IMAGEDIM>* rim){
 	image_integer<short, IMAGEDIM>* output = new image_integer<short,IMAGEDIM> (this,false);
-	image_binary<IMAGEDIM>* filled = new image_binary<IMAGEDIM>(this);
-	filled->dilate_2D(30);
-	filled->erode_2D(30);
-	filled->fill_holes_2D(0);
-	filled->fill_holes_2D(1);
-	filled->fill_holes_2D(2);
-	filled->largest_object_3D();
 	vector<Vector3D> points;
 	vector<Vector3D> temp;
-
-	image_binary<IMAGEDIM>* rim = new image_binary<IMAGEDIM>(filled);
-	//filled->erode_2D();
-	//rim->combine(filled,COMB_SUB);
-	rim->outline_3D();
-
-	datamanagement.add(rim,"Rim",true);
-	datamanagement.add(filled,"Filled",true);
 
 	//Create vector 3 in array;
 	int max_x=this->get_size_by_dim(0);
@@ -1957,7 +1942,6 @@ vector<image_integer<short, IMAGEDIM>* > image_binary<IMAGEDIM>::distance_path_t
 	ret.push_back(output);
 	ret.push_back(dijkstra_image_version(output,points));
 
-	
 	return ret;
 }
 
@@ -1970,11 +1954,11 @@ Vector3D temp;
 	do{
 		do{
 			j--;
-		}while (x >dist->get_voxel(Q[j]));
+		}while(x >dist->get_voxel(Q[j]));
 
 		do{
 			i++;
-		} while (x <dist->get_voxel(Q[i]));
+		}while(x <dist->get_voxel(Q[i]));
 
 		if (i < j){ 
 			temp = Q[i];   
@@ -1992,8 +1976,8 @@ void image_binary<IMAGEDIM>::sort_queue(image_integer<short, IMAGEDIM>* dist, ve
      if (top < bottom)
     {
           middle = partition_quicksort(dist, Q, top, bottom);
-          sort_queue(dist, Q, top, middle);   // sort first section
-          sort_queue(dist, Q, middle+1, bottom);    // sort second section
+          sort_queue(dist, Q, top, middle);
+          sort_queue(dist, Q, middle+1, bottom);
      }
 	return;
 }
@@ -2048,9 +2032,6 @@ image_integer<short,IMAGEDIM>* image_binary<IMAGEDIM>::dijkstra_image_version(im
 			return parent_map;
 		}
 		
-
-		//short alt;
-		//alt = dist_u + 3;
 		for(int i = 0; i <26; i++){
 			if(dijkstra_update(dist, u[0]+x_change[i],u[1]+y_change[i],u[2]+z_change[i],dist_u+alt_c[i]))
 				parent_map->set_voxel(u[0]+x_change[i],u[1]+y_change[i],u[2]+z_change[i],par[i]);
