@@ -1912,10 +1912,18 @@ image_integer<short, IMAGEDIM>* image_binary<IMAGEDIM>::distance_chessboard_3D(b
 }
 
 template <int IMAGEDIM>
-vector<image_integer<short, IMAGEDIM>* > image_binary<IMAGEDIM>::distance_path_to_border_3D(image_binary<IMAGEDIM>* rim){
+vector<image_integer<short, IMAGEDIM>* > image_binary<IMAGEDIM>::distance_path_to_border_3D(image_binary<IMAGEDIM>* rim, bool weighted){
 	image_integer<short, IMAGEDIM>* output = new image_integer<short,IMAGEDIM> (this,false);
 	vector<Vector3D> points;
 	vector<Vector3D> temp;
+
+	image_integer<short, IMAGEDIM>* weights;
+	if(weighted)
+		weights  = this->distance_345_3D();
+	else{
+		weights = new image_integer<short, IMAGEDIM>(this,false);
+		weights->fill(0);
+	}
 
 	//Create vector 3 in array;
 	int max_x=this->get_size_by_dim(0);
@@ -1940,7 +1948,7 @@ vector<image_integer<short, IMAGEDIM>* > image_binary<IMAGEDIM>::distance_path_t
 	//It is now set up for dijkstra.
 	vector<image_integer<short,IMAGEDIM>* > ret;
 	ret.push_back(output);
-	ret.push_back(dijkstra_image_version(output,points));
+	ret.push_back(dijkstra_image_version(output,points, weights));
 
 	return ret;
 }
@@ -1993,7 +2001,7 @@ bool image_binary<IMAGEDIM>::dijkstra_update(image_integer<short, IMAGEDIM>* dis
 
 //Start with a vector with smallest distance last in array.
 template <int IMAGEDIM>
-image_integer<short,IMAGEDIM>* image_binary<IMAGEDIM>::dijkstra_image_version(image_integer<short, IMAGEDIM>* dist, vector<Vector3D> Q){
+image_integer<short,IMAGEDIM>* image_binary<IMAGEDIM>::dijkstra_image_version(image_integer<short, IMAGEDIM>* dist, vector<Vector3D> Q,image_integer<short, IMAGEDIM>* weight){
 	vector<Vector3D> v;
 	short dist_u;
 	image_integer<short,IMAGEDIM>* parent_map = new image_integer<short,IMAGEDIM>(dist,false);
@@ -2033,7 +2041,8 @@ image_integer<short,IMAGEDIM>* image_binary<IMAGEDIM>::dijkstra_image_version(im
 		}
 		
 		for(int i = 0; i <26; i++){
-			if(dijkstra_update(dist, u[0]+x_change[i],u[1]+y_change[i],u[2]+z_change[i],dist_u+alt_c[i]))
+			int alt = alt_c[i] + (weight->get_voxel(u)-weight->get_voxel(u[0]+x_change[i],u[1]+y_change[i],u[2]+z_change[i]))+1;
+			if(dijkstra_update(dist, u[0]+x_change[i],u[1]+y_change[i],u[2]+z_change[i],dist_u+alt))
 				parent_map->set_voxel(u[0]+x_change[i],u[1]+y_change[i],u[2]+z_change[i],par[i]);
 		}
 	}
