@@ -1912,18 +1912,11 @@ image_integer<short, IMAGEDIM>* image_binary<IMAGEDIM>::distance_chessboard_3D(b
 }
 
 template <int IMAGEDIM>
-vector<image_integer<short, IMAGEDIM>* > image_binary<IMAGEDIM>::distance_path_to_border_3D(image_binary<IMAGEDIM>* rim, bool weighted){
+vector<image_integer<short, IMAGEDIM>* > image_binary<IMAGEDIM>::distance_path_to_border_3D(image_binary<IMAGEDIM>* rim, image_integer<short, IMAGEDIM>* weights){
 	image_integer<short, IMAGEDIM>* output = new image_integer<short,IMAGEDIM> (this,false);
 	vector<Vector3D> points;
 	vector<Vector3D> temp;
-
-	image_integer<short, IMAGEDIM>* weights;
-	if(weighted)
-		weights  = this->distance_345_3D();
-	else{
-		weights = new image_integer<short, IMAGEDIM>(this,false);
-		weights->fill(0);
-	}
+	vector<image_integer<short,IMAGEDIM>* > ret;
 
 	//Create vector 3 in array;
 	int max_x=this->get_size_by_dim(0);
@@ -1946,7 +1939,7 @@ vector<image_integer<short, IMAGEDIM>* > image_binary<IMAGEDIM>::distance_path_t
 	}
 	points.insert(points.begin(),temp.begin(),temp.end());
 	//It is now set up for dijkstra.
-	vector<image_integer<short,IMAGEDIM>* > ret;
+	
 	ret.push_back(output);
 	ret.push_back(dijkstra_image_version(output,points, weights));
 
@@ -1999,6 +1992,25 @@ bool image_binary<IMAGEDIM>::dijkstra_update(image_integer<short, IMAGEDIM>* dis
 	return false;
 }
 
+template <int IMAGEDIM>
+int* image_binary<IMAGEDIM>::dijkstra_n26_weight(image_integer<short, IMAGEDIM>* weight, Vector3D u, int x_change[], int y_change[], int z_change[]){
+	
+	int vals[26];
+	int res[26];
+	for(int i = 0; i <26; i++){
+		vals[i] = weight->get_voxel(u[0]+x_change[i],u[1]+y_change[i],u[2]+z_change[i]);
+	}
+	for(int i = 0; i <26; i++){
+		res[i] = 0;
+		for(int j = 0; j <26; j++){
+			if(vals[i] < vals[j]){//Want to be up on the ridges
+				res[i]++;
+			}
+		}
+	}
+	return res;
+}
+
 //Start with a vector with smallest distance last in array.
 template <int IMAGEDIM>
 image_integer<short,IMAGEDIM>* image_binary<IMAGEDIM>::dijkstra_image_version(image_integer<short, IMAGEDIM>* dist, vector<Vector3D> Q,image_integer<short, IMAGEDIM>* weight){
@@ -2039,9 +2051,10 @@ image_integer<short,IMAGEDIM>* image_binary<IMAGEDIM>::dijkstra_image_version(im
 		if(dist_u == std::numeric_limits<short>::max()){//No reachable voxels left
 			return parent_map;
 		}
-		
+		int* w = dijkstra_n26_weight(weight, u, x_change, y_change, z_change);
 		for(int i = 0; i <26; i++){
-			int alt = alt_c[i] + (weight->get_voxel(u)-weight->get_voxel(u[0]+x_change[i],u[1]+y_change[i],u[2]+z_change[i]))+1;
+			//int alt = alt_c[i] + (weight->get_voxel(u)-weight->get_voxel(u[0]+x_change[i],u[1]+y_change[i],u[2]+z_change[i]))+1;
+			int alt = w[i]*w[i]+1;//alt_c[i] + w[i];
 			if(dijkstra_update(dist, u[0]+x_change[i],u[1]+y_change[i],u[2]+z_change[i],dist_u+alt))
 				parent_map->set_voxel(u[0]+x_change[i],u[1]+y_change[i],u[2]+z_change[i],par[i]);
 		}
