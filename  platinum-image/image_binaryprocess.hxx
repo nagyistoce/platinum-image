@@ -1997,7 +1997,7 @@ int* image_binary<IMAGEDIM>::dijkstra_n26_weight(image_integer<short, IMAGEDIM>*
 	
 	int vals[26];
 	int res[26];
-	for(int i = 0; i <26; i++){
+	for(int i = 0; i <6; i++){
 		vals[i] = weight->get_voxel(u[0]+x_change[i],u[1]+y_change[i],u[2]+z_change[i]);
 	}
 	for(int i = 0; i <26; i++){
