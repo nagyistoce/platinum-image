@@ -242,6 +242,7 @@ public:
 	image_binary<IMAGEDIM>* region_grow_3D(Vector3D seed, ELEMTYPE min_intensity, ELEMTYPE max_intensity=std::numeric_limits<ELEMTYPE>::max());
 	image_binary<IMAGEDIM>* region_grow_3D(image_binary<IMAGEDIM> *seed_image, ELEMTYPE min_intensity, ELEMTYPE max_intensity=std::numeric_limits<ELEMTYPE>::max());
 	image_binary<IMAGEDIM>* region_grow_3D(queue<Vector3D> seed_queue, ELEMTYPE min_intensity, ELEMTYPE max_intensity=std::numeric_limits<ELEMTYPE>::max());
+	image_binary<IMAGEDIM>* region_grow_3D_with_cumulative_threshold(queue<Vector3D> seed_queue, float &center, float min_quota, float max_quota, int nr_base);
 	image_binary<IMAGEDIM>* region_grow_3D_if_equal_or_lower_intensity(queue<Vector3D> seed_queue, ELEMTYPE min_intensity=1);
 	image_binary<IMAGEDIM>* region_grow_3D_if_lower_intensity(image_binary<IMAGEDIM> *seed_image, ELEMTYPE min_intensity=1);
 	image_binary<IMAGEDIM>* region_grow_3D_if_lower_intensity(queue<Vector3D> seed_queue, ELEMTYPE min_intensity=1);

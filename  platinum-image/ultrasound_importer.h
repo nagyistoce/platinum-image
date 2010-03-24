@@ -45,6 +45,7 @@ public:
 	~ultrasound_importer(void);
 	//void read_study(ifstream &myfile, long length);
 	void set_side(ifstream &myfile, long length);
+	void set_patient_ecode(ifstream &myfile,long length);
 	bool match(string text);
 	bool is_new_version(ifstream &myfile);
 	void set_date(ifstream &myfile, long length);

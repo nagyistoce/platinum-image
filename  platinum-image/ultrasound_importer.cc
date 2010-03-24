@@ -25,7 +25,7 @@ ultrasound_importer::ultrasound_importer(string file){
 	read_file(file);
 	file.substr(0, 2);
 	name = file.substr(file.find_last_of('/')+1);
-	ecode = name.substr(0,name.find_first_of(' '));
+	//ecode = name.substr(0,name.find_first_of(' '));
 	/*if(name.at(0) == '0'){
 		ecode = "E" + name.substr(0,8);
 	}else{
@@ -76,6 +76,36 @@ bool ultrasound_importer::is_new_version(ifstream &myfile){
 	string line(buff);
 	return line.find("3.00",0) == string::npos && study_date.find("199",0) == string::npos; //not old version. Want all newer versions to be supported
 }
+
+void ultrasound_importer::set_patient_ecode(ifstream &myfile,long length){
+	char buff[5];
+	long pos_ = 0;
+	char input;
+	long new_pos;
+	while(pos_ < length){// && (pos_ > -1)){
+		new_pos = myfile.tellg();
+		input = myfile.get();
+		if(input == '7'){
+			//myfile.read(buff,2);
+			//string line(buff);
+			input = myfile.get();
+			//cout << line << endl;
+			if(input == '5'){
+				input = myfile.get();
+				if(input == '0'){ 
+					myfile.read(buff,4);
+					string line(buff);
+					ecode = "750" + line;
+					cout << ecode << endl;
+					return;
+				}
+			}
+		}
+		pos_ = myfile.tellg();
+	}
+	ecode = "xxx";
+}
+
 void ultrasound_importer::set_side(ifstream &myfile, long length){
 	char buff[6];
 	long pos_ = 0;
@@ -164,7 +194,7 @@ void ultrasound_importer::read_file(string filepath){
 		
 
 		//myfile.seekg (0, ios::beg); no need
-		
+		set_patient_ecode(myfile,f_length);
 		set_side(myfile, f_length);
 
 		cout << "side is set to: " << side << endl;

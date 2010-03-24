@@ -2366,6 +2366,46 @@ image_binary<IMAGEDIM>* image_scalar<ELEMTYPE, IMAGEDIM>::region_grow_3D(queue<V
 }
 
 template <class ELEMTYPE, int IMAGEDIM>
+image_binary<IMAGEDIM>* image_scalar<ELEMTYPE, IMAGEDIM>::region_grow_3D_with_cumulative_threshold(queue<Vector3D> seed_queue, float &center, float min_quota, float max_quota, int nr_base)
+{
+	image_binary<IMAGEDIM> *res = new image_binary<IMAGEDIM>(this,0);
+	res->fill(false);
+	//for seed-queue... //res->set_voxel(seed[0],seed[1],seed[2],true);
+	int sx = this->datasize[0];
+	int sy = this->datasize[1];
+	int sz = this->datasize[2];
+//	cout<<sx<<" "<<sy<<" "<<sz<<endl;
+
+	Vector3D pos;
+	Vector3D pos2;
+
+	ELEMTYPE val;
+	int count = nr_base;
+	while(seed_queue.size()>0){
+		pos = seed_queue.front();
+		seed_queue.pop();
+
+		for(int x=std::max(0,int(pos[0]-1)); x<=std::min(int(pos[0]+1),sx-1); x++){
+			for(int y=std::max(0,int(pos[1]-1)); y<=std::min(int(pos[1]+1),sy-1); y++){
+				for(int z=std::max(0,int(pos[2]-1)); z<=std::min(int(pos[2]+1),sz-1); z++){
+					val = this->get_voxel(x,y,z);
+
+					if(val>=center*min_quota && val<=center*max_quota && res->get_voxel(x,y,z)==false){
+						pos2[0]=x; pos2[1]=y; pos2[2]=z;
+						seed_queue.push(pos2);
+						res->set_voxel(x,y,z,true);
+						center = center + (val - center)/count;
+						count++;
+					}
+				}
+			}
+		}
+	}
+	cout<<"region_grow_3D --> Done...(seed_queue.size()="<<seed_queue.size()<<")"<<endl;
+	return res;
+}
+
+template <class ELEMTYPE, int IMAGEDIM>
 image_binary<IMAGEDIM>* image_scalar<ELEMTYPE, IMAGEDIM>::region_grow_3D_if_equal_or_lower_intensity(queue<Vector3D> seed_queue, ELEMTYPE min_intensity)
 {
 	image_binary<IMAGEDIM> *res = new image_binary<IMAGEDIM>(this,0);

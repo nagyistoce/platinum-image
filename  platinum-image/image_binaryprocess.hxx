@@ -1997,7 +1997,7 @@ int* image_binary<IMAGEDIM>::dijkstra_n26_weight(image_integer<short, IMAGEDIM>*
 	
 	int vals[26];
 	int res[26];
-	for(int i = 0; i <6; i++){
+	for(int i = 0; i <26; i++){
 		vals[i] = weight->get_voxel(u[0]+x_change[i],u[1]+y_change[i],u[2]+z_change[i]);
 	}
 	for(int i = 0; i <26; i++){
@@ -2054,7 +2054,7 @@ image_integer<short,IMAGEDIM>* image_binary<IMAGEDIM>::dijkstra_image_version(im
 		int* w = dijkstra_n26_weight(weight, u, x_change, y_change, z_change);
 		for(int i = 0; i <26; i++){
 			//int alt = alt_c[i] + (weight->get_voxel(u)-weight->get_voxel(u[0]+x_change[i],u[1]+y_change[i],u[2]+z_change[i]))+1;
-			int alt = w[i]*w[i]+1;//alt_c[i] + w[i];
+			int alt = w[i]+1;//alt_c[i] + w[i];
 			if(dijkstra_update(dist, u[0]+x_change[i],u[1]+y_change[i],u[2]+z_change[i],dist_u+alt))
 				parent_map->set_voxel(u[0]+x_change[i],u[1]+y_change[i],u[2]+z_change[i],par[i]);
 		}
