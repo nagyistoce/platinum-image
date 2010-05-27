@@ -968,9 +968,9 @@ void image_general<ELEMTYPE, IMAGEDIM>::write_additional_data(image_binary<IMAGE
 			cout << "radius:" << radius << endl;
 			free = shape_calc::calc_cirlce_3d(p1,p2,radius);
 			if(free.size() >=2){
-				p1 = world_to_voxel(free.at(0));
+				p1 = this->world_to_voxel(free.at(0));
 				for(int q = 1; q < free.size(); q++){//connect the dots
-					p2 = world_to_voxel(free.at(q));
+					p2 = this->world_to_voxel(free.at(q));
 					temp = shape_calc::calc_line_3d(p1,p2);
 					vec.insert(vec.end(),temp.begin(), temp.end());
 					p1 = p2;
@@ -980,9 +980,9 @@ void image_general<ELEMTYPE, IMAGEDIM>::write_additional_data(image_binary<IMAGE
 		case AT_FREEHAND:
 			free = (dynamic_cast<freehand_data*>(base))->p;
 			if(free.size() >=2){
-				p1 = world_to_voxel(free.at(0));
+				p1 = this->world_to_voxel(free.at(0));
 				for(int q = 1; q < free.size(); q++){//connect the dots
-					p2 = world_to_voxel(free.at(q));
+					p2 = this->world_to_voxel(free.at(q));
 					temp = shape_calc::calc_line_3d(p1,p2);
 					vec.insert(vec.end(),temp.begin(), temp.end());
 					p1 = p2;

@@ -945,7 +945,7 @@ FLTKhelper_data::FLTKhelper_data(int id, int x, int y, int w, int h):FLTKgeom_ba
 
 	int h_coord = h*3/4;
 	int button_increase = 20;
-	int x_val = 0;
+	//int x_val = 0;
 	
 	
 	vector<additional_data_base*> h_data = datamanagement.get_image<data_base>(data_id)->helper_data->data;

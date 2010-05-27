@@ -198,8 +198,8 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::set_scalar_parameters()
 	stats = NULL;
 	set_stats_histogram(new histogram_1D<ELEMTYPE >(this));  //hist1D constructor calls resize()... and calculate()
 	
-	ELEMTYPE mi = stats->min();
-	ELEMTYPE ma = stats->max();
+	//ELEMTYPE mi = stats->min();
+	//ELEMTYPE ma = stats->max();
 //    stats->min(std::numeric_limits<ELEMTYPE>::min());
 //    stats->max(std::numeric_limits<ELEMTYPE>::max()); //JK ????
 
@@ -1842,7 +1842,7 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::save_histogram_to_txt_file(const std::str
 }
 template <class ELEMTYPE, int IMAGEDIM>
 void image_scalar<ELEMTYPE, IMAGEDIM>::make_histogram_curve(){
-	datamanagement.add(this->stats->get_curve_for_rendering(),name() + " hist");
+	datamanagement.add(this->stats->get_curve_for_rendering(),this->name() + " hist");
 }
 
 
