@@ -485,6 +485,7 @@ double invIncompleteBeta(const double p, const double a, const double b);	// Inv
 double logGamma(const double x);											// Logarithm of the Gamma function
 double incompleteBeta(const double a, const double b, const double x);		// Incomplete beta function
 double incompleteBetaCF(const double a, const double b, const double x);	// Continued fraction for incomplete beta function
+double regularizedGamma(const unsigned int N, const double x);				// Regularized Gamma function
 
 // Rigid 3D landmark based alignment
 // Three non-collinear landmarks is sufficient to guarantee a solution

@@ -1065,7 +1065,7 @@ string Matrix3Drow2str(Matrix3D m, int row)
 
 unsigned int get_factorial(unsigned int i)
 {
-	if(i==1){
+	if(i<=1){
 		return 1;
 	}
 	else{
@@ -1149,6 +1149,7 @@ float tsquare(const std::vector<Vector3D> & x, const std::vector<Vector3D> & y)
 
 	return ((nx * ny) / (nx + ny)) * ((xmean - ymean) * (s_inv * (xmean - ymean)));
 }
+
 
 void subtract_from_all(std::vector<Vector3D> &x, Vector3D value)
 {
@@ -1301,6 +1302,14 @@ double incompleteBetaCF(const double a, const double b, const double x)
 			{ break; }
 	}
 	return result;
+}
+
+double regularizedGamma(const unsigned int N, const double x) {
+	double Q = 0.0;
+	for (int k=0; k<N; k++)
+		Q +=pow(x,k)/get_factorial(k);
+	Q *= exp(-x);
+	return Q;
 }
 
 bool fit_points(const std::vector<Vector3D> & fixed, std::vector<Vector3D> & moving, 
