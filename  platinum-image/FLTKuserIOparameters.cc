@@ -1156,7 +1156,7 @@ FLTKuserIOpar_stringlist::FLTKuserIOpar_stringlist (const std::string name, std:
 	menuitems[strlist.size()].label(NULL);
     menuitems[0].setonly();
 	control = new Fl_Menu_Button(x(),y()+PARTITLEMARGIN,w(),h()-PARTITLEMARGIN,current_value);
-	strcpy(current_value,strlist[0].c_str());
+	strlist.size()>0 ? strcpy(current_value,strlist[0].c_str()) : strcpy(current_value,"");
 	
 	control->copy(menuitems);
 	control->box(FL_THIN_UP_BOX);
