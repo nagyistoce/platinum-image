@@ -136,6 +136,7 @@ void histogram_1D<ELEMTYPE>::resize (unsigned long newNum)
 
 	if(this->bucket_vector != NULL){	//JK - Prevent memory loss....
 //		cout<<"...delete buckets...."<<endl;
+		delete this->bucket_vector;
 		this->bucket_vector = NULL;
 	}
    // this->buckets = new unsigned long [this->num_buckets];

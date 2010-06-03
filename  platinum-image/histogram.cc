@@ -44,9 +44,11 @@ void histogram_base::reallocate_buckets_if_necessary(int new_num_buckets)
 		if (new_num_buckets !=0){    //change #buckets
             this->num_buckets=new_num_buckets;
 		}
-		if(this->bucket_vector!= NULL)
-			this->bucket_vector->clear();
-		//this->bucket_vector = NULL;
+		if(this->bucket_vector!= NULL){
+			//this->bucket_vector->clear();
+			//this->bucket_vector = NULL;
+			delete this->bucket_vector;
+			}
         this->bucket_vector=new pts_vector<unsigned long>(this->num_buckets);
 
 	}
@@ -55,10 +57,12 @@ void histogram_base::reallocate_buckets_if_necessary(int new_num_buckets)
 
 histogram_base::histogram_base ()
     {
-    bucket_vector = NULL;
-
     num_distinct_values =0;
 	num_elements_in_hist = 0;
+	bucket_vector = NULL;
+	if(bucket_vector != NULL){
+		delete bucket_vector;
+	}
 	bucket_vector = new pts_vector<unsigned long>(10);
     }
 
@@ -66,7 +70,8 @@ histogram_base::~histogram_base ()
     {
     if (bucket_vector != NULL){
 		//delete []buckets;	//Avoids memory loss... You might crash here if you have written outside the allocated memory
-		bucket_vector->clear();
+		//bucket_vector->clear();
+		delete bucket_vector;
 		}
     }
 

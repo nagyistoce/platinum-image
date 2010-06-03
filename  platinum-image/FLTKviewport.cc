@@ -1106,6 +1106,8 @@ void FLTK_Pt_MPR_pane::create_geom_menu(int W){
     geom_button->copy(geom_menu_items);
 	geom_button->box(FL_THIN_UP_BOX);
 	geom_button->labelsize(FLTK_SMALL_LABEL);
+	
+	delete[] geom_menu_items;
 }
 viewport* FLTK_Pt_MPR_pane::get_viewport_parent()
 {
@@ -1377,6 +1379,8 @@ void FLTK_Pt_Curve_pane::create_geom_menu(int W){
     geom_button->copy(geom_menu_items);
 	geom_button->box(FL_THIN_UP_BOX);
 	geom_button->labelsize(FLTK_SMALL_LABEL);
+	
+	delete[] geom_menu_items;
 
 }
 void FLTK_Pt_Curve_pane::create_curve_menu(int W){
@@ -1647,6 +1651,8 @@ void FLTK_Pt_Spectrum_pane::create_geom_menu(int W){
     geom_button->copy(geom_menu_items);
 	geom_button->box(FL_THIN_UP_BOX);
 	geom_button->labelsize(FLTK_SMALL_LABEL);
+	
+	delete[] geom_menu_items;
 
 }
 
@@ -1955,8 +1961,10 @@ FLTKviewport::FLTKviewport(int xpos,int ypos,int width,int height, viewport *vp_
     datamenu_button = new Fl_Menu_Button(0+(buttonleft+=buttonwidth),0,buttonwidth,buttonheight,"Data");
     
     renderermenu_button = new Fl_Menu_Button(0+(buttonleft+=buttonwidth),0,buttonwidth,buttonheight,"Renderer");
-	//The factory below returnsconnects the  
-	renderermenu_button->copy(rendermanager::pane_factory.menu(cb_renderer_select3,(void*)this)); 
+	//The factory below returnsconnects the
+	Fl_Menu_Item * fmenu_tmp = rendermanager::pane_factory.createmenu(cb_renderer_select3,(void*)this);
+	renderermenu_button->copy(fmenu_tmp);
+	delete fmenu_tmp;
     renderermenu_button->user_data(NULL);
    /* 
     //direction menu is constant for each viewport

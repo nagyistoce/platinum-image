@@ -138,7 +138,7 @@ public:
     }
     
 
-    Fl_Menu_Item * menu (Fl_Callback * cb, void * receiver)
+    Fl_Menu_Item * createmenu (Fl_Callback * cb, void * receiver)
     {    
         Fl_Menu_Item * fmenu;
         int num_items = m_object_creator.size(); 

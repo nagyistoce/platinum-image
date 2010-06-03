@@ -997,7 +997,7 @@ double fit_gaussians_to_curve_cost_function<ELEMTYPE>::f(vnl_vector<double> cons
 
 //	if(punish_ampl>0){
 	float max_ampl=0;
-	float min_ampl=100000000000;
+	float min_ampl=numeric_limits<float>::max();
 	for(int i=0;i<num_gaussians;i++){
 		max_ampl = max<float>(max_ampl,v[i].amplitude);
 		min_ampl = min<float>(min_ampl,v[i].amplitude);

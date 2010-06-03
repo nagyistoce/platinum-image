@@ -1163,6 +1163,8 @@ FLTKuserIOpar_stringlist::FLTKuserIOpar_stringlist (const std::string name, std:
 	control->box(FL_THIN_UP_BOX);
 	control->labelsize(FLTK_SMALL_LABEL);
 	
+	delete[] menuitems; //JK2
+	
     end();
 }
 

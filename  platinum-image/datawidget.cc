@@ -1039,7 +1039,7 @@ FLTKShift::FLTKShift(int id, int x, int y, int w, int h):FLTKgeom_base(id,x,y,w,
 	const int slice_w = 20.0/60.0*w;
 
 	int h_coord = h*3/4;
-	int button_increase = h_coord/2;
+	//int button_increase = h_coord/2;
 	
 	
 	
