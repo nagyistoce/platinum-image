@@ -128,6 +128,8 @@ class image_storage : public image_base
 		string resolve_tooltip();		//combines tooltip data of this class with data from other classes
 		string resolve_tooltip_image_storage(); //resolves tooltip data typical for this class
 		string resolve_datasize_in_kb();
+		string resolve_elemtype();
+
 
 
         // *** iterator ***        

@@ -120,7 +120,7 @@ public:
     ELEMTYPE get_num_values();
 	ELEMTYPE get_max() const;
 	ELEMTYPE get_min() const;
-//	float get_mean_intensity();
+	float get_mean_intensity();
 	histogram_1D<ELEMTYPE>* get_histogram();
 	histogram_1D<ELEMTYPE>* get_histogram_new_with_same_num_buckets_as_intensities();
 	virtual void stats_refresh(bool min_max_refresh=false);
@@ -193,6 +193,7 @@ public:
 	//--------------------
 	void crop_3D(image_binary<3> *mask);
 	image_scalar<ELEMTYPE, IMAGEDIM>* crop_and_return_3D(image_binary<3> *mask);
+	image_scalar<ELEMTYPE, IMAGEDIM>* mask_crop_and_return_3D(image_binary<3> *mask);
 	//... get_sub_region(...)
 
 	ELEMTYPE get_max_in_slice3D(int slice, int dir=2);
@@ -332,7 +333,9 @@ public:
 
 // -------------- Scalar Load/Save functions ---------------
 	void load_dataset_from_VTK_file(std::string file_path);
+    void save_to_TIF_collage(const std::string file_path, int num_cols=4, int num_rows=4);
     void save_to_TIF_file_series_3D(const std::string file_path_base, int dir=2, int from_slice=-1, int to_slice=-1);
+	void save_after_uchar_casted_to_TIF_file(const std::string file_path_base, const std::string slice="0");
 	void save_uchar2D_to_TIF_file(const std::string file_path_base, const std::string slice="0");
 	void save_projection_to_8bit_tif_file(const std::string file_path_base, int dir, PROJECTION_MODE PROJ=PROJ_MAX);
 
@@ -399,7 +402,7 @@ public:
 	void appl_scale_outer_slices_using_mean(int dir, int no_outer_slices=1);
 	void appl_scale_outer_slices_using_mean(int dir, int no_outer_slices, image_scalar<ELEMTYPE, IMAGEDIM> *im1, image_scalar<ELEMTYPE, IMAGEDIM> *im2);
 
-	image_binary<3>* appl_abd_create_crude_grad_mask( image_binary<3>* small_abd_mask, int std_x, int std_y, int std_z, int erode_dist, string save_base="" );
+	image_binary<3>* appl_abd_create_crude_grad_mask( image_binary<3>* small_abd_mask, int std_x, int std_y, int std_z, int erode_dist, string save_base="", bool use_largest_obj_3D=0 );
 
 };
 

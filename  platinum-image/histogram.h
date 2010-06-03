@@ -160,6 +160,7 @@ class histogram_1D : public histogram_typed<ELEMTYPE> //horizontal 1D graph hist
 	    //void image (int vol);
 
 		void calculate_from_image_data(int number_of_buckets=0);
+		void print_histogram_info();
 //		void print_histogram_content();
 		//thresholdparvalue get_threshold (float h_min,float h_max, float v_min, float v_max, int mode = THRESHOLD_2D_MODE_RECT);
 
@@ -217,9 +218,9 @@ class histogram_1D : public histogram_typed<ELEMTYPE> //horizontal 1D graph hist
 		float find_better_amplitude(gaussian g, int from_bucket, int to_bucket, float factor1=0.8, float factor2=1.2, int nr_steps=10);
 		float find_better_center(gaussian g, int from_bucket, int to_bucket, float factor1=0.8, float factor2=1.2, int nr_steps=10);
 		float find_better_sigma(gaussian g, int from_bucket, int to_bucket, float factor1=0.8, float factor2=1.2, int nr_steps=10);
-		double get_sum_square_diff_between_buckets(vector<gaussian> v, int from_bucket, int to_bucket, bool ignore_zeros=true);
+		double get_sum_square_diff_between_buckets(vector<gaussian> v, int from_bucket, int to_bucket, bool ignore_zeros=true, bool weight_with_hist_freq=false);
 		double get_sum_square_diff_between_buckets(gaussian g, int from_bucket, int to_bucket, bool ignore_zeros=true);
-		double get_sum_square_diff(vector<gaussian> v, bool ignore_zeros=true);
+		double get_sum_square_diff(vector<gaussian> v, bool ignore_zeros=true, bool weight_with_hist_freq=false);
 		double get_sum_square_diff(gaussian g, bool ignore_zeros=true);
 		double get_gaussian_area(gaussian g, int from_bucket, int to_bucket);
 		double get_gaussian_area(gaussian g);
@@ -228,7 +229,7 @@ class histogram_1D : public histogram_typed<ELEMTYPE> //horizontal 1D graph hist
 		double get_sum_square_gaussian_overlap(vector<gaussian> v);
 		vector<double> get_overlaps_in_percent(vector<gaussian> v);
 		vnl_vector<double> get_vnl_vector_with_start_guess_of_num_gaussians(int num_gaussians);
-		ELEMTYPE fit_two_gaussians_to_histogram_and_return_threshold(string save_histogram_file_path = "");
+		ELEMTYPE fit_two_gaussians_to_histogram_and_return_threshold(float punish_overlap=0, float punish_area_differences=0, float punish_variance_differences=0, bool weight_with_hist_freq=false, string save_histogram_file_path = "");
 		vnl_vector<double> fit_n_gaussians_to_histogram(int n = 2,string save_histogram_file_path = "");
 
 		//------ Fitting of rayleigh functions ------
@@ -249,8 +250,6 @@ class histogram_1D : public histogram_typed<ELEMTYPE> //horizontal 1D graph hist
 		float get_variance_in_intensity_range(ELEMTYPE from, ELEMTYPE to);
 		int get_bucket_pos_with_largest_value_in_bucket_range(int from, int to);
 		int get_bucket_pos_with_largest_value_in_intensity_range(ELEMTYPE from, ELEMTYPE to);
-
-
     };
 
 

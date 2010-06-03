@@ -100,6 +100,7 @@ public:
 	image_integer<unsigned long, 3>* label_connected_objects_with_perimeter_2D(int direction=2, IMGBINARYTYPE object_value=TRUE); ///Get image_integer from connected objects in 2D-planes orthogonal to the axis given by direction with labels corresponding to object perimeter (4-nbh).
 	image_scalar<float, 3>* label_connected_objects_with_p2a_2D(int direction=2, IMGBINARYTYPE object_value=TRUE); //Uses "perimeter_2D" and "area_2D"
 	void largest_object_2D(int direction=2, IMGBINARYTYPE object_value=TRUE); ///Keep the largest object (defined by object_value) for each plane in 2D-planes orthogonal to the axis given by direction.
+	void largest_objects_2D(int num_objects, IMGBINARYTYPE object_value=TRUE);
     void threshold_size_2D(int min_size, int direction=2, IMGBINARYTYPE object_value=TRUE); ///Keep all objects (defined by object_value) > min_size voxels for each plane in 2D-planes orthogonal to the axis given by direction.
     void cog_inside_2D(image_binary<IMAGEDIM>* mask, int direction=2, IMGBINARYTYPE object_value=TRUE); ///Keep all objects (defined by object_value) having their cog within mask in 2D-planes orthogonal to the axis given by direction.
 	void erode_2D(int thickness=3, int direction=2, IMGBINARYTYPE object_value=TRUE); ///Morphological erode up to distance value=thickness for each plane in 2D-planes orthogonal to the axis given by direction, using the 34 chamfer distance map.
@@ -153,7 +154,7 @@ public:
 	float mutual_overlap_3D(image_binary<IMAGEDIM>* second_image);
 	vector<Vector3D> get_center_of_gravities_for_objects_3D(SPACE_TYPE type = VOXEL_SPACE); //oooo
 
-	image_binary<3>* region_grow_3D_if_lower_intensity_using_dist_thresholding(int dist_thresh=10);
+	image_binary<3>* region_grow_3D_if_lower_intensity_using_dist_thresholding(bool use_dist_345=true, int dist_thresh=10, bool use_largest_object=true);
 
 	void appl_crude_abdominal_artifact_removal();
 

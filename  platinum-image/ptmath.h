@@ -42,9 +42,16 @@
 
 #include "fileutils.h"
 
+class v3i{
+	public:
+	int data[3];
+};
+
+
 ///...and types
 typedef itk::Vector<float,3> Vector3D;
 typedef itk::Vector<int,3> Vector3Dint;
+typedef v3i Vector3Di;
 typedef itk::Point<float,3> Point3D;
 typedef std::pair<long, long> HistoPair;
 typedef itk::Matrix<float> Matrix3D;
@@ -413,6 +420,7 @@ double get_random_number_in_span(double min, double max);
 Vector3D create_Vector3D(float x, float y, float z);
 Vector3D create_Vector3D(vnl_vector<float> &v);
 Vector3Dint create_Vector3Dint(int x, int y, int z);
+Vector3Di create_Vector3Di(int x, int y, int z);
 Vector3Dint create_Vector3Dint(Vector3D v);
 Vector2D create_Vector2D(float x, float y);
 Vector2Dint create_Vector2Dint(int x, int y);

@@ -138,13 +138,14 @@ void FLTKuserIOpar_path::browse_button_cb(Fl_Widget *callingwidget, void *)
 	}else{ //folder path
 
 		path = fl_dir_chooser("Choose a directory", last_path.c_str(), 0);
-		fp->control->value(path);
-		cout<<"path="<<path<<endl; 
 		if(path == NULL){
 			pt_error::error("FLTKuserIOpar_path loading cancelled",pt_error::notice);
 			return;
+		}else{
+			cout<<"path="<<path<<endl; 
+			fp->control->value(path);
+			pt_config::write("latest_path",path_parent(path));
 		}
-		pt_config::write("latest_path",path_parent(path));
 	}
 
 }

@@ -104,7 +104,7 @@ metadata::~metadata()
 
 void metadata::read_metadata_from_dcm_file(string dcm_file)
 {
-	cout<<"read_metadata_from_dcm_file("<<dcm_file<<")"<<endl;
+//	cout<<"read_metadata_from_dcm_file("<<dcm_file<<")"<<endl;
      	//itk::GDCMImageIO::Pointer dcmIO; //Allows simple dicom meta data import
 		//dicom might store other data types than image data... 
 		//dcmIO->GetFileName()=="" if meta data is not available from dicom file.

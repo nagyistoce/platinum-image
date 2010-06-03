@@ -935,14 +935,16 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::appl_scale_outer_slices_using_mean(int di
 }
 
 template <class ELEMTYPE, int IMAGEDIM>
-image_binary<3>* image_scalar<ELEMTYPE, IMAGEDIM>::appl_abd_create_crude_grad_mask( image_binary<3>* small_abd_mask, int std_x, int std_y, int std_z, int erode_dist, string save_base)
+image_binary<3>* image_scalar<ELEMTYPE, IMAGEDIM>::appl_abd_create_crude_grad_mask( image_binary<3>* small_abd_mask, int std_x, int std_y, int std_z, int erode_dist, string save_base, bool use_largest_obj_3D)
 {
 	image_scalar<float,3> *this_float = new image_scalar<float,3>(this);
 
 	filter_central_difference_magn_2d* diff_2d = new filter_central_difference_magn_2d(2);
 	this_float->filter_3D(diff_2d);
+	if(save_base!=""){
+		this_float->save_to_file(save_base+"_1_grad.vtk");
+	}
 	this_float->data_has_changed();
-
 	this_float->mask_out(small_abd_mask);
 
 	//---------------------------------
@@ -950,24 +952,39 @@ image_binary<3>* image_scalar<ELEMTYPE, IMAGEDIM>::appl_abd_create_crude_grad_ma
 	this_float->data_has_changed();
 
 	if(save_base!=""){
-		this_float->save_to_file(save_base+"_grad_smooth.vtk");
+		this_float->save_to_file(save_base+"_2_grad_smooth.vtk");
 	}
 
 	image_binary<3> *gradient_mask = this_float->threshold( this_float->get_mean() );
+	if(save_base!=""){
+		gradient_mask->save_to_file(save_base+"_3_thr.vtk");
+	}
 	gradient_mask->fill_holes_2D();
-	gradient_mask->largest_object_2D();
+	if(use_largest_obj_3D){
+		gradient_mask->largest_object_3D();
+	}else{
+		gradient_mask->largest_object_2D();
+	}
 
 	if(save_base!=""){
-		gradient_mask->save_to_file(save_base+"_grad_thresh.vtk");
+		gradient_mask->save_to_file(save_base+"_4_holes_largest.vtk");
 	}
 	gradient_mask->erode_2D(erode_dist);
 
 	if(save_base!=""){
-		gradient_mask->save_to_file(save_base+"_grad_thresh_eroded.vtk");
+		gradient_mask->save_to_file(save_base+"_5_eroded.vtk");
 	}
 
+	image_binary<3>	*gradient_mask_conv = gradient_mask->convex_hull_2D();
+
+	if(save_base!=""){
+		gradient_mask_conv->save_to_file(save_base+"_6_convec_hull2D.vtk");
+	}
+
+
 	delete this_float;
-	return gradient_mask;
+	delete gradient_mask;
+	return gradient_mask_conv;
 }
 
 
@@ -1044,11 +1061,11 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::appl_1D_SIM_bias_correction(image_binary<
 //		tmp_field->save_to_file( "tmp_SIM_fields_" + int2str(iter) + "_smooth_scale.vtk" );
 		field->combine(tmp_field, COMB_ADD);
 		field->data_has_changed();
-		field->save_to_file( "tmp_SIM_field_sum_" + int2str(iter) + ".vtk" );
+//		field->save_to_file( "tmp_SIM_field_sum_" + int2str(iter) + ".vtk" );
 		field->add_value_to_all_voxels(1,mask);
 		feat1_corr->combine(field, COMB_MULT);
 		feat1_corr->map_negative_values(0);
-		feat1_corr->save_to_file( "tmp_SIM_feat1_corr_" + int2str(iter) + ".vtk" );
+//		feat1_corr->save_to_file( "tmp_SIM_feat1_corr_" + int2str(iter) + ".vtk" );
 	}
 
 	if(hist!=NULL){

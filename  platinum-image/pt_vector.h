@@ -90,9 +90,14 @@ public:
 	ELEMTYPE get_max_value_in_range(int from, int to);
 	ELEMTYPE get_min_value_in_range(int from, int to);
 	float get_variance_in_range(int from, int to);
+	float get_variance_in_range_in_units(int from, int to);
 	void mean_value_smoothing(int filter_size);
+	double get_weighted_mean_x_in_range(int from, int to);
+	double get_weighted_mean_x();
+	double get_weighted_mean_intensity_in_range(int from, int to);
+	double get_weighted_mean_intensity();
 	double get_mean_in_range(int from, int to);
-	double get_mean_x_in_range(int from, int to);
+//	double get_mean_x_in_range(int from, int to);
 	double get_slope_at_location(int location);
 	double distance_between_points(int x1, int x2);
 	double get_mean_in_range_for_vector(int from, int to, vector<ELEMTYPE> vec);
@@ -102,6 +107,8 @@ public:
 	void normalize_to_maximum();
 
 	ELEMTYPE get_x_at_lower_percentile(float percentile, bool ignore_zero_intensity);
+	
+	void print_pts_vector_info();
 
 //------ Fitting of gaussian functions ------
 	void fit_gaussian_to_intensity_range(float &amp, float &center, float &sigma, double from, double to, bool print_info=false);
@@ -109,9 +116,9 @@ public:
 	float find_better_amplitude(gaussian g, int from_bucket, int to_bucket, float factor1=0.8, float factor2=1.2, int nr_steps=10);
 	float find_better_center(gaussian g, int from_bucket, int to_bucket, float factor1=0.8, float factor2=1.2, int nr_steps=10);
 	float find_better_sigma(gaussian g, int from_bucket, int to_bucket, float factor1=0.8, float factor2=1.2, int nr_steps=10);
-	double get_sum_square_diff_between_buckets(vector<gaussian> v, int from_bucket, int to_bucket, bool ignore_zeros=true);
+	double get_sum_square_diff_between_buckets(vector<gaussian> v, int from_bucket, int to_bucket, bool ignore_zeros=true, bool weight_with_hist_freq=false);
 	double get_sum_square_diff_between_buckets(gaussian g, int from_bucket, int to_bucket, bool ignore_zeros=true);
-	double get_sum_square_diff(vector<gaussian> v, bool ignore_zeros=true);
+	double get_sum_square_diff(vector<gaussian> v, bool ignore_zeros=true, bool weight_with_hist_freq=false);
 	double get_sum_square_diff(gaussian g, bool ignore_zeros=true);
 	double get_gaussian_area(gaussian g, int from_bucket, int to_bucket);
 	double get_gaussian_area(gaussian g);
@@ -120,7 +127,8 @@ public:
 	double get_sum_square_gaussian_overlap(vector<gaussian> v);
 	vector<double> get_overlaps_in_percent(vector<gaussian> v);
 	vnl_vector<double> get_vnl_vector_with_start_guess_of_num_gaussians(int num_gaussians);
-	ELEMTYPE fit_two_gaussians_to_histogram_and_return_threshold(string save_histogram_file_path = "");
+//	ELEMTYPE fit_two_gaussians_to_histogram_and_return_threshold(string save_histogram_file_path = "");
+	void fit_two_gaussians_to_histogram(vnl_vector<double> &x, float punish_overlap=0, float punish_area_differences=0, float punish_variance_differences=0, bool weight_with_hist_freq=false);
 	vnl_vector<double> fit_n_gaussians_to_histogram(int n = 2, string save_histogram_file_path = "");
 
 	gaussian fit_gaussian_with_amoeba(int from, int to);
@@ -132,6 +140,7 @@ public:
 	double get_sum_square_diff_from_buckets(rayleighian r, int from_bucket, int to_bucket, bool ignore_zeros=true);
 
 };
+
 template<class ELEMTYPE>
 pts_vector<ELEMTYPE>::pts_vector(int start_size) : pt_vector<ELEMTYPE>(start_size){
 	
@@ -256,30 +265,55 @@ void pts_vector<ELEMTYPE>::mean_value_smoothing(int filter_size){
 	}
 
 }
-
+/*
 template<class ELEMTYPE>
 double pts_vector<ELEMTYPE>::get_mean_x_in_range(int from, int to){
 	
-	double mean;
-
-	mean = 0;
+	double mean = 0;
 	for(double i = from; i < to; i++)
 		mean +=(from_x_to_val(i)/(to-from+1));
 
 	return mean;
 }
+*/
+
+template<class ELEMTYPE>
+double pts_vector<ELEMTYPE>::get_weighted_mean_x_in_range(int from, int to){
+	double mean = 0;
+	double sum_values = 0;
+
+	for(double i = from; i < to; i++){
+		sum_values += float(this->at(i));
+		mean +=float(this->at(i)) * (i)/(to-from+1);
+	}
+	return mean/sum_values;
+}
+
+template<class ELEMTYPE>
+double pts_vector<ELEMTYPE>::get_weighted_mean_x(){
+	return get_weighted_mean_x_in_range(0,this->size()-1);
+}
+
+template<class ELEMTYPE>
+double pts_vector<ELEMTYPE>::get_weighted_mean_intensity_in_range(int from, int to){
+	return from_x_to_val( get_weighted_mean_x_in_range(from,to) );
+}
+
+template<class ELEMTYPE>
+double pts_vector<ELEMTYPE>::get_weighted_mean_intensity(){
+	return get_weighted_mean_intensity_in_range(0,this->size()-1);
+}
 
 template<class ELEMTYPE>
 double pts_vector<ELEMTYPE>::get_mean_in_range(int from, int to){
 	
-	double mean;
-
-	mean = 0;
+	double mean = 0;
 	for(int i = from; i < to; i++)
-		mean +=(this->at(i)/(to-from+1));
+		mean +=(float(this->at(i))/float(to-from+1));
 
 	return mean;
 }
+
 template<class ELEMTYPE>
 double pts_vector<ELEMTYPE>::get_mean_in_range_for_vector(int from, int to, vector<ELEMTYPE> vec){
 	
@@ -343,7 +377,22 @@ double pts_vector<ELEMTYPE>::from_x_to_val(int x){
 template <class ELEMTYPE>
 float pts_vector<ELEMTYPE>::get_variance_in_range(int from, int to)
 {
-	float mean = get_mean_x_in_range(from,to); //TITTA p?mean
+	float mean = float(to+from)/2.0;
+	float sum = 0;
+	float num_values = 0;
+	float diff=0;
+	for(int i=from; i<=to; i++){
+		diff = mean-float(i);
+		sum += float(this->at(i))*diff*diff; //this number of pixels with this (mean_intensity_diff)^2...
+		num_values += float(this->at(i));
+	}
+	return sum/num_values;
+}
+
+template <class ELEMTYPE>
+float pts_vector<ELEMTYPE>::get_variance_in_range_in_units(int from, int to)
+{
+	float mean = this->from_x_to_val(float(to+from)/2.0); //TITTA p?mean
 	float sum = 0;
 	float num_values = 0;
 	float diff=0;
@@ -401,6 +450,13 @@ ELEMTYPE pts_vector<ELEMTYPE>::get_x_at_lower_percentile(float percentile, bool 
 
 /* Base ends here */
 
+template <class ELEMTYPE>
+void pts_vector<ELEMTYPE>::print_pts_vector_info()
+{
+	cout<<"this->x_axis_start="<<this->x_axis_start<<endl;
+	cout<<"this->x_res="<<this->x_res<<endl;
+}
+
 /* Scalar starts here */
 template <class ELEMTYPE>
 void pts_vector<ELEMTYPE>::fit_gaussian_to_intensity_range(float &amp, float &center, float &sigma, double from_int, double to_int, bool print_info)
@@ -420,7 +476,7 @@ void pts_vector<ELEMTYPE>::fit_gaussian_to_intensity_range(float &amp, float &ce
 
 	gaussian g(amp,center,sigma);
 	g.amplitude = float(this->get_max_value_in_range(from_bucket,to_bucket));
-	g.center = this->get_mean_x_in_range(from_bucket,to_bucket); //detta ‰r inte s?logiskt fˆr kurvor.....
+	g.center = this->from_x_to_val(float(to_bucket+from_bucket)/2.0); 
 //	g.center = this->get_max_value_in_range(from_bucket,to_bucket);
 	g.sigma = sqrt(this->get_variance_in_range(from_bucket,to_bucket)); //intensity variance...
 	int dyn_from_bucket = std::max(from_bucket, this->from_val_to_x(g.center-1.5*g.sigma));
@@ -541,9 +597,10 @@ float pts_vector<ELEMTYPE>::find_better_sigma(gaussian g, int from_bucket, int t
 }
 
 template <class ELEMTYPE>
-double pts_vector<ELEMTYPE>::get_sum_square_diff_between_buckets(vector<gaussian> v, int from_bucket, int to_bucket, bool ignore_zeros){
+double pts_vector<ELEMTYPE>::get_sum_square_diff_between_buckets(vector<gaussian> v, int from_bucket, int to_bucket, bool ignore_zeros, bool weight_with_hist_freq){
 	double error = 0;
-	float val=0;
+	float gaussian_height=0;
+	float hist_height=0;
 	int zero_intensity_bucket = this->from_val_to_x(0);
 
 	for(int j=from_bucket;j<=to_bucket;j++){
@@ -551,20 +608,26 @@ double pts_vector<ELEMTYPE>::get_sum_square_diff_between_buckets(vector<gaussian
 
 		if(this->at(j)>0 || !ignore_zeros){
 			if(j != zero_intensity_bucket){ //dont include the commonly seen peak at zero intensity
-
-				val=0;
+				gaussian_height=0;
 				double intensity = this->from_x_to_val(j);
-				for(int i=0;i<v.size();i++){
-					val += v[i].evaluate_at(intensity);	
-				}
 
-				if(j<0){
-					error += pow(val - 0, 2);
+				if(weight_with_hist_freq){ //used to determine whether individual or summed gaussians shall b used...
+					for(int i=0;i<v.size();i++){
+						gaussian_height = max<float>(gaussian_height, float(v[i].evaluate_at(intensity)));	
+					}
 				}else{
-					error += pow(val - float(this->at(j)), 2);
+					for(int i=0;i<v.size();i++){
+						gaussian_height += v[i].evaluate_at(intensity);	
+					}
 				}
-			}
 
+				if(j<0 || j>=this->size()){		//if summation is outside histogram (indices)--> large errors... 
+					hist_height = 0;
+				}else{
+					hist_height = float(this->at(j));
+				}
+				error += pow(gaussian_height - hist_height, 2);
+			}
 		}
 	}
 	return error;
@@ -579,8 +642,8 @@ double pts_vector<ELEMTYPE>::get_sum_square_diff_between_buckets(gaussian g, int
 }
 
 template <class ELEMTYPE>
-double pts_vector<ELEMTYPE>::get_sum_square_diff(vector<gaussian> v, bool ignore_zeros){
-	return get_sum_square_diff_between_buckets(v,0,this->size()-1, ignore_zeros);
+double pts_vector<ELEMTYPE>::get_sum_square_diff(vector<gaussian> v, bool ignore_zeros, bool weight_with_hist_freq){
+	return get_sum_square_diff_between_buckets(v,0,this->size()-1, ignore_zeros, weight_with_hist_freq);
 }
 
 template <class ELEMTYPE>
@@ -688,8 +751,8 @@ vnl_vector<double> pts_vector<ELEMTYPE>::get_vnl_vector_with_start_guess_of_num_
 		//SD (int)
 		x[i*3+0] = this->get_max_value_in_range(from_bucket,to_bucket);
 		x[i*3+1] = from_x_to_val(this->get_x_at_lower_percentile( float(i+0.5)/float(num_gaussians), true ));
-		x[i*3+2] = sqrt(this->get_variance_in_range(from_bucket,to_bucket));
-
+//		x[i*3+1] = this->get_x_at_lower_percentile( float(i+0.5)/float(num_gaussians), true );
+		x[i*3+2] = sqrt(this->get_variance_in_range_in_units(from_bucket,to_bucket));
 		from_bucket = to_bucket;
 	}
 	return x;
@@ -705,7 +768,7 @@ gaussian pts_vector<ELEMTYPE>::fit_gaussian_with_amoeba(int from, int to)
 		temp->push_back(this->at(i));
 	}
 
-	fit_gaussians_to_curve_cost_function<ELEMTYPE> cost(temp,1, false, false);
+	fit_gaussians_to_curve_cost_function<ELEMTYPE> cost(temp,1, 0, 0, 0);
 	vnl_amoeba amoeba_optimizer = vnl_amoeba(cost);
 	amoeba_optimizer.verbose = false;
 	amoeba_optimizer.set_x_tolerance(1);
@@ -729,9 +792,9 @@ gaussian pts_vector<ELEMTYPE>::fit_gaussian_with_amoeba(int from, int to)
 
 
 template <class ELEMTYPE>
-ELEMTYPE pts_vector<ELEMTYPE>::fit_two_gaussians_to_histogram_and_return_threshold(string save_histogram_file_path)
+void pts_vector<ELEMTYPE>::fit_two_gaussians_to_histogram(vnl_vector<double> &x, float punish_overlap, float punish_area_differences, float punish_variance_differences, bool weight_with_hist_freq)
 {
-	fit_gaussians_to_curve_cost_function<ELEMTYPE> cost(this,2, true, true);
+	fit_gaussians_to_curve_cost_function<ELEMTYPE> cost(this,2, punish_overlap, punish_area_differences, punish_variance_differences, weight_with_hist_freq);
 	vnl_amoeba amoeba_optimizer = vnl_amoeba(cost);
 	amoeba_optimizer.verbose = false;
 	amoeba_optimizer.set_x_tolerance(1);
@@ -739,7 +802,7 @@ ELEMTYPE pts_vector<ELEMTYPE>::fit_two_gaussians_to_histogram_and_return_thresho
 //	amoeba_optimizer.set_max_iterations(10);
 //	amoeba_optimizer.set_f_tolerance(1);
 
-	vnl_vector<double> x = this->get_vnl_vector_with_start_guess_of_num_gaussians(2);
+//	vnl_vector<double> x = this->get_vnl_vector_with_start_guess_of_num_gaussians(2);
 	cout<<"x="<<x<<endl;
 	amoeba_optimizer.minimize(cost,x);
 	cout<<"x="<<x<<endl;
@@ -747,22 +810,17 @@ ELEMTYPE pts_vector<ELEMTYPE>::fit_two_gaussians_to_histogram_and_return_thresho
 	cout<<"amoeba_optimizer.F_tolerance="<<amoeba_optimizer.F_tolerance<<endl;
 	cout<<"amoeba_optimizer.X_tolerance="<<amoeba_optimizer.X_tolerance<<endl;
 
-	gaussian g = gaussian(x[0],x[1],x[2]);
-	gaussian g2 = gaussian(x[3],x[4],x[5]);
-
-	if(save_histogram_file_path != ""){
-		vector<gaussian> v; v.push_back(g); v.push_back(g2);
-		//this->sa->save_histogram_to_txt_file(save_histogram_file_path,v);
-	}
+//	gaussian g = gaussian(x[0],x[1],x[2]);
+//	gaussian g2 = gaussian(x[3],x[4],x[5]);
 
 //	return x[1] + 3*x[2]; //pos + 2*SD
-	return g.get_value_at_intersection_between_centers(g2);
+//	return g.get_value_at_intersection_between_centers(g2);
 }
 
 template <class ELEMTYPE>
 vnl_vector<double> pts_vector<ELEMTYPE>::fit_n_gaussians_to_histogram(int n, string save_histogram_file_path)
 {
-	fit_gaussians_to_curve_cost_function<ELEMTYPE> cost(this,n, true, true);
+	fit_gaussians_to_curve_cost_function<ELEMTYPE> cost(this,n, 0.2, 0.2, 0.2);
 	vnl_amoeba amoeba_optimizer = vnl_amoeba(cost);
 	amoeba_optimizer.verbose = false;
 	amoeba_optimizer.set_x_tolerance(1);
@@ -906,21 +964,25 @@ class fit_gaussians_to_curve_cost_function : public vnl_cost_function
 {
 	pts_vector<ELEMTYPE> *the_hist;
 	int num_gaussians;
-	bool punish_overlap;
-	bool punish_large_area_differences;
+	float punish_overlap;
+	float punish_area_differences;
+	float punish_variance_differences;
+	bool weight_with_hist_freq;
 
 public:
-	fit_gaussians_to_curve_cost_function(pts_vector<ELEMTYPE> *h, int num, bool punish_overlap=false, bool punish_large_area_differences=false);
+	fit_gaussians_to_curve_cost_function(pts_vector<ELEMTYPE> *h, int num, float punish_overl=0, float punish_area_diff=0, float punish_variance_diff=0, bool weight_with_hist_f=false);
 	double f(vnl_vector<double> const &x);
 };
 
 template<class ELEMTYPE>
-fit_gaussians_to_curve_cost_function<ELEMTYPE>::fit_gaussians_to_curve_cost_function(pts_vector<ELEMTYPE> *h, int num, bool punish_overl, bool punish_large_area_diffs):vnl_cost_function(num*3)
+fit_gaussians_to_curve_cost_function<ELEMTYPE>::fit_gaussians_to_curve_cost_function(pts_vector<ELEMTYPE> *h, int num, float p_ol, float p_ad, float p_vd, bool weight_with_hist_f):vnl_cost_function(num*3)
 {
 	the_hist = h;
 	num_gaussians = num;
-	punish_overlap = punish_overl;
-	punish_large_area_differences = punish_large_area_diffs;
+	punish_overlap = p_ol;
+	punish_area_differences = p_ad;
+	punish_variance_differences = p_vd;
+	weight_with_hist_freq = weight_with_hist_f;
 }
 
 template<class ELEMTYPE>
@@ -930,42 +992,29 @@ double fit_gaussians_to_curve_cost_function<ELEMTYPE>::f(vnl_vector<double> cons
 	for(int i=0;i<num_gaussians;i++){
 		v.push_back( gaussian(x[i*3+0],x[i*3+1],x[i*3+2]) );
 	}
-	double res = the_hist->get_sum_square_diff(v);
+	double res = the_hist->get_sum_square_diff(v,true,weight_with_hist_freq);
 //	cout<<x<<"-->"<<res<<endl;
 
-	//-------------------------------
-	//-------------------------------
-	//if(punish_variance_differences){
-	double mean_sigma=0;
-	double mean_sigma_diff=0;
-	for(int i=0;i<v.size();i++){
-		mean_sigma += v[i].sigma;
+//	if(punish_ampl>0){
+	float max_ampl=0;
+	float min_ampl=100000000000;
+	for(int i=0;i<num_gaussians;i++){
+		max_ampl = max<float>(max_ampl,v[i].amplitude);
+		min_ampl = min<float>(min_ampl,v[i].amplitude);
 	}
-	mean_sigma = mean_sigma/v.size();
+	res = res*(max_ampl/min_ampl);
+//	}
 
-	for(int i=0;i<v.size();i++){
-		mean_sigma_diff += abs(v[i].sigma-mean_sigma)/mean_sigma;
-	}
-	mean_sigma_diff = mean_sigma_diff/v.size();
-	res = res*(1+0.2*mean_sigma_diff);
-
-	//-------------------------------
-	//-------------------------------
-
-
-	if(punish_overlap){
+	if(punish_overlap>0){
 		std::vector<double> overlaps = the_hist->get_overlaps_in_percent(v);
 		double mean_ = mean<double>(overlaps);
 //		cout<<"mean_="<<mean_<<endl;
-		res = res*(1+mean_);
-
-		res += the_hist->get_sum_square_gaussian_overlap(v);
+		res = res*(1.0+punish_overlap*mean_);
+//		res += the_hist->get_sum_square_gaussian_overlap(v);
 	}
 
-	if(punish_large_area_differences){
-
+	if(punish_area_differences>0){
 		vector<double> areas = the_hist->get_gaussian_areas(v);
-		
 		double mean_area = mean<double>(areas);
 //		cout<<"mean_area="<<mean_area<<endl;
 
@@ -975,11 +1024,37 @@ double fit_gaussians_to_curve_cost_function<ELEMTYPE>::f(vnl_vector<double> cons
 //			cout<<"mean_diff_percent="<<mean_diff_percent<<endl;
 		}
 		mean_diff_percent = mean_diff_percent/areas.size();
-
 //		cout<<"*mean_diff_percent="<<mean_diff_percent<<endl;
-
 		res = res*(1+0.2*mean_diff_percent);
 	}
+
+	if(punish_variance_differences>0){
+		double mean_sigma=0;
+		double mean_sigma_diff=0;
+		for(int i=0;i<v.size();i++){
+			mean_sigma += v[i].sigma;
+		}
+		mean_sigma = mean_sigma/v.size();
+
+		for(int i=0;i<v.size();i++){
+			mean_sigma_diff += abs(v[i].sigma-mean_sigma)/mean_sigma;
+		}
+		mean_sigma_diff = mean_sigma_diff/v.size();
+		res = res*(1.0+punish_variance_differences*mean_sigma_diff);
+	}
+
+	bool is_any_amplitude_neg=false;
+	for(int i=0;i<num_gaussians;i++){
+		if(v[i].amplitude<0){
+			is_any_amplitude_neg=true;
+		}
+	}
+	if(is_any_amplitude_neg){
+		res = res*res;
+	}
+
+//	cout<<"x="<<x<<endl;
+//	cout<<"res="<<res<<endl;
 
 	return res;
 }

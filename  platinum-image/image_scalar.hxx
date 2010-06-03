@@ -41,13 +41,13 @@ ELEMTYPE image_scalar<ELEMTYPE, IMAGEDIM>::get_min() const
 {
     return stats->min();
 }
-/*
+
 template <class ELEMTYPE, int IMAGEDIM>
 float image_scalar<ELEMTYPE, IMAGEDIM>::get_mean_intensity()
 {
     return stats->get_mean_intensity(); //does not do what we want it too.... yet...
 }
-*/
+
 
 template <class ELEMTYPE, int IMAGEDIM>
 template <class sourceType>
@@ -1159,6 +1159,22 @@ image_scalar<ELEMTYPE, IMAGEDIM>* image_scalar<ELEMTYPE, IMAGEDIM>::crop_and_ret
 
 	return res;
 }
+
+template <class ELEMTYPE, int IMAGEDIM>
+image_scalar<ELEMTYPE, IMAGEDIM>* image_scalar<ELEMTYPE, IMAGEDIM>::mask_crop_and_return_3D(image_binary<3> *mask)
+{
+	image_scalar<ELEMTYPE, IMAGEDIM>* res=NULL;
+	if(this->same_size(mask)){
+		res = new image_scalar<ELEMTYPE, IMAGEDIM>(this,"tmp");
+		res->mask_out(mask);
+		res->crop_3D(mask);
+	}else{
+		pt_error::error("mask_crop_and_return_3D(image_binary<3> *mask)--> NOT same size...",pt_error::debug);
+	}
+	return res;
+}
+
+
 
 template <class ELEMTYPE, int IMAGEDIM>
 ELEMTYPE image_scalar<ELEMTYPE, IMAGEDIM>::get_max_in_slice3D(int slice, int dir)
@@ -3634,6 +3650,25 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::load_dataset_from_VTK_file(string file_pa
 	}
 }
 
+template <class ELEMTYPE, int IMAGEDIM>
+void image_scalar<ELEMTYPE, IMAGEDIM>::save_to_TIF_collage(const std::string file_path, int num_cols, int num_rows)
+{
+	image_scalar<ELEMTYPE, IMAGEDIM> *res = new image_scalar<ELEMTYPE, IMAGEDIM>(num_cols*this->nx(),num_rows*this->ny(),1);
+	res->fill(0);
+	int slice=0;
+	Vector3Dint from_size = create_Vector3Dint(this->nx(),this->ny(),1);
+	for(int j=0;j<num_rows;j++){
+		for(int i=0;i<num_cols;i++){
+			//fill_region_3D_with_subvolume_image(Vector3Dint to_pos, image_general<ELEMTYPE, IMAGEDIM> *im, Vector3Dint from_pos, Vector3Dint from_size); //based on given voxel coords
+			Vector3Dint to_pos = create_Vector3Dint(i*this->nx(), j*this->ny(),0);
+			Vector3Dint from_pos = create_Vector3Dint(0,0,slice);
+			res->fill_region_3D_with_subvolume_image(to_pos, this, from_pos, from_size);
+			slice++;
+		}
+	}
+	res->save_after_uchar_casted_to_TIF_file(file_path);
+	delete res;
+}
 
 template <class ELEMTYPE, int IMAGEDIM>
 void image_scalar<ELEMTYPE, IMAGEDIM>::save_to_TIF_file_series_3D(const std::string file_path_base, int dir, int from_slice, int to_slice)
@@ -3668,6 +3703,18 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::save_to_TIF_file_series_3D(const std::str
 		delete slc2;
 	}
 }
+
+template <class ELEMTYPE, int IMAGEDIM>
+void image_scalar<ELEMTYPE, IMAGEDIM>::save_after_uchar_casted_to_TIF_file(const std::string file_path_base, const std::string slice)
+{
+    image_scalar<ELEMTYPE, IMAGEDIM> *this2 = new image_scalar<ELEMTYPE, IMAGEDIM>(this);
+	this2->scale(0,255);
+    image_scalar<unsigned char, IMAGEDIM> *this3 = new image_scalar<unsigned char, IMAGEDIM>(this2);
+	this3->save_uchar2D_to_TIF_file(file_path_base,slice);
+	delete this2;
+	delete this3;
+}
+
 
 template <class ELEMTYPE, int IMAGEDIM>
 void image_scalar<ELEMTYPE, IMAGEDIM>::save_uchar2D_to_TIF_file(const std::string file_path_base, const std::string slice)

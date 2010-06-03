@@ -172,7 +172,7 @@ histogram_1D<ELEMTYPE>::histogram_1D (image_storage<ELEMTYPE> * i, int num_bucke
 	if(num_buckets>0){
 		resize(num_buckets);
 	}else{
-		resize(780);//Default # of buckets... i->max() cannot be called since it uses histogram_1D
+		resize(1001);//Default # of buckets... i->max() cannot be called since it uses histogram_1D
 	}
 }
 
@@ -355,6 +355,16 @@ void histogram_1D<ELEMTYPE >::calculate_from_image_data(int new_num_buckets)
         this->min_value = std::numeric_limits<ELEMTYPE>::min();
 	}
 }
+
+template <class ELEMTYPE>
+void histogram_1D<ELEMTYPE >::print_histogram_info()
+{
+	cout<<"min="<<this->min()<<endl;
+	cout<<"get_scalefactor()="<<this->get_scalefactor()<<endl;
+	this->bucket_vector->print_pts_vector_info();
+}
+
+
 
 template <class ELEMTYPE>
 void histogram_1D<ELEMTYPE>::recalc_min_max_data()
@@ -915,9 +925,9 @@ float histogram_1D<ELEMTYPE>::find_better_sigma(gaussian g, int from_bucket, int
 }
 
 template <class ELEMTYPE>
-double histogram_1D<ELEMTYPE>::get_sum_square_diff_between_buckets(vector<gaussian> v, int from_bucket, int to_bucket, bool ignore_zeros){
+double histogram_1D<ELEMTYPE>::get_sum_square_diff_between_buckets(vector<gaussian> v, int from_bucket, int to_bucket, bool ignore_zeros, bool weight_with_hist_freq){
 	
-	return this->get_sum_square_diff_between_buckets(v, from_bucket, to_bucket, ignore_zeros);
+	return this->bucket_vector->get_sum_square_diff_between_buckets(v, from_bucket, to_bucket, ignore_zeros, weight_with_hist_freq);
 }
 
 
@@ -929,8 +939,8 @@ double histogram_1D<ELEMTYPE>::get_sum_square_diff_between_buckets(gaussian g, i
 }
 
 template <class ELEMTYPE>
-double histogram_1D<ELEMTYPE>::get_sum_square_diff(vector<gaussian> v, bool ignore_zeros){
-	return get_sum_square_diff_between_buckets(v,0,this->num_buckets-1, ignore_zeros);
+double histogram_1D<ELEMTYPE>::get_sum_square_diff(vector<gaussian> v, bool ignore_zeros, bool weight_with_hist_freq){
+	return get_sum_square_diff_between_buckets(v,0,this->num_buckets-1, ignore_zeros, weight_with_hist_freq);
 }
 
 template <class ELEMTYPE>
@@ -986,9 +996,30 @@ vnl_vector<double> histogram_1D<ELEMTYPE>::get_vnl_vector_with_start_guess_of_nu
 
 
 template <class ELEMTYPE>
-ELEMTYPE histogram_1D<ELEMTYPE>::fit_two_gaussians_to_histogram_and_return_threshold(string save_histogram_file_path)
+ELEMTYPE histogram_1D<ELEMTYPE>::fit_two_gaussians_to_histogram_and_return_threshold(float punish_overlap, float punish_area_differences, float punish_variance_differences, bool weight_with_hist_freq, string save_histogram_file_path)
 {
-	return this->bucket_vector->fit_two_gaussians_to_histogram_and_return_threshold(save_histogram_file_path);
+	this->print_histogram_info();
+
+	vnl_vector<double> x = this->bucket_vector->get_vnl_vector_with_start_guess_of_num_gaussians(2);
+
+	//the values in x are now in index
+	this->bucket_vector->fit_two_gaussians_to_histogram(x, punish_overlap, punish_area_differences, punish_variance_differences, weight_with_hist_freq);
+
+
+	if(save_histogram_file_path != ""){
+		vector<gaussian> v;
+		for(int i=0; i<2; i++) {
+			v.push_back( gaussian(x[i*3+0],x[i*3+1],x[i*3+2]) );
+		}
+		this->save_histogram_to_txt_file(save_histogram_file_path,v);
+	}
+
+//	return x[1] + 3*x[2]; //pos + 2*SD
+	gaussian g = gaussian(x[0],x[1],x[2]);
+	gaussian g2 = gaussian(x[3],x[4],x[5]);
+//	int index = g.get_value_at_intersection_between_centers(g2);
+//	return this->bucketpos_to_intensity(index);
+	return g.get_value_at_intersection_between_centers(g2);
 }
 
 template <class ELEMTYPE>
@@ -1074,13 +1105,21 @@ ELEMTYPE histogram_1D<ELEMTYPE>::get_max_value_in_bucket_range(int from, int to,
 template <class ELEMTYPE>
 float histogram_1D<ELEMTYPE>::get_mean_intensity_in_bucket_range(int from, int to)
 {
-	return this->bucket_vector->get_mean_in_range(from, to);
+//	return this->bucket_vector->get_mean_in_range(from, to);
+	double sum = 0;
+	for(int i=from; i<=to; i++){
+		sum += this->bucket_vector->at(i) * this->bucketpos_to_intensity(i);
+	}
+
+	return sum/float(this->num_elements_in_hist);
 }
 
 template <class ELEMTYPE>
 float histogram_1D<ELEMTYPE>::get_mean_intensity()
 {	
-	return this->bucket_vector->get_mean_in_range(0,this->bucket_vector->size()-1);
+	float mean = this->get_mean_intensity_in_bucket_range(0,this->bucket_vector->size()-1);
+	return mean;
+//	return this->bucket_vector->get_weighted_mean_intensity();
 }
 
 template <class ELEMTYPE>

@@ -403,6 +403,11 @@ string image_base::resolve_tooltip_image_base()
 	return resolve_tooltip_data_base()  +  "origin="+Vector3D2str(origin)+"\n"  +  "slice_orientation="+this->get_slice_orientation()+"\n";  //+"\n"+"orientation="+orientation;
 }
 
+string image_base::resolve_elemtype()
+{
+	return "undefined";
+}
+
 
 imageloader::imageloader(std::vector<std::string> * f)
 {
@@ -742,10 +747,9 @@ image_base *dicomloader::read()
 					#endif
 
 					if(!already_loaded){
-						#ifdef CHECK_ALREADY_LOADED_FILES
-							loaded_series.push_back(seriesIdentifier);
-							loaded_TEs.push_back(get_dicom_tag_value(*file,DCM_TE));
-						#endif
+
+						loaded_series.push_back(seriesIdentifier);
+						loaded_TEs.push_back(get_dicom_tag_value(*file,DCM_TE));
 
 						itk::ImageIOBase::IOPixelType pixelType=dicomIO->GetPixelType();
 						itk::ImageIOBase::IOComponentType theComponentType = dicomIO->GetComponentType();

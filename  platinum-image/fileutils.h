@@ -45,9 +45,10 @@ using namespace std;
 #endif
 
 
-void ensure_trailing_slash(string &s);                           //! ensures an accurate directory path,
-                                                                //! adds a trailing slash ( / ) if
-                                                                //! there wasn't one already
+void ensure_trailing_slash(string &s);  //! ensures an accurate directory path, adds a trailing slash ( / ) if there wasn't one already
+void remove_trailing_slash(string &s);  //
+
+
 //------------- File and directory handling ----------------------
 
 vector<string> get_dir_entries(string path, bool full_path=false, bool use_recursion=false);    //return string vector listing directory contents
@@ -74,12 +75,21 @@ void remove_file(string file_path);
 
 string find_first_file_where_filename_contains(string dir_path, string substring);
 
+unsigned long get_file_size(string filepath);
+string get_first_line_from_file_containing(string file_path, string target, int &resulting_line_number);
+string get_line_with_number(string file_path, int resulting_line_number);
+string get_line_with_offset_from_first_line_containing(string file_path, string target, int line_offset=1);
+
+//------------- Advanced file and directory handling ----------------------
+void read_text_file_and_create_subfolders_in_dir(string file_path, string target_dir_base);
+
 
 //------------- String vector specific handling ----------------------
 
 void add_to_string_vector_if_not_present(vector<string> &v, string s);
 bool combinations_equal(vector<string> tag_combo_1, vector<string> tag_combo_2);
-vector<string> remove_strings_that_conatain_any_of_these(vector<string> v, vector<string> samples);
+vector<string> remove_strings_that_contain_any_of_these(vector<string> v, vector<string> samples);
+int does_string_vector_contain_item_containing(vector<string> v, string substring);
 
 
 //------------- Dicom specific file handling ----------------------
@@ -101,7 +111,9 @@ vector<string>	get_dicom_files_with_dcm_tag_value(vector<string> files, string d
 int				get_number_of_dicom_files_in_dir(string dir_path);
 string			get_dicom_tag_value(string file_path, string dcm_tag, bool remove_garbage_char=true);
 bool			does_dir_contain_dcmfile_with_tag_value(string dir_path, string dcm_tag, string tag_val, bool recursive_search=false);
+bool			does_first_dcmfile_in_dir_contain(string dir_path, string dcm_tag, string tag_val);
 string			find_first_sub_dir_containing_dcm_file_with_tag_value(string dir_path, string dcm_tag, string tag_val, bool recursive_search=false);
+vector<string>	find_sub_dirs_containing_dcm_files_with_tag_value(string dir_path, string dcm_tag, string tag_val, bool recursive_search=false, bool check_only_first_file=true);
 TagValueDirInfo get_number_of_dirs_and_first_sub_dir_containing_dcm_file_with_tag_value(string dir_path, string dcm_tag, string tag_val); //SO
 vector<string>	list_dicom_tag_values_for_this_ref_tag_value(vector<string> files, string dcm_tag, string dcm_tag_val, string dcm_ref_tag);
 vector<string>	list_dicom_tag_values_in_dir(string dir_path, string dcm_tag, bool recursive_search=false, bool exclusive_values=false);
@@ -131,7 +143,9 @@ vector<vector<string> >	get_header_combinations_from_these_dicom_files_sort_file
 vector<string>	get_first_dicom_files_corresponding_to_these_combos(string dir_path, vector<string> dcm_tags, vector<vector<string> > combos, bool recursive_search=false, bool full_path=true);
 vector<string>	get_first_dicom_files_corresponding_to_these_combos2(string dir_path, vector<string> dcm_tags, bool recursive_search=false, bool full_path=true);
 
+void save_all_dicom_series_to_specific_file_format(string dir_path, vector<string> tag_combo, bool use_recursive_search=true, string format = ".dcm");
 void save_all_dicom_series_to_VTK_files(string dir_path, vector<string> tag_combo, bool use_recursive_search=true);
+void save_all_dicom_series_to_DCM_files(string dir_path, vector<string> tag_combo, bool use_recursive_search=true);
 
 //------------- String handling functions ----------------------
 
@@ -142,6 +156,9 @@ string replace_last_substring(string s, string val, string replacement="");
 string replace_substrings(string s, string val, string replacement="");
 string get_csv_item(string s, int item_num, string separator="\t"); //item_num=0 is the first...
 bool string_contains(string s, string sample);
+
+void get_vector_of_substrings_separated_by(string s, string separator, vector<string> &v);
+vector<string> get_vector_of_substrings_separated_by(string s, string separator = "\t");
 
 string int2str(int i);
 string float2str(float f);

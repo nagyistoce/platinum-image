@@ -163,6 +163,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::set_parameters (image_general<sourceType
     this->set_min(sourceImage->get_min_float_safe());
 //    this->stats->max(sourceImage->get_max());
 //    this->stats->min(sourceImage->get_min());
+    this->meta = sourceImage->meta;
 
 //	cout<<"this->get_voxel_size()="<<this->get_voxel_size()<<endl;
 
@@ -506,7 +507,6 @@ void image_general<ELEMTYPE, IMAGEDIM>::combine_using_physical_pos(image_general
 				for(vox_pos[0]=0;vox_pos[0]<this->nx();vox_pos[0]++){
 					phys = this->origin + mat1*vox_pos;
 					other_voxel = mat3*(phys - image2->get_origin());
-
 					if(image2->is_voxelpos_within_image_3D(other_voxel)){
 //					if(image2->is_physical_pos_within_image_3D(phys)){
 						this_voxel = mat2*(phys - this->origin);
@@ -516,8 +516,27 @@ void image_general<ELEMTYPE, IMAGEDIM>::combine_using_physical_pos(image_general
 			}
 		}
 		cout<<endl;
-
 	break;
+
+	case COMB_MULT:
+		cout<<"...MULT";
+		for(vox_pos[2]=0;vox_pos[2]<this->nz();vox_pos[2]++){
+			cout<<" "<<vox_pos[2];
+			for(vox_pos[1]=0;vox_pos[1]<this->ny();vox_pos[1]++){
+				for(vox_pos[0]=0;vox_pos[0]<this->nx();vox_pos[0]++){
+					phys = this->origin + mat1*vox_pos;
+					other_voxel = mat3*(phys - image2->get_origin());
+					if(image2->is_voxelpos_within_image_3D(other_voxel)){
+//					if(image2->is_physical_pos_within_image_3D(phys)){
+						this_voxel = mat2*(phys - this->origin);
+						this->set_voxel( this_voxel, this->get_voxel(this_voxel) * image2->get_voxel(other_voxel) );
+					}
+				}
+			}
+		}
+		cout<<endl;
+	break;
+
 	default:
 		pt_error::error("image_general<ELEMTYPE, IMAGEDIM>::combine_using_physical_pos --> COMBINE_MODE not recognized",pt_error::debug);
 		break;
@@ -2217,6 +2236,18 @@ ELEMTYPE* image_general<ELEMTYPE, IMAGEDIM>::get_voxel_pointer_by_dir(int u, int
 	return get_voxel_pointer(u,v,w); //Loop over z		
 }
 
+
+template <class ELEMTYPE, int IMAGEDIM>
+Vector3Dint image_general<ELEMTYPE, IMAGEDIM>::get_voxel_coord_by_dir(int u, int v, int w, int direction)
+{
+	if(direction==0)
+		return create_Vector3Dint(w,u,v);
+	if(direction==1)
+		return create_Vector3Dint(v,w,u);
+	return create_Vector3Dint(u,v,w);
+}
+
+
 template <class ELEMTYPE, int IMAGEDIM>
 double image_general<ELEMTYPE, IMAGEDIM>::get_num_diff_1storder_central_diff_3D(int x, int y, int z, int direction)
 {	
@@ -2246,6 +2277,34 @@ double image_general<ELEMTYPE, IMAGEDIM>::get_num_diff_3rdorder_central_diff_3D(
 		return 0.5*(get_num_diff_2ndorder_central_diff_3D(x,y+1,z,direction1,direction2)-get_num_diff_2ndorder_central_diff_3D(x,y-1,z,direction1,direction2));
 	return 0.5*(get_num_diff_2ndorder_central_diff_3D(x,y,z+1,direction1,direction2)-get_num_diff_2ndorder_central_diff_3D(x,y,z-1,direction1,direction2));
 }
+
+
+template <class ELEMTYPE, int IMAGEDIM>
+vector<Vector3Dint> image_general<ELEMTYPE, IMAGEDIM>::get_neighbour_voxel_vector_6nbh(int x, int y, int z)
+{
+	vector<Vector3Dint> neighbours;
+	if (x<this->get_size_by_dim(0)-1) neighbours.push_back(create_Vector3Dint(x+1,y,z));
+	if (x>0) neighbours.push_back(create_Vector3Dint(x-1,y,z));
+	if (y<this->get_size_by_dim(1)-1) neighbours.push_back(create_Vector3Dint(x,y+1,z));
+	if (y>0) neighbours.push_back(create_Vector3Dint(x,y-1,z));
+	if (z<this->get_size_by_dim(2)-1) neighbours.push_back(create_Vector3Dint(x,y,z+1));
+	if (z>0) neighbours.push_back(create_Vector3Dint(x,y,z-1));	
+	return neighbours;
+}
+
+template <class ELEMTYPE, int IMAGEDIM>
+vector<Vector3Dint> image_general<ELEMTYPE, IMAGEDIM>::get_neighbour_voxel_vector_4nbh(int u, int v, int w, int direction)
+{
+	vector<Vector3Dint> neighbours;
+	if (u<this->get_size_by_dim_and_dir(0,direction)-1) neighbours.push_back(this->get_voxel_coord_by_dir(u+1,v,w,direction));
+	if (u>0) neighbours.push_back(this->get_voxel_coord_by_dir(u-1,v,w,direction));
+	if (v<this->get_size_by_dim_and_dir(1,direction)-1) neighbours.push_back(this->get_voxel_coord_by_dir(u,v+1,w,direction));
+	if (v>0) neighbours.push_back(this->get_voxel_coord_by_dir(u,v-1,w,direction));
+	return neighbours;
+}
+
+
+
 
 template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::set_voxel_by_dir(int u, int v, int w, ELEMTYPE value, int direction)

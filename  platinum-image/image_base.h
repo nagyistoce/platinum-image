@@ -172,6 +172,7 @@ class image_base : public data_base
 		string resolve_tooltip();
 		string resolve_tooltip_image_base();
 		virtual void helper_data_to_binary_image(vector<int> vec) = 0;
+		virtual string resolve_elemtype();
 
     };
 

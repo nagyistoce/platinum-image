@@ -207,6 +207,7 @@ class image_general : public image_storage <ELEMTYPE >
 
         ELEMTYPE get_voxel_by_dir(int u, int v, int w, int direction=2);
 		ELEMTYPE* get_voxel_pointer_by_dir(int u, int v, int w, int direction=2);
+        Vector3Dint get_voxel_coord_by_dir(int u, int v, int w, int direction=2);
 
         histogram_1D<ELEMTYPE>* get_histogram_from_masked_region_3D(image_binary<3>* mask, int num_buckets=1000);
         histogram_1D<ELEMTYPE>* get_histogram_with_num_buckets(int num_buckets);
@@ -334,6 +335,7 @@ class image_general : public image_storage <ELEMTYPE >
         virtual void save_to_VTK_file_if_true(const bool save_bool_variable, const std::string file_path, const bool useCompression = false);
         virtual void save_to_VTK_file_if_non_empty(string save_base, const std::string file_path, const bool useCompression = false);
         virtual void save_to_DCM_file(const std::string file_path, const bool useCompression = false, const bool anonymize = true);
+        virtual void save_to_DCM_file2(const std::string file_path, const bool useCompression = false, const bool anonymize = true);
         void save_to_DCM_file_series(const std::string file_path, const bool useCompression = true, const bool anonymize = true);
 		void save_to_raw_file(const std::string file_path, bool save_image_info_txt_file=false);
         void save_to_NIFTI_file(const std::string file_path); //JK test
@@ -370,6 +372,9 @@ class image_general : public image_storage <ELEMTYPE >
 
 
 		//JK TODO - write == != operators for image_general class...
+
+		vector<Vector3Dint> get_neighbour_voxel_vector_6nbh(int x, int y, int z);
+		vector<Vector3Dint> get_neighbour_voxel_vector_4nbh(int u, int v, int w, int direction=2);
 
 
         // *** iterator ***        

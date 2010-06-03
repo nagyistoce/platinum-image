@@ -397,7 +397,6 @@ void fcm::save_vnl_matrix_to_file(vnl_matrix<float> &V, std::string file_path)
 
 sfcm::sfcm(fcm_image_vector_type vec, vnl_matrix<float> V_init_clusters, float m_fuzzyness, float u_diff_limit, SFCM_NBH_TYPE nbh_type, image_binary<3> *mask) : fcm(vec, V_init_clusters, m_fuzzyness, u_diff_limit, mask)
 {
-
 	mean_nbh_dist_image = new image_scalar<float,3>(this->images[0],false);
 	mean_nbh_dist_image->fill(0);
 
@@ -464,6 +463,7 @@ void sfcm::calc_mean_nbh_dist_image_6NBH()
 	float d[6];
 	float mean;
 
+	//------------------ image center ------------------
 	for(int k=1;k<nz()-1;k++){
 		for(int j=1;j<ny()-1;j++){
 			for(int i=1;i<nx()-1;i++){
@@ -485,8 +485,34 @@ void sfcm::calc_mean_nbh_dist_image_6NBH()
 			}//x
 		}//y
 	}//z
-	this->average_nbh_dist_mean /= n_pix();
+
+	//------------------ image border ------------------
+	vector<Vector3Dint> nbrs;
+	for(int k=0;k<nz();k++){
+		for(int j=0;j<ny();j++){
+			for(int i=0;i<nx();i++){
+				if( (i==0)||(j==0)||(k==0)||(i==nx()-1)||(j==ny()-1)||(k==nz()-1)){
+					if(this->is_pixel_included(i,j,k)){			//check mask...
+						nbrs = images[0]->get_neighbour_voxel_vector_6nbh(i,j,k);
+						mean = 0;
+						for(int n=0;n<nbrs.size();n++){
+							d[n] = get_pixel_int_dist(i,j,k,nbrs[n][0],nbrs[n][1],nbrs[n][2]);
+							mean += d[n];
+						}
+						mean /= float(nbrs.size());
+						this->mean_nbh_dist_image->set_voxel(i,j,k,mean);
+						this->average_nbh_dist_mean += mean;
+					}
+				}
+			}
+		}//x
+	}//y
+
+
+
+	this->average_nbh_dist_mean /= this->n_pix();
 	this->mean_nbh_dist_image->data_has_changed();
+//	mean_nbh_dist_image->save_to_VTK_file("D:/Joel/Data/HEPFAT_work/mean_nbh_dist_image.vtk");
 
 	cout<<"average_nbh_dist_mean (6NBH) ="<<this->average_nbh_dist_mean<<endl;
 }
@@ -496,6 +522,7 @@ void sfcm::calc_mean_nbh_dist_image_4NBH()
 	float d[4];
 	float mean;
 
+	//------------------ image center ------------------
 	for(int k=0;k<nz();k++){
 		for(int j=1;j<ny()-1;j++){
 			for(int i=1;i<nx()-1;i++){
@@ -517,17 +544,41 @@ void sfcm::calc_mean_nbh_dist_image_4NBH()
 //		for(int j=0;j<ny();j=j+ny()-1){
 //		}
 	}//z
+
+
+	//------------------ image border ------------------
+	vector<Vector3Dint> nbrs;
+	for(int k=0;k<nz();k++){
+		for(int j=0;j<ny();j++){
+			for(int i=0;i<nx();i++){
+				if( (i==0)||(j==0)||(i==nx()-1)||(j==ny()-1) ){
+					if(this->is_pixel_included(i,j,k)){			//check mask...
+						nbrs = images[0]->get_neighbour_voxel_vector_4nbh(i,j,k);
+						mean = 0;
+						for(int n=0;n<nbrs.size();n++){
+							d[n] = get_pixel_int_dist(i,j,k,nbrs[n][0],nbrs[n][1],nbrs[n][2]);
+							mean += d[n];
+						}
+						mean /= float(nbrs.size());
+						this->mean_nbh_dist_image->set_voxel(i,j,k,mean);
+						this->average_nbh_dist_mean += mean;
+					}
+				}
+			}//x
+		}//y
+	}//z
+
 	this->average_nbh_dist_mean /= n_pix();
 	this->mean_nbh_dist_image->data_has_changed();
 
 	cout<<"average_nbh_dist_mean (4NBH) ="<<this->average_nbh_dist_mean<<endl;
 }
 
-float sfcm::calc_dissimilarity_6NBH(int c, int i, int j, int k)
+float sfcm::calc_dissimilarity_6NBH(int c, int i, int j, int k, float dky2[], float dxy[], float lxy[])
 {
 	float dkx2 = pow(int_dist_images[c]->get_voxel(i,j,k),2);
 
-	float dky2[6];
+//	float dky2[6];
 	dky2[0] = pow(int_dist_images[c]->get_voxel(i,j,k-1),2);
 	dky2[1] = pow(int_dist_images[c]->get_voxel(i,j,k+1),2);
 	dky2[2] = pow(int_dist_images[c]->get_voxel(i,j-1,k),2);
@@ -535,7 +586,7 @@ float sfcm::calc_dissimilarity_6NBH(int c, int i, int j, int k)
 	dky2[4] = pow(int_dist_images[c]->get_voxel(i-1,j,k),2);
 	dky2[5] = pow(int_dist_images[c]->get_voxel(i+1,j,k),2);
 
-	float dxy[6];
+//	float dxy[6];
 	dxy[0] = get_pixel_int_dist(i,j,k,i,j,k-1);
 	dxy[1] = get_pixel_int_dist(i,j,k,i,j,k+1);
 	dxy[2] = get_pixel_int_dist(i,j,k,i,j-1,k);
@@ -543,7 +594,7 @@ float sfcm::calc_dissimilarity_6NBH(int c, int i, int j, int k)
 	dxy[4] = get_pixel_int_dist(i,j,k,i-1,j,k);
 	dxy[5] = get_pixel_int_dist(i,j,k,i+1,j,k);
 
-	float lxy[6];
+//	float lxy[6];
 	for(int i=0;i<6;i++){
 		lxy[i] = this->calc_lamda(dxy[i]);
 	}
@@ -556,6 +607,40 @@ float sfcm::calc_dissimilarity_6NBH(int c, int i, int j, int k)
 
 	return dissim;
 }
+
+
+
+float sfcm::calc_dissimilarity_along_border_6NBH(int c, int i, int j, int k)
+{
+	float dkx2 = pow(int_dist_images[c]->get_voxel(i,j,k),2);
+
+	vector<Vector3Dint> nbrs = int_dist_images[c]->get_neighbour_voxel_vector_6nbh(i,j,k);
+
+	float dky2[6];
+	for(int n=0;n<nbrs.size();n++){
+		dky2[n] = pow(int_dist_images[c]->get_voxel(nbrs[n][0],nbrs[n][1],nbrs[n][2]),2);
+	}
+
+	float dxy[6];
+	for(int n=0;n<nbrs.size();n++){
+		dxy[n] = get_pixel_int_dist(i,j,k,nbrs[n][0],nbrs[n][1],nbrs[n][2]);
+	}
+
+
+	float lxy[6];
+	for(int n=0;n<nbrs.size();n++){
+		lxy[n] = this->calc_lamda(dxy[n]);
+	}
+
+	float dissim=0;
+	for(int n=0;n<nbrs.size();n++){
+		dissim += dkx2*lxy[n] + dky2[n]*(1.0-lxy[n]);
+	}
+	dissim = dissim/float(nbrs.size());
+
+	return dissim;
+}
+
 
 float sfcm::calc_dissimilarity_4NBH(int c, int i, int j, int k)
 {
@@ -587,6 +672,35 @@ float sfcm::calc_dissimilarity_4NBH(int c, int i, int j, int k)
 	return dissim;
 }
 
+float sfcm::calc_dissimilarity_along_border_4NBH(int c, int i, int j, int k)
+{
+	float dkx2 = pow(int_dist_images[c]->get_voxel(i,j,k),2);
+
+	vector<Vector3Dint> nbrs = int_dist_images[c]->get_neighbour_voxel_vector_4nbh(i,j,k,2);
+
+	float dky2[4];
+	for(int n=0;n<nbrs.size();n++){
+		dky2[n] = pow(int_dist_images[c]->get_voxel(nbrs[n][0],nbrs[n][1],nbrs[n][2]),2);
+	}
+
+	float dxy[4];
+	for(int n=0;n<nbrs.size();n++){
+		dxy[n] = get_pixel_int_dist(i,j,k,nbrs[n][0],nbrs[n][1],nbrs[n][2]);
+	}
+
+	float lxy[4];
+	for(int n=0;n<nbrs.size();n++){
+		lxy[n] = this->calc_lamda(dxy[n]);
+	}
+
+	float dissim=0;
+	for(int n=0;n<nbrs.size();n++){
+		dissim += dkx2*lxy[n] + dky2[n]*(1.0-lxy[n]);
+	}
+	dissim = dissim/float(nbrs.size());
+
+	return dissim;
+}
 
 
 void sfcm::calc_dissimilarity_images(const vnl_matrix<float> &V)
@@ -599,11 +713,12 @@ void sfcm::calc_dissimilarity_images(const vnl_matrix<float> &V)
 		if(image_mask!=NULL){
 			this->dissim_images[c]->fill(0);	//JK-time consuming but needed when a mask is used...
 		}else{
-			this->dissim_images[c]->fill_image_border_3D(0);
+			//this->dissim_images[c]->fill_image_border_3D(0);
 		}
 
 		if(the_sfcm_nbh_type == SFCM_4NBH){
-			for(int k=1;k<nz()-1;k++){
+			//------------------ Image "center"  ------------------
+			for(int k=0;k<nz();k++){
 				for(int j=1;j<ny()-1;j++){
 					for(int i=1;i<nx()-1;i++){
 						if(this->is_pixel_included(i,j,k)){
@@ -612,12 +727,41 @@ void sfcm::calc_dissimilarity_images(const vnl_matrix<float> &V)
 					}
 				}
 			}
+			//------------------ Outer border  ------------------
+			for(int k=0;k<nz();k++){	
+				for(int j=0;j<ny();j++){	
+					for(int i=0;i<nx();i++){	
+						if( (i==0)||(j==0)||(i==nx()-1)||(j==ny()-1) ){
+							if(this->is_pixel_included(i,j,k)){
+								this->dissim_images[c]->set_voxel(i,j,k,this->calc_dissimilarity_along_border_4NBH(c,i,j,k));
+							}
+						}
+					}
+				}
+			}
+
 		}else if(the_sfcm_nbh_type == SFCM_6NBH){
+			//------------------ Image "center"  ------------------
+			float dky2[6];
+			float dxy[6];
+			float lxy[6];
 			for(int k=1;k<nz()-1;k++){
 				for(int j=1;j<ny()-1;j++){
 					for(int i=1;i<nx()-1;i++){
 						if(this->is_pixel_included(i,j,k)){
-							this->dissim_images[c]->set_voxel(i,j,k,this->calc_dissimilarity_6NBH(c,i,j,k));
+							this->dissim_images[c]->set_voxel(i,j,k,this->calc_dissimilarity_6NBH(c,i,j,k,dky2,dxy,lxy));
+						}
+					}
+				}
+			}
+			//------------------ Outer border  ------------------
+			for(int k=0;k<nz();k++){	
+				for(int j=0;j<ny();j++){	
+					for(int i=0;i<nx();i++){	
+						if( (i==0)||(j==0)||(k==0)||(i==nx()-1)||(j==ny()-1)||(k==nz()-1)){
+							if(this->is_pixel_included(i,j,k)){
+								this->dissim_images[c]->set_voxel(i,j,k,this->calc_dissimilarity_along_border_6NBH(c,i,j,k));
+							}
 						}
 					}
 				}
@@ -665,9 +809,12 @@ void sfcm::Update_imagesfcm(float scale_percentile)
 	}
 
 
-
 	//do a first roud outside to allow calculation of "u_change_max"...
 	calc_int_dist_images_euclidean(V);
+//	for(int c=0;c<n_clust();c++){
+//		this->int_dist_images[c]->save_to_VTK_file("D:/Joel/Data/HEPFAT_work/int_dist_images_start_"+int2str(c)+"_.vtk");	//distance in feature space... (n_clust)
+//	}
+
 //	save_int_dist_images(path+"sfcm0_int_dist");
 
 	//calc sfcm objects....
@@ -678,20 +825,20 @@ void sfcm::Update_imagesfcm(float scale_percentile)
 		calc_mean_nbh_dist_image_4NBH();	//only needed once...
 	}
 
-	save_mean_nbh_dist_image("sfcm1_mean_dist.vtk");
+//	save_mean_nbh_dist_image("D:/Joel/Data/HEPFAT_work/sfcm1_mean_dist_start.vtk");
+
 	calc_sigma();				//only needed once...
 
 	calc_dissimilarity_images(V);	//sfcm
 //	save_dissimilarity_images(path+"sfcm2_dissim_images");
 
 	calc_memberships(u_images2, dissim_images, m);
-	for(int c=0;c<n_clust();c++){
-		u_images2[c]->fill_image_border_3D(0); //have to clear outer border....
-	}
-
-	for(int c=0;c<n_clust();c++){
-		u_images2[c]->save_to_VTK_file(path +"sfcm3_u_images2_"+ int2str(c)+".vtk");
-	}
+//	for(int c=0;c<n_clust();c++){
+//		u_images2[c]->fill_image_border_3D(0); //have to clear outer border....
+//	}
+//	for(int c=0;c<n_clust();c++){
+//		u_images2[c]->save_to_VTK_file("D:/Joel/Data/HEPFAT_work/sfcm3_u_images2_start"+ int2str(c)+".vtk");
+//	}
 
 	calc_cluster_centers(V,u_images2,m);
 	cout<<"V="<<V<<endl;
@@ -722,9 +869,9 @@ void sfcm::Update_imagesfcm(float scale_percentile)
 //		calc_memberships(u_images2, int_dist_images, m);
 		calc_memberships(u_images2, dissim_images, m);
 
-		for(int c=0;c<n_clust();c++){
-			u_images2[c]->fill_image_border_3D(0); //have to clear outer border....
-		}
+//		for(int c=0;c<n_clust();c++){
+//			u_images2[c]->fill_image_border_3D(0); //have to clear outer border....
+//		}
 
 //		for(int c=0;c<n_clust();c++){
 //			u_images2[c]->save_to_VTK_file(path +"sfcm6_u_images2_"+int2str(iter)+"_"+int2str(c)+".vtk");

@@ -34,11 +34,19 @@
 
 void ensure_trailing_slash(string &s)
     {
-    if (*s.rbegin() != '/')
+    if(*s.rbegin() != '/')
         {
         s.append("/");
         }
     }
+
+void remove_trailing_slash(string &s)
+	{
+    if(*s.rbegin() == '/')
+        {
+		s = s.substr(0,s.size()-1);
+        }
+	}
 
 vector<string> get_dir_entries(string path, bool full_path, bool use_recursion)
     {
@@ -266,6 +274,98 @@ string find_first_file_where_filename_contains(string dir_path, string substring
 	return "";
 }
 
+unsigned long get_file_size(string filepath){
+	unsigned long f_length=0, begin, end;
+	ifstream myfile(filepath.c_str(),ios::in | ios::binary); //BINARY SOLVED EVERYTHING!!!
+	if(myfile.is_open()){
+		//Get length of file
+		begin = myfile.tellg();
+		myfile.seekg(0, ios::end);
+		end = myfile.tellg();
+		f_length = end-begin;
+	}
+	return f_length;
+}
+
+string get_first_line_from_file_containing(string file_path, string target, int &resulting_line_number){
+	ifstream myfile;
+	myfile.open(file_path.c_str());
+
+
+	if(myfile.is_open()){
+		char buffer[10000];
+		string s;
+		int ind;
+		resulting_line_number=-1;
+
+		while(!myfile.eof()){
+			myfile.getline(buffer,10000);
+			resulting_line_number++;
+			s=string(buffer);
+//			cout<<"s="<<s<<endl;
+
+			ind = s.find(target);
+			if(ind>=0 && ind<s.size()){
+				return s;
+			}
+		}
+		myfile.close();
+	}
+
+	resulting_line_number=-1;
+	return "";
+}
+
+string get_line_with_number(string file_path, int resulting_line_number){
+	ifstream myfile;
+	myfile.open(file_path.c_str());
+	if(myfile.is_open()){
+		char buffer[10000];
+		string s;
+		int line_number=-1;
+
+		while(!myfile.eof()){
+			myfile.getline(buffer,10000);
+			line_number++;
+			s=string(buffer);
+//			cout<<"s="<<s<<endl;
+
+			if(line_number==resulting_line_number){
+				return s;
+			}
+		}
+		myfile.close();
+	}
+	return "";
+}
+
+string get_line_with_offset_from_first_line_containing(string file_path, string target, int line_offset){
+	int resulting_line_number;
+	get_first_line_from_file_containing(file_path, target, resulting_line_number);
+
+	return get_line_with_number(file_path,resulting_line_number+line_offset);;
+}
+
+
+void read_text_file_and_create_subfolders_in_dir(string file_path, string target_dir_base)
+{
+	ifstream myfile;
+	myfile.open(file_path.c_str());
+
+	if(myfile.is_open()){
+		char buffer[10000];
+		string s;
+
+		while(!myfile.eof()){
+			myfile.getline(buffer,10000);
+			s=string(buffer);
+//			cout<<target_dir_base+"/"+s<<endl;
+			create_dir(target_dir_base+"/"+s);
+		}
+		myfile.close();
+	}
+}
+
 
 void add_to_string_vector_if_not_present(vector<string> &v, string s)
 {
@@ -296,7 +396,7 @@ bool combinations_equal(vector<string> tag_combo_1, vector<string> tag_combo_2)
 	return true;
 }
 
-vector<string> remove_strings_that_conatain_any_of_these(vector<string> v, vector<string> samples)
+vector<string> remove_strings_that_contain_any_of_these(vector<string> v, vector<string> samples)
 {
 	vector<string> res;
 	bool keep_this = true;
@@ -311,6 +411,19 @@ vector<string> remove_strings_that_conatain_any_of_these(vector<string> v, vecto
 	}
 	return res;
 }
+
+int does_string_vector_contain_item_containing(vector<string> v, string substring)
+{
+	int ind;
+	for(int i=0; i<v.size();i++){
+		ind = v[i].find(substring);
+		if(ind>=0 && ind<v[i].size()){
+			return i;
+		}
+	}
+	return -1;
+}
+
 
 //------------- Dicom specific file handling ----------------------
 
@@ -488,6 +601,28 @@ bool does_dir_contain_dcmfile_with_tag_value(string dir_path, string dcm_tag, st
 	return false;
 }
 
+bool does_first_dcmfile_in_dir_contain(string dir_path, string dcm_tag, string tag_val)
+{
+//	cout<<"does_first_dcmfile_in_dir_contain...("<<dir_path<<")"<<endl;
+
+	string dcm_file = get_first_dicom_file_in_dir(dir_path, true);
+
+	if(file_exists(dcm_file)){	//the "dcm_file" might of course be empty...
+		itk::GDCMImageIO::Pointer dicomIO = itk::GDCMImageIO::New();
+		string dcmdata = "";
+
+		dicomIO->SetFileName(dcm_file.c_str());
+		dicomIO->ReadImageInformation();		//get basic DICOM header
+		dicomIO->GetValueFromTag(dcm_tag,dcmdata);
+		remove_string_ending(dcmdata," "); //removes eventual last garbage char
+//		cout<<"tag_val=("<<tag_val<<") dcmdata=("<<dcmdata<<")"<<endl;
+		if(dcmdata == tag_val){
+			return true;
+		}
+	}
+	return false;
+}
+
 
 string find_first_sub_dir_containing_dcm_file_with_tag_value(string dir_path, string dcm_tag, string tag_val, bool recursive_search)
 {
@@ -509,6 +644,38 @@ string find_first_sub_dir_containing_dcm_file_with_tag_value(string dir_path, st
 		}
 	}
 	return "";
+}
+
+vector<string> find_sub_dirs_containing_dcm_files_with_tag_value(string dir_path, string dcm_tag, string tag_val, bool recursive_search, bool check_only_first_file)
+{
+	vector<string> res;
+	vector<string> res2;
+	vector<string> dirs = subdirs(dir_path);
+
+	string result="";
+
+	for(int i=0;i<dirs.size();i++){
+		//cout<<"dirs[i]="<<dirs[i]<<endl;
+		if(recursive_search){
+			res2 = find_sub_dirs_containing_dcm_files_with_tag_value(dirs[i], dcm_tag, tag_val, recursive_search, check_only_first_file);
+			for(int j=0;j<res2.size();j++){
+				res.push_back(res2[j]);
+			}
+			res2.clear();
+		}
+
+		if(check_only_first_file){
+			if(does_first_dcmfile_in_dir_contain(dirs[i],dcm_tag,tag_val)){
+				res.push_back(dirs[i]);
+			}
+		}else{
+			if(does_dir_contain_dcmfile_with_tag_value(dirs[i],dcm_tag,tag_val,false)){
+				//cout<<"***"<<endl;
+				res.push_back(dirs[i]);
+			}
+		}
+	}
+	return res;
 }
 
 //----------------------------------------------work in progress-----/SO------------------
@@ -627,7 +794,7 @@ bool does_dicom_file_tag_contain(string file_path, string dcm_tag, string conten
 {
 	string tag = get_dicom_tag_value(file_path, dcm_tag, true);
 	int pos = tag.find(content);
-	cout<<file_path<<" "<<dcm_tag<<" "<<tag<<" "<<content<<" "<<pos<<" "<<tag.size()<<endl;
+//	cout<<file_path<<" "<<dcm_tag<<" "<<tag<<" "<<content<<" "<<pos<<" "<<tag.size()<<endl;
 	if( pos>=0 && pos<tag.size() ){
 		return true;
 	}
@@ -777,6 +944,7 @@ vector<string> get_dicom_tag_value_combination(string file_path, vector<string> 
 	if(dicomIO->CanReadFile(file_path.c_str()))
 	{
 		dicomIO->SetFileName(file_path.c_str());
+//		dicomIO->BreakOnError();
 		dicomIO->ReadImageInformation();		//get basic DICOM header
 
 		for(int i=0; i<dcm_tags.size();i++){
@@ -1000,7 +1168,9 @@ vector<string>	get_first_dicom_files_corresponding_to_these_combos2(string dir_p
 	return first_dcm_files;
 }
 
-void save_all_dicom_series_to_VTK_files(string dir_path, vector<string> tag_combo, bool use_recursive_search){
+
+void save_all_dicom_series_to_specific_file_format(string dir_path, vector<string> tag_combo, bool use_recursive_search, string format)
+{
 
 	vector<string> dcm_files = get_first_dicom_files_corresponding_to_these_combos2(dir_path, tag_combo, use_recursive_search, true);
 
@@ -1019,19 +1189,32 @@ void save_all_dicom_series_to_VTK_files(string dir_path, vector<string> tag_comb
 		for(int j=1;j<tag_combo.size();j++){
 			save_file_name += "_" + get_dicom_tag_value(this_dcm_file, tag_combo[j]);
 		}
-		save_file_name += ".vtk";
 
 		cout<<"save_file_name="<<save_file_name<<endl;
 		save_file_name = replace_substrings(save_file_name, " ", "_");
 		save_file_name = replace_substrings(save_file_name, ":", "_");
+		save_file_name = replace_substrings(save_file_name, "\\", "_"); // changes "single" "\" to "_"
 		cout<<"save_file_name="<<save_file_name<<endl;
 
-		im->save_to_VTK_file(dir_path + save_file_name);
+		if(format == ".dcm"){
+			im->save_to_DCM_file(dir_path + save_file_name + ".dcm");
+		}else if(format == ".vtk"){
+			im->save_to_VTK_file(dir_path + save_file_name + ".vtk");
+		}else{
+			cout<<"save_all_dicom_series_to_specific_file_format... (format not recognized:"<<format<<")"<<endl;
+		}
 
 		delete im;
 	}
 }
 
+void save_all_dicom_series_to_VTK_files(string dir_path, vector<string> tag_combo, bool use_recursive_search){
+	save_all_dicom_series_to_specific_file_format(dir_path, tag_combo, use_recursive_search, ".vtk");
+}
+
+void save_all_dicom_series_to_DCM_files(string dir_path, vector<string> tag_combo, bool use_recursive_search){
+	save_all_dicom_series_to_specific_file_format(dir_path, tag_combo, use_recursive_search, ".dcm");
+}
 
 
 //------------- String handling functions ----------------------
@@ -1116,10 +1299,28 @@ bool string_contains(string s, string sample)
 	return false;
 }
 
-vector<string> subdirs(string dir_path, bool fullpath)
-    {
-    ensure_trailing_slash(dir_path);
+void get_vector_of_substrings_separated_by(string s, string separator, vector<string> &v){
+//	cout<<"s="<<s<<endl;
+	int ind = s.find("\t");
+	if(ind>=0&&ind<s.size()){
+		string substring = s.substr(0,ind);
+//		cout<<"substring="<<substring<<endl;
+		v.push_back(substring);
+		string s2 = s.substr(ind+separator.size(), s.size()-ind);
+//		cout<<"s2="<<s2<<endl;
+		get_vector_of_substrings_separated_by(s2, separator,v);
+	}
+}
 
+vector<string> get_vector_of_substrings_separated_by(string s, string separator){
+	vector<string> v;
+	get_vector_of_substrings_separated_by(s, separator,v);
+	return v;
+}
+
+vector<string> subdirs(string dir_path, bool fullpath)
+{
+    ensure_trailing_slash(dir_path);
     vector<string> result = get_dir_entries(dir_path,false);
 //	for(int i=0;i<result.size();i++){
 //		cout<<"res="<<result[i]<<endl;
@@ -1127,29 +1328,21 @@ vector<string> subdirs(string dir_path, bool fullpath)
 
     vector<string>::iterator dirs = result.begin();
 
-    while (result.size() > 0 && dirs != result.end())
-        {
-        //sort out items which are not directories
-        //or circular references
-		//cout<<"*dirs="<<*dirs<<endl;
+    while(result.size() > 0 && dirs != result.end()){
+        //sort out items which are not directories or circular references //cout<<"*dirs="<<*dirs<<endl;
 
-	    if (*dirs == "." || *dirs == ".." || !dir_exists(dir_path + *dirs) )
-            {
+	    if(*dirs == "." || *dirs == ".." || !dir_exists(dir_path + *dirs) ){
             dirs=result.erase(dirs);
-            }
-        else
-            {
+        }else{
 				if(fullpath){
 					(*dirs).insert(0,dir_path);
 				}
             ensure_trailing_slash(*dirs);
-
             ++dirs; 
-
-            }
-        }
-    return result;
-    }
+		}
+	}
+	return result;
+}
 
 
 vector<string> subdirs_where_name_contains(string dir_path, string name_substring)

@@ -390,11 +390,11 @@ void image_general<ELEMTYPE, IMAGEDIM>::load_dataset_from_DICOM_files2(std::stri
 template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::load_dataset_from_DICOM_fileAF(std::string file_path, std::string seriesIdentifier)
 { 
-	std::cout<< "--- load_dataset_from_DICOM_filesAF" << std::endl;
-	std::cout<<"file_path="<<file_path<<std::endl;
-	std::cout<<"seriesIdentifier="<<seriesIdentifier<<std::endl;
+//	std::cout<< "--- load_dataset_from_DICOM_filesAF" << std::endl;
+//	std::cout<<"file_path="<<file_path<<std::endl;
+//	std::cout<<"seriesIdentifier="<<seriesIdentifier<<std::endl;
 	string dir_path = path_parent(file_path);
-	std::cout<<"dir_path="<<dir_path<<std::endl;
+//	std::cout<<"dir_path="<<dir_path<<std::endl;
 	
     typedef itk::GDCMSeriesFileNames NamesGeneratorType;
     NamesGeneratorType::Pointer nameGenerator = NamesGeneratorType::New();
@@ -404,25 +404,25 @@ void image_general<ELEMTYPE, IMAGEDIM>::load_dataset_from_DICOM_fileAF(std::stri
 
     typedef std::vector<std::string> FileNamesContainer;
 	FileNamesContainer fileNames = nameGenerator->GetFileNames(seriesIdentifier);
-	std::cout<<"Number of files in series..."<<fileNames.size()<<std::endl;
+//	std::cout<<"Number of files in series..."<<fileNames.size()<<std::endl;
 
 	//********** remove multiple echoes *************
 	//JK - This is temporary excluded for speedup --> dual echo iamging sequenses will be loaded in the "same volume"
 	vector<string> echotimes = list_dicom_tag_values_for_this_ref_tag_value(fileNames, DCM_SERIES_ID, seriesIdentifier, DCM_TE);
-	std::cout<<"Number of TE:s..."<<echotimes.size()<<std::endl;
-	if(echotimes.size()>1){//delelect all other echo times but the one int the file clicked...
+//	std::cout<<"Number of TE:s..."<<echotimes.size()<<std::endl;
+	if(echotimes.size()>1){//delelect all other echo times but the one in the file clicked...
 		fileNames = get_dicom_files_with_dcm_tag_value(fileNames, DCM_TE, get_dicom_tag_value(file_path,DCM_TE));
 	}
 
 	fileNames = get_dicom_files_with_dcm_tag_value(fileNames, DCM_TEMP_POS_ID, get_dicom_tag_value(file_path,DCM_TEMP_POS_ID));
-	std::cout<<"Number of files in series (efter separation for TEMPORAL_POS_ID..."<<fileNames.size()<<std::endl;
+//	std::cout<<"Number of files in series (efter separation for TEMPORAL_POS_ID..."<<fileNames.size()<<std::endl;
 	
 	load_dataset_from_these_DICOM_files(fileNames);
 }
 
 template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::load_dataset_from_these_DICOM_files(vector<string> fileNames){
-	cout<<"load_dataset_from_these_DICOM_files...("<<fileNames.size()<<")"<<endl;
+//	cout<<"load_dataset_from_these_DICOM_files...("<<fileNames.size()<<")"<<endl;
 	itk::GDCMImageIO::Pointer dicomIO = itk::GDCMImageIO::New();
 	typename theImagePointer image = theImageType::New();
 
@@ -473,7 +473,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::load_dataset_from_DICOM_file(string file
 template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::load_dataset_from_all_DICOM_files_in_dir(std::string dir_path)
     {  
-		cout<<"load_dataset_from_all_DICOM_files_in_dir...("<<dir_path<<")"<<endl;
+//		cout<<"load_dataset_from_all_DICOM_files_in_dir...("<<dir_path<<")"<<endl;
 		
 		//-- Remove final "\\" of dir_path...
 		while(dir_path.find_last_of("\\")==dir_path.size()-1){
@@ -601,6 +601,18 @@ void image_general<ELEMTYPE, IMAGEDIM>::save_to_VTK_file_if_non_empty(string sav
 
 template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::save_to_DCM_file(const std::string file_path, const bool useCompression, const bool anonymize)
+{
+	if(this->resolve_elemtype() == "float"){
+		image_general<short,3> *im2 = new image_general<short,3>( dynamic_cast<image_general<float,3>*>(this) );
+		im2->save_to_DCM_file2( file_path, useCompression, anonymize);
+		delete im2;
+	}else{
+		this->save_to_DCM_file2( file_path, useCompression, anonymize);
+	}
+}
+
+template <class ELEMTYPE, int IMAGEDIM>
+void image_general<ELEMTYPE, IMAGEDIM>::save_to_DCM_file2(const std::string file_path, const bool useCompression, const bool anonymize)
     {
 //	cout<<"save_to_DCM_file..."<<endl;    //port image to ITK image and save it as DCM file
 

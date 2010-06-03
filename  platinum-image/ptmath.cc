@@ -850,6 +850,7 @@ Vector3Dint create_Vector3Dint( int x, int y, int z )
 	v[2] = z;
 	return v;
 }
+
 Vector3Dint create_Vector3Dint(Vector3D v)
 {
 	Vector3Dint v2;
@@ -859,6 +860,14 @@ Vector3Dint create_Vector3Dint(Vector3D v)
 	return v2;
 }
 
+Vector3Di create_Vector3Di(int x, int y, int z)
+{
+	Vector3Di v;
+	v.data[0]=x;
+	v.data[1]=y;
+	v.data[2]=z;
+	return v;
+}
 
 Vector2D create_Vector2D(float x, float y)
 {

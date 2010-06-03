@@ -153,8 +153,10 @@ public:
 	void calc_sigma();
 	void calc_mean_nbh_dist_image_6NBH();
 	void calc_mean_nbh_dist_image_4NBH();
-	float calc_dissimilarity_6NBH(int c, int i, int j, int k); //denoted dissimilarity index (D_kx) in Liew2003
+	float calc_dissimilarity_6NBH(int c, int i, int j, int k, float dky2[], float dxy[], float lxy[]); //denoted dissimilarity index (D_kx) in Liew2003
+	float calc_dissimilarity_along_border_6NBH(int c, int i, int j, int k); //denoted dissimilarity index (D_kx) in Liew2003
 	float calc_dissimilarity_4NBH(int c, int i, int j, int k); //denoted dissimilarity index (D_kx) in Liew2003
+	float calc_dissimilarity_along_border_4NBH(int c, int i, int j, int k); //denoted dissimilarity index (D_kx) in Liew2003
 
 	void Update_imagesfcm(float scale_percentile=0.99); //executes sfcm algorithm ( in sweet ITK style... ;-)  )...
 

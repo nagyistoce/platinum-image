@@ -699,6 +699,27 @@ void image_binary<IMAGEDIM>::largest_object_2D(int direction, IMGBINARYTYPE obje
 	}
 	
 template <int IMAGEDIM>
+void image_binary<IMAGEDIM>::largest_objects_2D(int num_objects, IMGBINARYTYPE object_value)
+{
+	image_binary<3> *res = new image_binary<3>(this,0);
+	res->fill(!object_value);
+
+	image_binary<3> *tmp;
+	for(int i=0;i<num_objects;i++){
+	//	cout<<"i="<<i<<endl;
+		tmp = new image_binary<3>(this);
+		tmp->mask_out(res,!object_value);	//remove already selected objects...
+		tmp->largest_object_2D();
+		res->combine(tmp,COMB_MAX);
+	//	cout<<"res_vol="<<res->get_number_of_voxels_with_value(object_value)<<endl;
+		delete tmp;
+	}
+
+	copy_data(res,this);
+	delete res;
+}
+
+template <int IMAGEDIM>
 void image_binary<IMAGEDIM>::threshold_size_2D(int min_size, int direction, IMGBINARYTYPE object_value)
 	{
 	int u,v,w;
@@ -2883,18 +2904,33 @@ vector<Vector3D> image_binary<IMAGEDIM>::get_center_of_gravities_for_objects_3D(
 }
 
 template <int IMAGEDIM>
-image_binary<3>* image_binary<IMAGEDIM>::region_grow_3D_if_lower_intensity_using_dist_thresholding(int dist_thresh)
+image_binary<3>* image_binary<IMAGEDIM>::region_grow_3D_if_lower_intensity_using_dist_thresholding(bool use_dist_345, int dist_thresh, bool use_largest_object)
 {
-	image_integer<short,3> *dist = this->distance_345_3D();
-	dist->name("dist");
-//	dist->save_to_file(base+"__c01_lung_2_dist.vtk");
+	image_scalar<float,3> *dist;
+	image_binary<3> *seeds;
 
-	image_binary<3> *seeds = dist->threshold(dist_thresh);
-	seeds->largest_object_3D();
+	if(use_dist_345){
+		image_integer<short,3> *dist2 = this->distance_345_3D();
+		dist = new image_scalar<float,3>(dist2);
+		delete dist2;
+		seeds = dist->threshold(dist_thresh);
+		datamanagement.add(dist,"dist",true);
+	}else{
+		dist = this->distance_3D(true);
+	}
+	dist->name("dist");
+	//dist->save_to_file(base+"__c01_lung_2_dist.vtk");
+	seeds = dist->threshold(dist_thresh);
+
+	if(use_largest_object){
+		seeds->largest_object_3D();
+	}
 
 	image_binary<3> *res = dist->region_grow_3D_if_lower_intensity(seeds);
-	delete dist;
-	delete seeds;
+
+//	delete seeds;
+	datamanagement.add(dist,"dist",true);
+	datamanagement.add(seeds,"seeds",true);
 	return res;
 }
 
