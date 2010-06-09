@@ -432,7 +432,14 @@ vector<Vector3D> load_vector_of_Vector3D_from_file(string filepath);
 bool is_defined(float f);
 bool is_defined(Vector3D v);
 
-int get_coord_from_dir(int x, int y, int z, int dir);
+int get_component_from_dir(int x, int y, int z, int dir);
+float get_component_from_dir(float x, float y, float z, int dir);
+float get_component_from_dir(Vector3D &v, int dir);
+
+int get_component_from_dim_and_dir(int x, int y, int z, int dim, int dir);
+float get_component_from_dim_and_dir(float x, float y, float z, int dim, int dir);
+float get_component_from_dim_and_dir(Vector3D &v, int dim, int dir);
+
 Vector3D get_mean_Vector3D(vector<Vector3D> v);
 Vector3Dint get_mean_Vector3Dint(vector<Vector3D> v);
 string Vector3D2str(Vector3D v);

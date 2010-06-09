@@ -292,7 +292,7 @@ void nav_tool::handle(viewport_event &event)
     if (!event.handled())
 	{
         const int * pms = myPort->pixmap_size();
-        int viewSize = std::min(pms[0],pms[1]);
+        //int viewSize = std::min(pms[0],pms[1]);
         const int * mouse = event.mouse_pos_global();
                 
         switch (event.type())

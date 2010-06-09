@@ -177,7 +177,7 @@ void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_imag
         
     int vol_count; //number of images to render in this call
     Vector3D voxel_offset[MAXRENDERVOLUMES]; //The voxel index ,for each volume, that should be displayed in the top left corner of the viewport
-    float rgb_min_norm=min(float(rgb_sx),float(rgb_sy));
+    //float rgb_min_norm=min(float(rgb_sx),float(rgb_sy));
     vol_count = static_cast<int> (std::distance(rc->begin(), rc->end()));
     
     Vector3D screen_center = create_Vector3D(rgb_sx, rgb_sy, 0);

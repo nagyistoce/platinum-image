@@ -989,7 +989,7 @@ bool is_defined(Vector3D v)
 	return ( is_defined(v[0])&&is_defined(v[1])&&is_defined(v[2]) )?true:false;
 }
 
-int get_coord_from_dir(int x, int y, int z, int dir)
+int get_component_from_dir(int x, int y, int z, int dir)
 {
 	if(dir==0){
 		return x;
@@ -998,6 +998,44 @@ int get_coord_from_dir(int x, int y, int z, int dir)
 	}
 	return z;
 }
+
+float get_component_from_dir(float x, float y, float z, int dir)
+{
+	if(dir==0){
+		return x;
+	}else if(dir==1){
+		return y;
+	}
+	return z;
+}
+
+float get_component_from_dir(Vector3D &v, int dir)
+{
+	if(dir==0){
+		return v[0];
+	}else if(dir==1){
+		return v[1];
+	}
+	return v[2];
+}
+
+int get_component_from_dim_and_dir(int x, int y, int z, int dim, int dir)
+{
+	//(dim+direction+1)%IMAGEDIM
+	return get_component_from_dir(x,y,z,(dim+dir+1)%3);
+}
+
+float get_component_from_dim_and_dir(float x, float y, float z, int dim, int dir)
+{
+	return get_component_from_dir(x,y,z,(dim+dir+1)%3);
+}
+
+float get_component_from_dim_and_dir(Vector3D &v, int dim, int dir)
+{
+	return get_component_from_dir(v[0],v[1],v[2],(dim+dir+1)%3);
+}
+
+
 
 Vector3D get_mean_Vector3D(vector<Vector3D> v)
 {

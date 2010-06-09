@@ -211,8 +211,8 @@ int image_label<IMAGEDIM>::get_label_with_largest_span_in_dir_3D(int dir)
 			for (int x=0; x<this->nx(); x++){
 				val = this->get_voxel(x,y,z);
 				if(val>0){
-					lmin[val] = min( lmin[val], get_coord_from_dir(x,y,z,dir) );
-					lmax[val] = max( lmax[val], get_coord_from_dir(x,y,z,dir) );
+					lmin[val] = min( lmin[val], get_component_from_dir(x,y,z,dir) );
+					lmax[val] = max( lmax[val], get_component_from_dir(x,y,z,dir) );
 				}
 			}
 		}

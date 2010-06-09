@@ -623,14 +623,14 @@ void rendermanager::center3d_and_fit(const int rendererID, const int imageID)
 //	cout<<"Y="<<renderers[r_ind]->the_rg->get_Y()<<endl;
 	float phys_span_x = image->get_phys_span_in_dir(((rendergeom_image*)renderers[r_ind]->the_rg)->get_X());
 	float phys_span_y = image->get_phys_span_in_dir(((rendergeom_image*)renderers[r_ind]->the_rg)->get_Y());
-	float phys_ratio = phys_span_y/phys_span_x;
+//	float phys_ratio = phys_span_y/phys_span_x;
 //	cout<<"phys_span_y="<<phys_span_y<<endl;
 //	cout<<"phys_span_x="<<phys_span_x<<endl;
 //	cout<<"phys_ratio="<<phys_ratio<<endl;
 
 	float vp_x = float(vp->w());
 	float vp_y = float(vp->h_pane());
-	float vp_ratio = vp_y/vp_x;
+//	float vp_ratio = vp_y/vp_x;
 //	cout<<"vp_x="<<vp_x<<endl;
 //	cout<<"vp_y="<<vp_y<<endl;
 //	cout<<"vp_ratio="<<vp_ratio<<endl;

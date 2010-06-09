@@ -633,7 +633,7 @@ void viewmanager::show_point_by_combination ( const Vector3D & point, const int 
 {
 	std::vector<int> dataIDs = rendermanagement.data_from_combination ( combinationID );	// get all data ids in the combination
 	std::vector<int> rendererIDs = rendermanagement.renderers_from_data ( dataIDs );		// get the renderers that is connected to at least one of the images
-	const int id = 	rendermanagement.renderer_from_combination(combinationID);				// id of the active viewport
+	//const int id = 	rendermanagement.renderer_from_combination(combinationID);				// id of the active viewport
 
 	// remove the id of the active viewport from the vector to prevent it from being updated
 	// Redraw its overlay first...

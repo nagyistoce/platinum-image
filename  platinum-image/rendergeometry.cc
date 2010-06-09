@@ -249,7 +249,7 @@ Vector3D rendergeom_curve::curve_to_view(int x, double y, int width, int height)
 
 void rendergeom_curve::get_value(int x_hat, double* val){
 
-	double y = 0.0;
+	//double y = 0.0;
 	int x;
 	if(curve == NULL){
 		val[0] = -1;
@@ -376,7 +376,7 @@ Vector3D rendergeom_spectrum::curve_to_view(int x, double y, int width, int heig
 
 void rendergeom_spectrum::get_value(int x_hat, double* val){
 
-	double y = 0.0;
+	//double y = 0.0;
 	int x;
 	if(curve == NULL){
 		val[0] = -1;
