@@ -51,7 +51,13 @@ void remove_trailing_slash(string &s)
 vector<string> get_dir_entries(string path, bool full_path, bool use_recursion)
     {
     // *** POSIX ***
-
+//	cout<<"get_dir_entries("<<path<<")"<<endl;
+		
+	if(!dir_exists(path)){
+		path = path_parent (path);	//if the path is given as a file_path... this is thanges to its base-folder-path...
+	}
+//	cout<<"get_dir_entries("<<path<<")"<<endl;
+	
     vector<string> f;
     dirent *ep;
     char cpath[MAXPATHLENGTH];

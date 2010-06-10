@@ -36,7 +36,7 @@
 //#include "histogram.h"
 //#include "histogram.hxx"
 
-#define CURVE_CONF_PATH "../PlatinumPrivateApps/HighResUS/curve_conf.inp"
+#define CURVE_CONF_PATH "../../Platinum/Apps/HighResUS/curve_conf.inp"
 
 using namespace std;
 

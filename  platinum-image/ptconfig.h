@@ -69,9 +69,12 @@ void pt_config::write(string key, T value, string filename)
 {
 	ConfigFile cf = ConfigFile(filename, "=", "//");
 	if ( cf.keyExists(key) )
-		{ cf.update_value_in_file(filename,key,value); }
+		{ 
+			//cout<<"keyExists"<<endl;
+			cf.update_value_in_file(filename,key,value); }
 	else
 	{
+		//cout<<"key does not exist..."<<endl;
 		cf.add<T>(key, value);
 		cf.save_to_file(filename);
 	}
