@@ -101,6 +101,8 @@ FLTKutilities.h
 FLTKviewport.h 
 global.h 
 graph.hxx
+halfedge.h
+halfedge_ops.h
 histo2D_tool.h 
 histogram.h 
 image_base.h 
@@ -114,8 +116,10 @@ image_scalar.h
 image_storage.h 
 landmark_tool.h 
 listedfactory.h 
+Mesh.h
 meta_tool.h 
 metadata.h 
+off_parser.h
 platinumprogram.h 
 point_collection.h 
 points_seq_func1D.h 
@@ -177,6 +181,8 @@ filters.cc
 FLTKuserIOparameters.cc 
 FLTKutilities.cc 
 FLTKviewport.cc 
+halfedge.cc
+halfedge_ops.cc
 histo2D_tool.cc 
 histogram.cc 
 histogram.hxx 
@@ -195,9 +201,11 @@ image_scalar.hxx
 image_scalarprocess.hxx 
 image_storage.hxx 
 landmark_tool.cc 
-mainwindow.cc 
+mainwindow.cc
+Mesh.cc 
 meta_tool.cc
 metadata.cc 
+off_parser.cc
 point.cc 
 point_collection.cc 
 points_seq_func1D.hxx 
@@ -295,6 +303,7 @@ TARGET_LINK_LIBRARIES(platinumlib vtkRendering vtkVolumeRendering vtkIO)
 #MACOSX_BUNDLE only affects OS X builds, and is required for GUI to function
 ADD_EXECUTABLE(PlatinumTest MACOSX_BUNDLE test_app.cc)
 ADD_EXECUTABLE(Histo2D MACOSX_BUNDLE Apps/Histo2D/Histo2D.cc)								#Modify this line to include application in this project
+ADD_EXECUTABLE(HighResUS MACOSX_BUNDLE Apps/HighResUS/HighResUS.cc)
 #ADD_EXECUTABLE(My_App MACOSX_BUNDLE Apps/My_App/My_App.cc)									#Modify this line to include application in this project
 ADD_EXECUTABLE(T1Mapping MACOSX_BUNDLE Apps/T1Mapping/T1Mapping.cc)							#Modify this line to include application in this project
 
@@ -306,6 +315,7 @@ IF(APPLE)
       ADD_CUSTOM_COMMAND(
         TARGET PlatinumTest.app/Contents/Resources/PlatinumTest.rsrc POST_BUILD
         TARGET Histo2D.app/Contents/Resources/Histo2D.rsrc POST_BUILD						#Modify this line to include application in this project
+        TARGET HighResUS.app/Contents/Resources/HighResUS.rsrc POST_BUILD
         #TARGET My_App.app/Contents/Resources/My_App.rsrc POST_BUILD						#Modify this line to include application in this project
         TARGET T1Mapping.app/Contents/Resources/T1Mapping.rsrc POST_BUILD					#Modify this line to include application in this project
   
@@ -318,11 +328,13 @@ ENDIF(APPLE)
 
 TARGET_LINK_LIBRARIES(PlatinumTest platinumlib)
 TARGET_LINK_LIBRARIES(Histo2D platinumlib)							#Modify this line to include application in this project
+TARGET_LINK_LIBRARIES(HighResUS platinumlib)
 #TARGET_LINK_LIBRARIES(My_App platinumlib)							#Modify this line to include application in this project
 TARGET_LINK_LIBRARIES(T1Mapping platinumlib)						#Modify this line to include application in this project
 
 ADD_DEPENDENCIES(PlatinumTest platinumlib)
 ADD_DEPENDENCIES(Histo2D platinumlib)								#Modify this line to include application in this project
+ADD_DEPENDENCIES(HighResUS platinumlib)
 #ADD_DEPENDENCIES(My_App platinumlib)								#Modify this line to include application in this project
 ADD_DEPENDENCIES(T1Mapping platinumlib)								#Modify this line to include application in this project
 
@@ -349,10 +361,13 @@ additional_data.h
 curve.h 
 datamanager.h 
 data_base.h 
+halfedge.h
 image_base.h 
 image_general.h 
 image_storage.h 
+Mesh.h
 metadata.h 
+off_parser.h
 point.h 
 point_collection.h 
 points_seq_func1D.h 
@@ -367,13 +382,16 @@ curve.hxx
 curve.cc
 datamanager.cc 
 data_base.cc 
+halfedge.cc
 image_base.cc 
 image_general.hxx 
 image_general_iterator.hxx 
 image_generalfile.hxx 
 image_storage_iterator.hxx 
 image_storage.hxx 
+Mesh.cc
 metadata.cc 
+off_parser.cc
 point_collection.cc 
 point.cc 
 points_seq_func1D.hxx 
@@ -460,6 +478,7 @@ fcm.h
 fileutils.h 
 filters.h
 FLTKutilities.h 
+halfedge_ops.h
 histogram.h 
 listedfactory.h 
 pt_vector.h
@@ -482,6 +501,7 @@ fileutils.cc
 filters.cc
 FLTKutilities.cc 
 graph.hxx
+halfedge_ops.cc
 histogram.cc 
 histogram.hxx 
 pt_vector.cc

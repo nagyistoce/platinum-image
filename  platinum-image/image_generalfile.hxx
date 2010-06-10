@@ -929,12 +929,12 @@ template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::helper_data_to_binary_image(vector<int> indexes){
 	image_binary<IMAGEDIM> *binary = new image_binary<IMAGEDIM>(this);
 	binary->fill(0);
-	cout << "Adding index:";
+	//cout << "Adding index:";
 	for(int i = 0; i < indexes.size(); i++){
-		cout << " " << indexes.at(i) << endl;
+	//	cout << " " << indexes.at(i) << endl;
 		write_additional_data(binary, indexes.at(i));
 	}
-	cout << endl;
+	//cout << endl;
 	datamanagement.add(binary,"binary",true);
 }
 template <class ELEMTYPE, int IMAGEDIM>
@@ -943,7 +943,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::helper_data_to_binary_image(ADDITIONAL_T
 	binary->fill(0);
 	for(int i = 0; i < this->helper_data->data.size(); i++){
 		if((this->helper_data)->data.at(i)->type == type)
-			write_additional_data(binary, i);
+			write_additional_data(binary, i+1);
 	}
 	datamanagement.add(binary,"binary",true);
 }
@@ -977,7 +977,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::write_additional_data(image_binary<IMAGE
 			p1 = (dynamic_cast<circle_data*>(base))->c;
 			p2 = (dynamic_cast<circle_data*>(base))->n;
 			radius = (dynamic_cast<circle_data*>(base))->radius;
-			cout << "radius:" << radius << endl;
+			//cout << "radius:" << radius << endl;
 			free = shape_calc::calc_cirlce_3d(p1,p2,radius);
 			if(free.size() >=2){
 				p1 = this->world_to_voxel(free.at(0));
@@ -1012,7 +1012,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::write_additional_data(image_binary<IMAGE
 	int x = datasize [0];
 	int y = datasize[1];
 	int z = datasize[2];
-	cout << "vec size: " << vec.size() << endl;
+	//cout << "vec size: " << vec.size() << endl;
 	if(!fill){
 		for(int i = 0; i < vec.size(); i++){
 			Vector3D point = vec.at(i);//world_to_voxel(vec.at(i));
@@ -1026,7 +1026,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::write_additional_data(image_binary<IMAGE
 	}else if(fill){
 		bin_image->fill_region_2d(vec, 1);
 	}
-	cout << "written nr: " << count << endl;
+	//cout << "written nr: " << count << endl;
 		//binary->set_voxel(vec.at(i)[0], vec.at(i)[1], vec.at(i)[2]);
 }
 template <class ELEMTYPE, int IMAGEDIM>
