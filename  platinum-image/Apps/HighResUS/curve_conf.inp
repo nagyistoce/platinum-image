@@ -1,0 +1,23 @@
+# curve_conf.inp
+# Data used as input to HighResUs project
+
+# ----------- Main ------------------------------
+
+simplCurveInterval 	= 0.120   # in mm
+max_dist_between_peaks 	= 1.0   # in mm
+min_val_for_peak 		= 5000  # in value
+scope_for_vally_loc	= 0.2  # in mm
+scope_for_maximum_diff	= 0.2 # in mm
+
+# --------- Input format examples -----------
+apples = 7				# comment after apples
+pears  = 3				# comment after pears
+price  = 1.99			# comment after price
+sale   = true			# comment after sale
+title  = one fine day	# comment after title
+weight = 2.5 kg			# comment after weight
+zone   = 1 2 3			# comment after 1st point
+         4 5 6			# comment after 2nd point
+         7 8 9			# comment after 3rd point
+
+This is also a comment since it has no equals sign and follows a blank line.
