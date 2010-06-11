@@ -84,6 +84,8 @@ public:
 //	virtual image_base* contract_borders(unsigned int dx, unsigned int dy, unsigned int dz);	
 //	virtual image_base* contract_borders2D_by_dir(int dir, unsigned int dr=1);
 
+	image_binary<IMAGEDIM>* mask_crop_and_return_3D(image_binary<3> *mask);
+
     // *** applications ***
 	
 	void fit_ellipsoid3D_to_this_image3D(ellipsoid3D *e, vector<double> min_constraints, vector<double> max_constraints, double non_object_cost=3, double object_cost=-1); // Will only converge with initial parameters of ellipsoid_3D close to optimal

@@ -81,7 +81,7 @@ float filter_central_difference_magn_2d::apply(float* neighbourhood)
 {
 	//pixels outside boundary are set to "std::numeric_limits<float>::max()"...
 	//undo this here to prevent overflow...
-	for(int i=0;i<4;i++){
+	for(int i=0;i<this->data.rows();i++){
 		if(neighbourhood[i] == std::numeric_limits<float>::max()){
 			neighbourhood[i] = 0;
 		}
@@ -91,6 +91,73 @@ float filter_central_difference_magn_2d::apply(float* neighbourhood)
 	float dv = neighbourhood[3]-neighbourhood[2];
 	//note that the weights are never used...
 	return sqrt(du*du+dv*dv);
+}
+
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
+
+filter_central_difference_magn_1d::filter_central_difference_magn_1d(int dir) 
+{
+	data = vnl_matrix<float>(2,4); //2 coordinates and 2 different values (x,y,z,w)...
+	if(dir==0){
+		//x					//y					//z				//w
+		data.put(0,0,-1); data.put(0,1,0);	data.put(0,2,0); data.put(0,3,-1);	//neg x-dir
+		data.put(1,0,+1); data.put(1,1,0);	data.put(1,2,0); data.put(1,3,+1);	//pos x-dir
+	}else if(dir==1){
+		data.put(0,0,0); data.put(0,1,-1);	data.put(0,2,0); data.put(0,3,-1);	//neg y-dir
+		data.put(1,0,0); data.put(1,1,+1);	data.put(1,2,0); data.put(1,3,+1);	//pos y-dir
+	}else{
+		data.put(0,0,0); data.put(0,1,0);	data.put(0,2,-1); data.put(0,3,-1);	//neg z-dir
+		data.put(1,0,0); data.put(1,1,0);	data.put(1,2,+1); data.put(1,3,+1);	//pos z-dir
+	}
+}
+
+float filter_central_difference_magn_1d::apply(float* neighbourhood)
+{
+	//pixels outside boundary are set to "std::numeric_limits<float>::max()"...
+	//undo this here to prevent overflow...
+	for(int i=0;i<this->data.rows();i++){
+		if(neighbourhood[i] == std::numeric_limits<float>::max()){
+			neighbourhood[i] = 0;
+		}
+	}
+
+	float du = neighbourhood[1]-neighbourhood[0];
+	//note that the weights are never used...
+	return sqrt(du*du);
+}
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
+
+filter_finite_difference_magn_1d::filter_finite_difference_magn_1d(int dir) 
+{
+	data = vnl_matrix<float>(2,4); //2 coordinates and 2 different values (x,y,z,w)...
+	if(dir==0){
+		//x					//y					//z				//w
+		data.put(0,0,-1); data.put(0,1,0);	data.put(0,2,0); data.put(0,3,-1);	//neg x-dir
+		data.put(1,0,0); data.put(1,1,0);	data.put(1,2,0); data.put(1,3,+1);	//myself
+	}else if(dir==1){
+		data.put(0,0,0); data.put(0,1,-1);	data.put(0,2,0); data.put(0,3,-1);	//neg y-dir
+		data.put(1,0,0); data.put(1,1,0);	data.put(1,2,0); data.put(1,3,+1);	//myself
+	}else{
+		data.put(0,0,0); data.put(0,1,0);	data.put(0,2,-1); data.put(0,3,-1);	//neg z-dir
+		data.put(1,0,0); data.put(1,1,0);	data.put(1,2,0); data.put(1,3,+1);	//myself
+	}
+}
+
+float filter_finite_difference_magn_1d::apply(float* neighbourhood)
+{
+	//pixels outside boundary are set to "std::numeric_limits<float>::max()"...
+	//undo this here to prevent overflow...
+	for(int i=0;i<this->data.rows();i++){
+		if(neighbourhood[i] == std::numeric_limits<float>::max()){
+			neighbourhood[i] = 0;
+		}
+	}
+
+	float du = neighbourhood[1]-neighbourhood[0];
+	//note that the weights are never used...
+	return sqrt(du*du);
 }
 
 

@@ -1912,6 +1912,12 @@ ELEMTYPE image_general<ELEMTYPE, IMAGEDIM>::get_voxel(Vector3Dint vox_pos) const
 }
 
 template <class ELEMTYPE, int IMAGEDIM>
+ELEMTYPE image_general<ELEMTYPE, IMAGEDIM>::get_voxel(int vox_pos[3]) const
+{
+    return this->dataptr[vox_pos[0] + datasize[0]*vox_pos[1] + datasize[0]*datasize[1]*vox_pos[2]];
+}
+
+template <class ELEMTYPE, int IMAGEDIM>
 ELEMTYPE* image_general<ELEMTYPE, IMAGEDIM>::get_voxel_pointer(int x, int y, int z)
 {
 	unsigned long steps = x + datasize[0]*y + datasize[0]*datasize[1]*z;
@@ -2112,6 +2118,16 @@ void image_general<ELEMTYPE, IMAGEDIM>::set_voxel(Vector3D coord_pos, ELEMTYPE v
     }
 
 template <class ELEMTYPE, int IMAGEDIM>
+void image_general<ELEMTYPE, IMAGEDIM>::set_voxel(int pos[3], ELEMTYPE voxelvalue)
+    {
+	//JK - uncomment these rows to detect writing outside allocated memory...
+	if(pos[0]<0||pos[0]>=datasize[0] || pos[1]<0||pos[1]>=datasize[1] || pos[2]<0||pos[2]>=datasize[2])
+		{cout<<"set_voxel--> strange index... x="<<pos[0]<<" y="<<pos[1]<<" z="<<pos[2]<<"... datasize=("<<datasize[0]<<","<<datasize[1]<<","<<datasize[2]<<")"<<endl;}
+
+    this->dataptr[pos[0] + datasize[0]*pos[1] + datasize[0]*datasize[1]*pos[2]] = voxelvalue;
+    }
+
+template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::set_voxel(int x, int y, int z, int w, ELEMTYPE voxelvalue)
 {
 	if(x<0||x>=datasize[0] || y<0||y>=datasize[1] || z<0||z>=datasize[2])
@@ -2291,6 +2307,33 @@ vector<Vector3Dint> image_general<ELEMTYPE, IMAGEDIM>::get_neighbour_voxel_vecto
 	if (z>0) neighbours.push_back(create_Vector3Dint(x,y,z-1));	
 	return neighbours;
 }
+
+template <class ELEMTYPE, int IMAGEDIM>
+vector<int[3]> image_general<ELEMTYPE, IMAGEDIM>::get_neighbour_voxel_vector_6nbh2(int x, int y, int z)
+{
+	vector<int[3]> neighbours;
+	if (x<this->get_size_by_dim(0)-1){
+		int a[3]; a[0]=x+1; a[1]=y; a[2]=z;	neighbours.push_back(a);
+	}
+	if (x>0){
+		int a[3]; a[0]=x-1; a[1]=y; a[2]=z;	neighbours.push_back(a);
+	}
+	if (y<this->get_size_by_dim(1)-1){
+		int a[3]; a[0]=x; a[1]=y+1; a[2]=z;	neighbours.push_back(a);
+	}
+	if (y>0){
+		int a[3]; a[0]=x; a[1]=y-1; a[2]=z;	neighbours.push_back(a);
+	}
+	if (z<this->get_size_by_dim(2)-1){
+		int a[3]; a[0]=x; a[1]=y; a[2]=z+1;	neighbours.push_back(a);
+	}
+	if (z>0){
+		int a[3]; a[0]=x; a[1]=y; a[2]=z-1;	neighbours.push_back(a);
+	}
+	return neighbours;
+}
+
+
 
 template <class ELEMTYPE, int IMAGEDIM>
 vector<Vector3Dint> image_general<ELEMTYPE, IMAGEDIM>::get_neighbour_voxel_vector_4nbh(int u, int v, int w, int direction)

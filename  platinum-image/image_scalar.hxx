@@ -3584,7 +3584,7 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::fill_image_with_gaussian_values_centered_
 	for(int i=0; i<3; i++){
 		center[i] = this->get_size_by_dim_and_dir(i,dir)/2;
 	}
-
+/*
 	Vector3Dint diff;
 	diff[2]=0;
 
@@ -3597,6 +3597,11 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::fill_image_with_gaussian_values_centered_
 			}
 		}
 	}
+*/
+	for(int w=0; w<this->get_size_by_dim_and_dir(2,dir); w++){
+		fill_slice_with_gaussian_values_2D(dir, w, g.amplitude, g.sigma, center[0], center[1]);
+	}
+
 }
 
 template <class ELEMTYPE, int IMAGEDIM>
@@ -3608,12 +3613,53 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::fill_image_with_gaussian_values_centered_
 template <class ELEMTYPE, int IMAGEDIM>
 void image_scalar<ELEMTYPE, IMAGEDIM>::fill_image_with_gaussian_values_2D(int dir, float ampl, float sigma_in_voxels, int center_u, int center_v)
 {
+	for(int w=0; w<this->get_size_by_dim_and_dir(2,dir); w++){
+		fill_slice_with_gaussian_values_2D(dir, w, ampl, sigma_in_voxels, center_u, center_v);
+	}
+}
+
+template <class ELEMTYPE, int IMAGEDIM>
+void image_scalar<ELEMTYPE, IMAGEDIM>::fill_slice_with_gaussian_values_2D(int dir, int slice, float ampl, float sigma_in_voxels, int center_u, int center_v)
+{
+	Vector3Dint diff;
+	diff[2]=0;
+	gaussian g = gaussian(ampl,0,sigma_in_voxels);
+	for(int v=0; v<this->get_size_by_dim_and_dir(1,dir); v++){
+		diff[1]=center_v-v;
+		for(int u=0; u<this->get_size_by_dim_and_dir(0,dir); u++){
+			diff[0]=center_u-u;
+			this->set_voxel_by_dir(u,v,slice,g.evaluate_at(magnitude(diff)),dir);
+		}
+	}
+}
+
+template <class ELEMTYPE, int IMAGEDIM>
+void image_scalar<ELEMTYPE, IMAGEDIM>::add_gaussian_values_to_image_3D_physical(gaussian g, Vector3D phys_center)
+{
+	Vector3D diff;
+	for(int z=0; z<this->datasize[2]; z++){
+		for(int y=0; y<this->datasize[1]; y++){
+			for(int x=0; x<this->datasize[0]; x++){
+				diff = phys_center - this->get_physical_pos_for_voxel(x,y,z);
+				this->set_voxel(x,y,z, g.evaluate_at(magnitude(diff)) + this->get_voxel(x,y,z) );
+			}
+		}
+	}
+}
+
+
+/*
+template <class ELEMTYPE, int IMAGEDIM>
+void image_scalar<ELEMTYPE, IMAGEDIM>::fill_image_with_gaussian_values_2D(int dir, float ampl, float sigma_in_voxels, vector<Vector3D> centers)
+{
 	Vector3Dint diff;
 	diff[2]=0;
 	gaussian g = gaussian(ampl,0,sigma_in_voxels);
 	for(int w=0; w<this->get_size_by_dim_and_dir(2,dir); w++){
 		for(int v=0; v<this->get_size_by_dim_and_dir(1,dir); v++){
-			diff[1]=center_v-v;
+			if(dir==2){
+				diff[1]=centers[w][0]-v;
+			}
 			for(int u=0; u<this->get_size_by_dim_and_dir(0,dir); u++){
 				diff[0]=center_u-u;
 				this->set_voxel_by_dir(u,v,w,g.evaluate_at(magnitude(diff)),dir);
@@ -3621,6 +3667,8 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::fill_image_with_gaussian_values_2D(int di
 		}
 	}
 }
+*/
+
 
 
 template <class ELEMTYPE, int IMAGEDIM>

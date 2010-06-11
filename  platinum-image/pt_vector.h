@@ -471,8 +471,8 @@ void pts_vector<ELEMTYPE>::fit_gaussian_to_intensity_range(float &amp, float &ce
 
 	int from_bucket = std::max(0, this->from_val_to_x(from_int));
 	int to_bucket = std::min(int(this->size()-1), this->from_val_to_x(to_int));
-//	cout<<"from_bucket="<<from_bucket<<endl;
-//	cout<<"to_bucket="<<to_bucket<<endl;
+	cout<<"from_bucket="<<from_bucket<<endl;
+	cout<<"to_bucket="<<to_bucket<<endl;
 
 	gaussian g(amp,center,sigma);
 	g.amplitude = float(this->get_max_value_in_range(from_bucket,to_bucket));

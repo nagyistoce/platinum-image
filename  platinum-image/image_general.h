@@ -184,6 +184,7 @@ class image_general : public image_storage <ELEMTYPE >
         // *** element access methods ***
         ELEMTYPE get_voxel(int x, int y, int z=0) const;
         ELEMTYPE get_voxel(Vector3Dint vox_pos) const;
+        ELEMTYPE get_voxel(int vox_pos[3]) const;
         ELEMTYPE* get_voxel_pointer(int x, int y, int z=0); //cannot be const
         ELEMTYPE* get_voxel_pointer(Vector3Dint vox_pos); //cannot be const
         ELEMTYPE get_voxel_in_physical_pos(Vector3D phys_pos);  
@@ -213,8 +214,9 @@ class image_general : public image_storage <ELEMTYPE >
         histogram_1D<ELEMTYPE>* get_histogram_with_num_buckets(int num_buckets);
 
         void set_voxel(int x, int y, int z, ELEMTYPE voxelvalue);
-        void set_voxel(int x, int y, int z, int w, ELEMTYPE voxelvalue);
         void set_voxel(Vector3D coord_pos, ELEMTYPE voxelvalue);
+        void set_voxel(int pos[3], ELEMTYPE voxelvalue);
+        void set_voxel(int x, int y, int z, int w, ELEMTYPE voxelvalue);
         void set_voxels(vector<Vector3D> coords, ELEMTYPE voxelvalue);
         void set_voxel_in_physical_pos(Vector3D phys_pos, ELEMTYPE voxelvalue);
 		void set_voxel_by_dir(int u, int v, int w, ELEMTYPE value, int direction=2);
@@ -374,6 +376,7 @@ class image_general : public image_storage <ELEMTYPE >
 		//JK TODO - write == != operators for image_general class...
 
 		vector<Vector3Dint> get_neighbour_voxel_vector_6nbh(int x, int y, int z);
+		vector<int[3]> get_neighbour_voxel_vector_6nbh2(int x, int y, int z);
 		vector<Vector3Dint> get_neighbour_voxel_vector_4nbh(int u, int v, int w, int direction=2);
 
 

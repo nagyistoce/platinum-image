@@ -55,6 +55,20 @@ public:
 	float apply(float *neighbourhood);
 };
 
+class filter_central_difference_magn_1d: public filter_base
+{
+public:
+	filter_central_difference_magn_1d(int dir=2);
+	float apply(float *neighbourhood);
+};
+
+class filter_finite_difference_magn_1d: public filter_base
+{
+public:
+	filter_finite_difference_magn_1d(int dir=2);
+	float apply(float *neighbourhood);
+};
+
 
 
 class filter_linear : public filter_base

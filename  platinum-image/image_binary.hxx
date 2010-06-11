@@ -511,6 +511,19 @@ image_binary<IMAGEDIM>* image_binary<IMAGEDIM>::contract_borders2D_by_dir(int di
 	return res;
 }
 
+template <int IMAGEDIM>
+image_binary<IMAGEDIM>* image_binary<IMAGEDIM>::mask_crop_and_return_3D(image_binary<3> *mask)
+{
+	image_binary<IMAGEDIM>* res=NULL;
+	if(this->same_size(mask)){
+		res = new image_binary<IMAGEDIM>(this,"tmp");
+		res->mask_out(mask);
+		res->crop_3D(mask);
+	}else{
+		pt_error::error("image_binary-mask_crop_and_return_3D(image_binary<3> *mask)--> NOT same size...",pt_error::debug);
+	}
+	return res;
+}
 
 
 template <int DIM>

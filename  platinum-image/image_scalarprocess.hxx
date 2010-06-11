@@ -987,9 +987,8 @@ image_binary<3>* image_scalar<ELEMTYPE, IMAGEDIM>::appl_abd_create_crude_grad_ma
 	return gradient_mask_conv;
 }
 
-
 template <class ELEMTYPE, int IMAGEDIM>
-void image_scalar<ELEMTYPE, IMAGEDIM>::appl_1D_SIM_bias_correction(image_binary<3>* mask, int num_iterations, float iteration_strength, float map_x_smoothing_std_dev, float map_y_smoothing_std_dev, float map_z_smoothing_std_dev, float feat1_smoothing_std_dev, int num_buckets_feat1, bool save_corrected_images_each_iteration, bool save_histogram_each_iteration, bool save_field_each_iteration) 
+void image_scalar<ELEMTYPE, IMAGEDIM>::appl_1D_SIM_bias_correction(image_binary<3>* mask, int num_iterations, float iteration_strength, float map_x_smoothing_std_dev, float map_y_smoothing_std_dev, float map_z_smoothing_std_dev,  int num_buckets_feat1, int feat1_nbh, int feat1_itr) 
 {
 	// corrected images:
 	image_scalar<float,3> *feat1_corr = new image_scalar<float,3>(this, "feat1_corr"); //Note... Used as the starting value...
@@ -1026,10 +1025,10 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::appl_1D_SIM_bias_correction(image_binary<
 		hist = feat1_corr->get_histogram_from_masked_region_3D(mask, num_buckets_feat1);
 		
 		// Calculate force in each bucket: Smooth, normalize and log, then derivate in each direction with sobel filter
-//		hist->save_histogram_to_txt_file("tmp_SIM_hist_" + int2str(iter) + ".txt");
-		hist->smooth_mean(10,10);
+		hist->save_histogram_to_txt_file("tmp_SIM_hist_" + int2str(iter) + ".txt");
+		hist->smooth_mean(feat1_nbh, feat1_itr);
 		hist->data_has_changed();
-//		hist->save_histogram_to_txt_file("tmp_SIM_hist_" + int2str(iter) + "_smooth.txt");
+		hist->save_histogram_to_txt_file("tmp_SIM_hist_" + int2str(iter) + "_smooth.txt");
 
 		for(int z=0; z<zsize; z++){
 			for(int y=0; y<ysize; y++){

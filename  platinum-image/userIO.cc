@@ -91,10 +91,13 @@ void userIO::FLTK_callback (Fl_Widget *callingwidget, void * foo)
         {
         if (callingwidget == par_group->close_button)
             {
-            par_group->action_callback(par_group->id(),USERIO_CB_CLOSE);
+				par_group->action_callback(par_group->id(),USERIO_CB_CLOSE);
             }
         if (callingwidget == par_group->OK_button)
-            {par_group->action_callback(par_group->id(),USERIO_CB_OK);}
+            {
+				par_group->action_callback(par_group->id(),USERIO_CB_OK);
+				cout<<"UserIO successfully called!"<<endl;
+			}
         }
 
     if (callingwidget == par_group->close_button)
