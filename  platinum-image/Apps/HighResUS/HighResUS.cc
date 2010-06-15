@@ -55,7 +55,7 @@
 
 
 void write_raw(ultrasound_importer *ultra, vector<gaussian> gauss){
-	string gauss_data = "../PlatinumPrivateApps/HighResUS/output/raw.skv";
+	string gauss_data = "Apps/HighResUS/output/raw.skv";
 	ofstream data(gauss_data.c_str(), ios::app);
 	string date, name, ecode,side;
 	date = ultra->study_date;
@@ -94,7 +94,7 @@ void write_raw(ultrasound_importer *ultra, vector<gaussian> gauss){
 }
 
 void write_measurements(ultrasound_importer *ultra, vector<gaussian> gauss){
-	string gauss_data = "../PlatinumPrivateApps/HighResUS/output/values.skv";
+	string gauss_data = "Apps/HighResUS/output/values.skv";
 	ofstream data(gauss_data.c_str(), ios::app);
 	double intima, media, adventitia, total, ratio;
 	double sigma_ratio = 1.1;
