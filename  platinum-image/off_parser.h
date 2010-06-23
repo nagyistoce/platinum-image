@@ -11,6 +11,7 @@ class off_parser{
       off_parser(){};
       ~off_parser(){};
       int parse_file(std::string s, Halfedge *fig);
+	  void save_file(std::string s, Halfedge *fig);
 
 };
 #else

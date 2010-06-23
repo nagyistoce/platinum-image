@@ -1898,6 +1898,26 @@ ELEMTYPE image_general<ELEMTYPE, IMAGEDIM>::get_max_in_region(int x,int y,int z,
 	return max_val;
 }
 
+template <class ELEMTYPE, int IMAGEDIM>
+ELEMTYPE image_general<ELEMTYPE, IMAGEDIM>::get_min_in_region(int x,int y,int z, unsigned int radius)
+{
+	ELEMTYPE min_val = std::numeric_limits<ELEMTYPE>::max();
+	ELEMTYPE val;
+
+	for(int w=std::max(0,int(z-radius)); w<=std::min(int(this->nz()-1),int(z+radius)); w++){
+		for(int v=std::max(0,int(y-radius)); v<=std::min(int(this->ny()-1),int(y+radius)); v++){
+			for(int u=std::max(0,int(x-radius)); u<=std::min(int(this->nx()-1),int(x+radius)); u++){
+				val = this->get_voxel(u,v,w);
+				if(val<min_val){
+					min_val = val;
+				}
+			}
+		}
+	}
+
+	return min_val;
+}
+
 
 template <class ELEMTYPE, int IMAGEDIM>
 ELEMTYPE image_general<ELEMTYPE, IMAGEDIM>::get_voxel(int x, int y, int z) const
