@@ -1175,6 +1175,22 @@ image_scalar<ELEMTYPE, IMAGEDIM>* image_scalar<ELEMTYPE, IMAGEDIM>::mask_crop_an
 }
 
 
+template <class ELEMTYPE, int IMAGEDIM>
+void image_scalar<ELEMTYPE, IMAGEDIM>::crop_3D_intensities_higher_than(ELEMTYPE from)
+{
+/*	image_scalar<ELEMTYPE, IMAGEDIM>* res=NULL;
+	if(this->same_size(mask)){
+		res = new image_scalar<ELEMTYPE, IMAGEDIM>(this,"tmp");
+		res->mask_out(mask);
+		res->crop_3D(mask);
+	}else{
+		pt_error::error("mask_crop_and_return_3D(image_binary<3> *mask)--> NOT same size...",pt_error::debug);
+	}
+	return res;
+*/
+}
+
+
 
 template <class ELEMTYPE, int IMAGEDIM>
 ELEMTYPE image_scalar<ELEMTYPE, IMAGEDIM>::get_max_in_slice3D(int slice, int dir)

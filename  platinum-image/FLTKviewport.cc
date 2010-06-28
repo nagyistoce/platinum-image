@@ -82,8 +82,8 @@ string eventnames[] =
 FLTKpane::FLTKpane():Fl_Overlay_Window(0,0,100,100)
 {
 	//FLTKpane(0,0,100,100);
-	Fl_Button *b = new Fl_Button(10,10,80,80, "FLTKpane()_button");
-	b->color(FL_RED);
+//	Fl_Button *b = new Fl_Button(10,10,80,80, "FLTKpane()_button");
+//	b->color(FL_RED);
 //	this->end();
 }
 
@@ -872,15 +872,15 @@ void FLTK_Event_pane::needs_rerendering()
 FLTK_Pt_pane::FLTK_Pt_pane():FLTKpane(0,0,100,100)
 {
 	cout<<"FLTK_Pt_pane()"<<endl;
-    int buttonleft=0;
-	int buttonheight=20;
-	int buttonwidth=70;
+  //  int buttonleft=0;
+	//int buttonheight=20;
+	//int buttonwidth=70;
 
 
 //	event_pane = new FLTK_Event_pane(0,buttonheight,100,100-buttonheight);
 
-	Fl_Button *b = new Fl_Button(10,50,20,200, "pt_pane()_button");
-	b->color(FL_BLUE);
+//	Fl_Button *b = new Fl_Button(10,50,20,200, "pt_pane()_button");
+//	b->color(FL_BLUE);
 
  //   this->box(FL_BORDER_BOX);
 //    this->align(FL_ALIGN_CLIP);
@@ -894,8 +894,8 @@ FLTK_Pt_pane::FLTK_Pt_pane():FLTKpane(0,0,100,100)
 FLTK_Pt_pane::FLTK_Pt_pane(int X,int Y,int W,int H) : FLTKpane(X,Y,W,H)
 {
 //	cout<<"FLTK_Pt_pane("<<X<<","<<Y<<","<<W<<","<<H<<")"<<endl;
-	Fl_Button *b = new Fl_Button(10,50,20,200, "pt_pane()_button");
-	b->color(FL_BLUE);
+//	Fl_Button *b = new Fl_Button(10,50,20,200, "pt_pane()_button");
+//	b->color(FL_BLUE);
 
 }
 
@@ -950,8 +950,8 @@ FLTK_Pt_MPR_pane::FLTK_Pt_MPR_pane() : FLTK_Pt_pane(0,0,100,100)
 
 //	Fl_Group::current(this);	//JK //RN test
 //	Fl_Button *b = new Fl_Button(0,buttonheight,100,100-buttonheight, "FLTK_Pt_MPR_pane()_button");	 //JK //RN test
-	Fl_Button *b = new Fl_Button(0,buttonheight,100,100-buttonheight, "FLTK_Pt_MPR_pane()_button");	 //JK //RN test
-	b->color(FL_RED);
+//	Fl_Button *b = new Fl_Button(0,buttonheight,100,100-buttonheight, "FLTK_Pt_MPR_pane()_button");	 //JK //RN test
+//	b->color(FL_RED);
 
 	event_pane = NULL;
 	event_pane = new FLTK_Event_pane(0,buttonheight,100,100-buttonheight, this); //JK //RN test
