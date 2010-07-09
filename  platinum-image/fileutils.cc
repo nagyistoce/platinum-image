@@ -1225,10 +1225,17 @@ void save_all_dicom_series_to_DCM_files(string dir_path, vector<string> tag_comb
 
 //------------- String handling functions ----------------------
 
+bool does_string_start_with(string s, string start)
+{
+	if(s.find_first_of(start) == 0){
+		return true;
+	}
+	return false;
+}
+
 bool does_string_end_with(string s, string ending)
 {
-	if(s.find_last_of(ending) == s.size()-1)
-	{
+	if(s.find_last_of(ending) == s.size()-1){
 		return true;
 	}
 	return false;

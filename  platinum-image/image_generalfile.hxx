@@ -1024,11 +1024,14 @@ void image_general<ELEMTYPE, IMAGEDIM>::write_additional_data(image_binary<IMAGE
 			}
 		}
 	}else if(fill){
-		bin_image->fill_region_2d(vec, 1);
+//		bin_image->fill_region_2d(vec, 1);	//JK removed this to test link error
 	}
 	//cout << "written nr: " << count << endl;
 		//binary->set_voxel(vec.at(i)[0], vec.at(i)[1], vec.at(i)[2]);
 }
+
+/*      //JK removed this to test link error
+
 template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::fill_region_2d(vector<Vector3D> border, ELEMTYPE fill_val){
 	
@@ -1081,7 +1084,10 @@ void image_general<ELEMTYPE, IMAGEDIM>::fill_region_2d(vector<Vector3D> border, 
 		queue.erase(queue.begin(),queue.begin()+1);
 		//cout <<"queue size: " << queue.size() << endl;
 	}*/
+/*
 }
+
+*/
 /*
 template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::load_dataset_from_VTK_file(string file_path)

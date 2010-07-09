@@ -25,7 +25,7 @@
 
 
 template <int IMAGEDIM>
-image_label<IMAGEDIM>::image_label(int w, int h, int d, IMGBINARYTYPE *ptr):image_integer<IMGLABELTYPE, IMAGEDIM>(w, h, d, ptr)
+image_label<IMAGEDIM>::image_label(int w, int h, int d, IMGLABELTYPE *ptr):image_integer<IMGLABELTYPE, IMAGEDIM>(w, h, d, ptr)
 {
 transfer_function();
 }

@@ -1104,22 +1104,35 @@ ELEMTYPE histogram_1D<ELEMTYPE>::get_max_value_in_bucket_range(int from, int to,
 }
 
 template <class ELEMTYPE>
-float histogram_1D<ELEMTYPE>::get_mean_intensity_in_bucket_range(int from, int to)
+float histogram_1D<ELEMTYPE>::get_mean_intensity_in_bucket_range(int from, int to, bool exclude_zero_int_bucket)
 {
 //	return this->bucket_vector->get_mean_in_range(from, to);
 	double sum = 0;
-	for(int i=from; i<=to; i++){
-		sum += this->bucket_vector->at(i) * this->bucketpos_to_intensity(i);
+	if(exclude_zero_int_bucket){
+		int zero_bucket_pos = this->intensity_to_bucketpos(0);
+		for(int i=from; i<=to; i++){
+			if(i != zero_bucket_pos){
+				sum += this->bucket_vector->at(i) * this->bucketpos_to_intensity(i);
+			}
+		}
+		
+		sum = sum/float( this->num_elements_in_hist - this->bucket_vector->at(zero_bucket_pos) );
+
+	}else{
+		for(int i=from; i<=to; i++){
+			sum += this->bucket_vector->at(i) * this->bucketpos_to_intensity(i);
+		}
+
+		sum = sum/float(this->num_elements_in_hist);
 	}
 
-	return sum/float(this->num_elements_in_hist);
+	return sum;
 }
 
 template <class ELEMTYPE>
-float histogram_1D<ELEMTYPE>::get_mean_intensity()
+float histogram_1D<ELEMTYPE>::get_mean_intensity(bool exclude_zero)
 {	
-	float mean = this->get_mean_intensity_in_bucket_range(0,this->bucket_vector->size()-1);
-	return mean;
+	return this->get_mean_intensity_in_bucket_range(0,this->bucket_vector->size()-1,exclude_zero);
 //	return this->bucket_vector->get_weighted_mean_intensity();
 }
 

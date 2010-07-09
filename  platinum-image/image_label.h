@@ -39,7 +39,7 @@ template<int IMAGEDIM = 3>
 class image_label : public image_integer <IMGLABELTYPE, IMAGEDIM>
 {
 public:
-	image_label(int w, int h, int d, IMGBINARYTYPE *ptr = NULL);
+	image_label(int w, int h, int d, IMGLABELTYPE *ptr = NULL);
     image_label(itk::SmartPointer< itk::OrientedImage<IMGLABELTYPE, IMAGEDIM > > &i);
 
 	template<class SOURCETYPE>

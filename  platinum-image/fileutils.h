@@ -149,6 +149,7 @@ void save_all_dicom_series_to_DCM_files(string dir_path, vector<string> tag_comb
 
 //------------- String handling functions ----------------------
 
+bool does_string_start_with(string s, string start);
 bool does_string_end_with(string s, string ending);
 bool remove_file_lastname(string &s, int max_no_lastname_chars=3);
 bool remove_string_ending(string &s, string ending=" ");

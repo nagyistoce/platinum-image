@@ -43,9 +43,9 @@ ELEMTYPE image_scalar<ELEMTYPE, IMAGEDIM>::get_min() const
 }
 
 template <class ELEMTYPE, int IMAGEDIM>
-float image_scalar<ELEMTYPE, IMAGEDIM>::get_mean_intensity()
+float image_scalar<ELEMTYPE, IMAGEDIM>::get_mean_intensity(bool exclude_zero)
 {
-    return stats->get_mean_intensity(); //does not do what we want it too.... yet...
+    return stats->get_mean_intensity(exclude_zero); //does not do what we want it too.... yet...
 }
 
 

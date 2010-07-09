@@ -120,7 +120,7 @@ public:
     ELEMTYPE get_num_values();
 	ELEMTYPE get_max() const;
 	ELEMTYPE get_min() const;
-	float get_mean_intensity();
+	float get_mean_intensity(bool exclude_zero=false);
 	histogram_1D<ELEMTYPE>* get_histogram();
 	histogram_1D<ELEMTYPE>* get_histogram_new_with_same_num_buckets_as_intensities();
 	virtual void stats_refresh(bool min_max_refresh=false);

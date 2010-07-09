@@ -347,7 +347,7 @@ class image_general : public image_storage <ELEMTYPE >
 		void helper_data_to_binary_image(vector<int> indexes);
 		void helper_data_to_binary_image(ADDITIONAL_TYPE type);
 		void write_additional_data(image_binary<IMAGEDIM> *image, int i);
-		void fill_region_2d(vector<Vector3D> border, ELEMTYPE fill_val);
+//		void fill_region_2d(vector<Vector3D> border, ELEMTYPE fill_val);	//JK removed this to test link error (tha only occurred when VS compiled "MinSizeRel"... ???)
 
 //        void save_to_TIF_file_series_3D(const std::string file_path_base, int dir=2, int from_slice=-1, int to_slice=-1);
 //		void save_uchar2D_to_TIF_file(const std::string file_path_base, const std::string slice="0");
