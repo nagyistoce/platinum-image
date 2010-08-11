@@ -124,7 +124,8 @@ class datamanager
         
         void delete_data (int id);          //delete data object and remove it
         void delete_data (data_base * d);   //from vector
-        void delete_all ();
+		void delete_all ();
+		void delete_all_if_true(bool b);
         
         void data_has_changed (int image_ID, bool recalibrate = false);   
         //signal that contents of a image has changed,

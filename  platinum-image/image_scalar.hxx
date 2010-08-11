@@ -82,6 +82,8 @@ histogram_1D<ELEMTYPE> *image_scalar<ELEMTYPE, IMAGEDIM>::get_histogram_new_with
 template <class ELEMTYPE, int IMAGEDIM>
 void image_scalar<ELEMTYPE, IMAGEDIM>::stats_refresh(bool min_max_refresh)
     {
+	//cout<<"image_scalar<ELEMTYPE, IMAGEDIM>::stats_refresh("<<min_max_refresh<<")"<<endl;
+
 	if(min_max_refresh){
 		this->min_max_refresh();
 	}
@@ -92,6 +94,8 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::stats_refresh(bool min_max_refresh)
 template <class ELEMTYPE, int IMAGEDIM>
 void image_scalar<ELEMTYPE, IMAGEDIM>::min_max_refresh()
 {
+	//cout<<"image_scalar<ELEMTYPE, IMAGEDIM>::min_max_refresh()"<<endl;
+
     ELEMTYPE minimum, maximum;
 	get_min_max_values(minimum, maximum);
    
@@ -1688,6 +1692,52 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::mask_out(image_binary<IMAGEDIM> *mask, IM
         }
 	//this->min_max_refresh();
     }
+
+template <class ELEMTYPE, int IMAGEDIM>
+void image_scalar<ELEMTYPE, IMAGEDIM>::mask_out_offset(image_binary<IMAGEDIM> *mask, IMGBINARYTYPE object_value, ELEMTYPE blank)
+{
+    Vector3D vox_offset = this->world_to_voxel(mask->get_physical_pos_for_voxel(0,0,0));
+	cout<<"vox_offset="<<vox_offset<<endl;
+	int from_x = max(0,int(0+vox_offset[0]));
+	int from_y = max(0,int(0+vox_offset[1]));
+	int from_z = max(0,int(0+vox_offset[2]));
+	if(from_x > (this->nx()-1)) from_x=this->nx()-1;
+	if(from_y > (this->ny()-1)) from_y=this->ny()-1;
+	if(from_z > (this->nz()-1)) from_z=this->nz()-1;
+	
+	int to_x = min( int(this->nx()), int(vox_offset[0]+mask->nx()) );
+	int to_y = min( int(this->ny()), int(vox_offset[1]+mask->ny()) );
+	int to_z = min( int(this->nz()), int(vox_offset[2]+mask->nz()) );
+	if(to_x < 0) to_x=0;
+	if(to_y < 0) to_y=0;
+	if(to_z < 0) to_z=0;
+	
+/*	for(int i=from_x; i<to_x; i++){
+		for(int j=from_y; j<to_y; j++){
+			for(int k=from_z; k<to_z; k++){
+				if(mask->get_voxel(i-vox_offset[0],j-vox_offset[1],k-vox_offset[2])!=object_value){
+					this->set_voxel(i,j,k,blank);
+				}
+			}
+		}
+	}
+*/	for(int i=0; i<this->nx(); i++){
+		for(int j=0; j<this->ny(); j++){
+			for(int k=0; k<this->nz(); k++){
+				
+				if(i>=from_x && j>=from_y && k>=from_z && i<to_x && j<to_y && k<to_z){
+					if(mask->get_voxel(i-vox_offset[0],j-vox_offset[1],k-vox_offset[2])!=object_value){
+						this->set_voxel(i,j,k,blank);
+					}
+				}else{
+					this->set_voxel(i,j,k,blank); //set everything "outside" mask span to "blank" to.
+				}
+			}
+		}
+	}
+	
+}
+
 
 template <class ELEMTYPE, int IMAGEDIM>
 void image_scalar<ELEMTYPE, IMAGEDIM>::mask_out(int low_x, int high_x, int low_y, int high_y, int low_z, int high_z, ELEMTYPE blank)

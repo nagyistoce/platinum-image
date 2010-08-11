@@ -414,6 +414,8 @@ void image_general<ELEMTYPE, IMAGEDIM>::load_file_to_this(std::string f)	//loads
 template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::data_has_changed(bool stat_refresh)
     {
+	//cout<<"image_general<ELEMTYPE, IMAGEDIM>::data_has_changed("<<stat_refresh<<")"<<endl;
+		
     //TODO: some outlandish malfunction in rendererMPR
     //when called with render_thumbnail-generated parameters
     //widget->refresh_thumbnail();
@@ -2856,6 +2858,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::print_geometry()
 	std::cout<<"*************************************"<<std::endl;
 	std::cout<< this->name()<<"\n->print_geometry() datasize: ("<<datasize[0]<<","<<datasize[1]<<","<<datasize[2]<<")"<<endl;
 	std::cout<<"num_elements:"<<this->num_elements<<std::endl;
+	std::cout<<"get_min,get_max:"<<this->get_min()<<","<<this->get_max()<<std::endl;
 	std::cout<<"origin:"<<this->origin<<std::endl;
 	std::cout<<"voxel_size:"<<this->get_voxel_size()<<std::endl;
 	std::cout<<"voxel_resize:"<<std::endl<<this->get_voxel_resize()<<std::endl;

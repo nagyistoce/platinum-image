@@ -121,17 +121,25 @@ class histogram_typed : public histogram_base //!features common to histograms o
       //  float min_float()
         //    {return abs(min_value);}
         void min (ELEMTYPE new_min)			
-            {min_value=new_min;}
+			{
+				min_value=new_min;
+				bucket_vector->config_x_axis(this->get_scalefactor(), new_min);
+			}
         ELEMTYPE max()							//returns histogram (and also image) "intensity max"
             {return max_value;}
         void max (ELEMTYPE new_max)			
-            {max_value=new_max;}
+            {
+				max_value=new_max;
+				bucket_vector->config_x_axis(this->get_scalefactor(), this->min());
+			}
 
 		void fill(unsigned long val);
 		void calc_bucket_max(bool ignore_zero_and_one=true);
 		void calc_bucket_mean();
 		void calc_num_distinct_values();
 		void calc_num_elements_in_hist();
+		float get_scalefactor();
+
 
 		virtual void data_has_changed(); //Updates statistics from the *buckets data
     };
@@ -180,7 +188,6 @@ class histogram_1D : public histogram_typed<ELEMTYPE> //horizontal 1D graph hist
 		void save_histogram_to_txt_file(std::string filepath, gaussian *g=NULL, bool reload_hist_from_image=false, std::string separator="\t");
 		void save_histogram_to_txt_file(std::string filepath, vector<gaussian> v, bool reload_hist_from_image=false, std::string separator="\t");
 		
-		float get_scalefactor();
 		ELEMTYPE bucketpos_to_intensity(int bucketpos);
 		int intensity_to_bucketpos(ELEMTYPE intensity);
 		

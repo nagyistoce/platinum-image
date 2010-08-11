@@ -104,6 +104,13 @@ void histogram_typed<ELEMTYPE>::calc_num_elements_in_hist()
 
 
 
+template <class ELEMTYPE>
+float histogram_typed<ELEMTYPE>::get_scalefactor(){
+	return float(this->max()-this->min())*1.000001/float(this->num_buckets);
+	//return float(this->max()-this->min())/float(this->num_buckets-1);
+}
+
+
 
 template <class ELEMTYPE>
 void histogram_typed<ELEMTYPE>::data_has_changed()
@@ -145,7 +152,7 @@ void histogram_1D<ELEMTYPE>::resize (unsigned long newNum)
 	//resize() is called from the constructor
     calculate_from_image_data(this->num_buckets);	 //the new number of buckets needs to be sent as argument
 
-	this->bucket_vector->config_x_axis(get_scalefactor(), this->min());
+	this->bucket_vector->config_x_axis(this->get_scalefactor(), this->min());
 
 }
 
@@ -237,7 +244,7 @@ histogram_1D<ELEMTYPE>::histogram_1D (image_storage<ELEMTYPE> *image_data, image
 		this->min(v_min);
 		this->max(v_max);
 
-		unsigned short bucketpos;
+		int bucketpos;
 
 		for( v = this->i_start, v_bin = image_bin_mask->begin().pointer(); (v != this->i_end) && (v_bin != image_bin_mask->end().pointer()); ++v, ++v_bin){
 			if(*v_bin>0){
@@ -260,8 +267,8 @@ histogram_1D<ELEMTYPE>::histogram_1D (image_storage<ELEMTYPE> *image_data, image
 	else
 	{
 		//no calculation was done, set sensible values
-		this->max_value = std::numeric_limits<ELEMTYPE>::max(); 
-		this->min_value = std::numeric_limits<ELEMTYPE>::min();
+		this->max(std::numeric_limits<ELEMTYPE>::max()); 
+		this->min(std::numeric_limits<ELEMTYPE>::min());
 	}
 }
  
@@ -323,7 +330,7 @@ histogram_1D<ELEMTYPE>::histogram_1D(string hist_text_file_path, std::string sep
 		this->readytorender = true;
 		pt_error::error("histogram_1D - constructor - file does not exist...",pt_error::debug);
 	}
-	this->bucket_vector->config_x_axis(get_scalefactor(), this->min());
+	this->bucket_vector->config_x_axis(this->get_scalefactor(), this->min());
 }
 
 
@@ -336,6 +343,7 @@ histogram_1D<ELEMTYPE >::~histogram_1D ()
 template <class ELEMTYPE>
 void histogram_1D<ELEMTYPE >::calculate_from_image_data(int new_num_buckets)
 {
+	//cout<<"histogram_1D<ELEMTYPE >::calculate_from_image_data("<<new_num_buckets<<")"<<endl;
 	this->reallocate_buckets_if_necessary(new_num_buckets);
 
     //get pointer to source data
@@ -347,13 +355,15 @@ void histogram_1D<ELEMTYPE >::calculate_from_image_data(int new_num_buckets)
 	this->readytorender=(this->images[0]->begin().pointer() != NULL);
 
     if(this->readytorender){
+		//cout<<"this->readytorender=1"<<endl;
 		this->recalc_min_max_data();
 		this->refill_bucket_data();
 		this->data_has_changed();
 	}else{
+		//cout<<"this->readytorender=0"<<endl;
         //no calculation was done, set sensible values
-        this->max_value = std::numeric_limits<ELEMTYPE>::max(); 
-        this->min_value = std::numeric_limits<ELEMTYPE>::min();
+        this->max(std::numeric_limits<ELEMTYPE>::max()); 
+        this->min(std::numeric_limits<ELEMTYPE>::min());
 	}
 }
 
@@ -390,7 +400,7 @@ void histogram_1D<ELEMTYPE>::recalc_min_max_data()
         this->max_value = std::numeric_limits<ELEMTYPE>::max(); 
         this->min_value = std::numeric_limits<ELEMTYPE>::min();
     }
-	(this->bucket_vector)->config_x_axis(get_scalefactor(), this->min()); //XXX testing
+	(this->bucket_vector)->config_x_axis(this->get_scalefactor(), this->min()); //XXX testing
 }
 
 template <class ELEMTYPE>
@@ -421,7 +431,7 @@ void histogram_1D<ELEMTYPE>::refill_bucket_data()
         this->max_value = std::numeric_limits<ELEMTYPE>::max(); 
         this->min_value = std::numeric_limits<ELEMTYPE>::min();
     }
-	this->bucket_vector->config_x_axis(get_scalefactor(), this->min());
+	this->bucket_vector->config_x_axis(this->get_scalefactor(), this->min());
 }
 
 /*
@@ -555,15 +565,10 @@ void histogram_1D<ELEMTYPE>::save_histogram_to_txt_file(std::string filepath, ve
 	}
 
 
-template <class ELEMTYPE>
-float histogram_1D<ELEMTYPE>::get_scalefactor(){
-	return float(this->max()-this->min())*1.000001/float(this->num_buckets);
-	//return float(this->max()-this->min())/float(this->num_buckets-1);
-}
 
 template <class ELEMTYPE>
 ELEMTYPE histogram_1D<ELEMTYPE>::bucketpos_to_intensity(int bucketpos){
-	return this->min() + float(bucketpos)*get_scalefactor();
+	return this->min() + float(bucketpos)*this->get_scalefactor();
 }
 
 template <class ELEMTYPE>
@@ -575,7 +580,7 @@ int histogram_1D<ELEMTYPE>::intensity_to_bucketpos(ELEMTYPE intensity){
 		return this->num_buckets-1;
 	}
 
-	return (intensity - this->min())/get_scalefactor();	//jk-complex
+	return (intensity - this->min())/this->get_scalefactor();	//jk-complex
 }
 
 template <class ELEMTYPE>
@@ -588,7 +593,7 @@ void histogram_1D<ELEMTYPE>::add_histogram_data(histogram_1D<ELEMTYPE> *hist2){
 	}else{
 		pt_error::error("histogram_1D - add_histogram_data - not same size...",pt_error::debug);
 	}
-	this->bucket_vector->config_x_axis(get_scalefactor(), this->min());
+	this->bucket_vector->config_x_axis(this->get_scalefactor(), this->min());
 }
 
 template <class ELEMTYPE>
@@ -598,7 +603,7 @@ void histogram_1D<ELEMTYPE>::clear_zero_intentisty_bucket(){
 		//this->buckets[zero_bucket_pos] = 0;
 		this->bucket_vector->at(zero_bucket_pos) = 0;
 	}
-	this->bucket_vector->config_x_axis(get_scalefactor(), this->min());
+	this->bucket_vector->config_x_axis(this->get_scalefactor(), this->min());
 }
 
 
@@ -609,7 +614,7 @@ void histogram_1D<ELEMTYPE>::set_sum_of_bucket_contents_to_value(double value){ 
 		//this->buckets[i] *= scale_factor;
 		this->bucket_vector->at(i) *= scale_factor;
 	}
-	this->bucket_vector->config_x_axis(get_scalefactor(), this->min());
+	this->bucket_vector->config_x_axis(this->get_scalefactor(), this->min());
 }
 
 template <class ELEMTYPE>
@@ -629,7 +634,7 @@ void histogram_1D<ELEMTYPE>::logarithm(int zero_handling)
 		else if (zero_handling==2) 
 			{this->bucket_vector->at(i) = std::numeric_limits<ELEMTYPE>::min();}
 	}
-	this->bucket_vector->config_x_axis(get_scalefactor(), this->min());
+	this->bucket_vector->config_x_axis(this->get_scalefactor(), this->min());
 }
 
 template <class ELEMTYPE>
@@ -688,7 +693,7 @@ void histogram_1D<ELEMTYPE>::smooth_mean(int nr_of_neighbours, int nr_of_times, 
 //			smooth(5, nr_of_times, end_filt, to);
 		}
 	}
-	this->bucket_vector->config_x_axis(get_scalefactor(), this->min());
+	this->bucket_vector->config_x_axis(this->get_scalefactor(), this->min());
 	delete res;
 }
 

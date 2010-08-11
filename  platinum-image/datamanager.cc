@@ -411,6 +411,14 @@ void datamanager::delete_all()
 	}
 }
 
+void datamanager::delete_all_if_true(bool b)
+{
+	if(b){
+		this->delete_all();
+	}
+}
+
+
 // Use delete_data() to remove data (data_base::~data_base() calls remove_data() after the allocated memory is removed)
 void datamanager::remove_data(int id)
 {
