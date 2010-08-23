@@ -51,7 +51,7 @@ void brainops::get_val_from_cube(image_integer<unsigned short,3> *T1, int x, int
 	var = (variance - sum*mean)/125;
 
 }
-image_binary<3>* brainops::fit_WM_cube_and_grow_accordingly(image_integer<unsigned short,3> *T1, int &thresh, float q1, float q2){
+image_binary<3>* brainops::fit_WM_cube_and_grow_accordingly(image_integer<unsigned short,3> *T1, int &thresh, Vector3D &p , float q1, float q2){
 	image_binary<3> *mask;
 	Vector3D pos = create_Vector3Dint(0,0,0);
 	float max = 0;
@@ -74,6 +74,7 @@ image_binary<3>* brainops::fit_WM_cube_and_grow_accordingly(image_integer<unsign
 			}
 		}
 	}
+	p = pos;
 	std::stack<Vector3Dint> seed;
 	for(int i = pos[0]-2; i <= pos[0]+2; i++){
 		for(int j = pos[1]-2; j <= pos[1]+2; j++){

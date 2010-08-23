@@ -33,7 +33,7 @@ class brainops{
 	public:
 		static void remove_bg(vector<image_scalar<unsigned short,3>* > brain);
 		static void get_val_from_cube(image_integer<unsigned short,3> *T1, int x, int y, int z, float &mean, float &var);
-		static image_binary<3>* fit_WM_cube_and_grow_accordingly(image_integer<unsigned short,3> *T1, int &thresh, float q1, float q2);
+		static image_binary<3>* fit_WM_cube_and_grow_accordingly(image_integer<unsigned short,3> *T1, int &thresh, Vector3D &p , float q1, float q2);
 };
 
 #endif __brainops__
