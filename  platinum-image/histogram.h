@@ -84,6 +84,9 @@ class histogram_base
 		//do variance, max, choose number of buckets and the like... omitting the num_buckets parameter uses current stored resolution 
 		virtual void calculate_from_image_data(int number_of_buckets=0) {}      
 		virtual void data_has_changed(){}; //Updates statistics from the *buckets data
+		unsigned short get_num_buckets(){return num_buckets;}
+		unsigned long get_bucket_max(){return bucket_max;}
+		
 		curve_scalar<unsigned long>* get_curve_for_rendering();
 
 		virtual void render_threshold (unsigned char * image, unsigned int w,unsigned int h) {}; 
@@ -187,6 +190,8 @@ class histogram_1D : public histogram_typed<ELEMTYPE> //horizontal 1D graph hist
 
 		void save_histogram_to_txt_file(std::string filepath, gaussian *g=NULL, bool reload_hist_from_image=false, std::string separator="\t");
 		void save_histogram_to_txt_file(std::string filepath, vector<gaussian> v, bool reload_hist_from_image=false, std::string separator="\t");
+
+		void save_histogram_to_tif_file(std::string filepath_base, int ny=500, gaussian *g=NULL);
 		
 		ELEMTYPE bucketpos_to_intensity(int bucketpos);
 		int intensity_to_bucketpos(ELEMTYPE intensity);
@@ -249,6 +254,8 @@ class histogram_1D : public histogram_typed<ELEMTYPE> //horizontal 1D graph hist
 		ELEMTYPE get_min_value_in_bucket_range(int from, int to, int &min_val_bucket_pos);
 		ELEMTYPE get_max_value_in_bucket_range(int from, int to);
 		ELEMTYPE get_max_value_in_bucket_range(int from, int to, int &max_val_bucket_pos);
+		double get_max_value_in_bucket_range_using_averaging(int from, int to, int mean_nbh, int &max_val_bucket_pos);
+
 		float get_mean_intensity_in_bucket_range(int from, int to, bool exclude_zero_int_bucket=false);
 		float get_mean_intensity(bool exclude_zero_int_bucket=false);
 		float get_hist_mean();

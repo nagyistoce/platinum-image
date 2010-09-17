@@ -565,6 +565,33 @@ void histogram_1D<ELEMTYPE>::save_histogram_to_txt_file(std::string filepath, ve
 	}
 
 
+template <class ELEMTYPE>
+void histogram_1D<ELEMTYPE>::save_histogram_to_tif_file(std::string filepath_base, int ny, gaussian *g)
+{
+	int nx = this->get_num_buckets();
+//	int ny=500;
+	float y_scale = float(ny) / (this->get_bucket_max()+1); //"rendered pixels per histogram height"
+
+	image_scalar<unsigned char,3> *im = new image_scalar<unsigned char,3>(nx,ny,1);
+	im->fill(255);
+	
+	float this_y;
+
+	for(int i=0;i<nx;i++){
+		this_y = this->bucket_vector->at(i);
+		im->set_voxel(i, (im->ny()-1) - this_y*y_scale, 0, 0);
+		
+		if(g != NULL){
+			this_y = g->evaluate_at( this->bucketpos_to_intensity(i) );
+			im->set_voxel(i, (im->ny()-1) - this_y*y_scale, 0, 100);
+		}
+		
+	}
+	
+	im->save_to_TIF_file_series_3D(filepath_base, 2, 0, 0);
+	delete im;
+}
+
 
 template <class ELEMTYPE>
 ELEMTYPE histogram_1D<ELEMTYPE>::bucketpos_to_intensity(int bucketpos){
@@ -756,7 +783,7 @@ ELEMTYPE histogram_1D<ELEMTYPE>::get_bucket_at_histogram_lower_percentile(float 
 	//if histogram comes from masked region... following line wont work....
 	//float num_elem_limit = float(this->images[0]->get_num_elements())*percentile;
 
-	unsigned short the_zero_bucket = this->intensity_to_bucketpos(0);
+	int the_zero_bucket = this->intensity_to_bucketpos(0);
 
 	float num_elem_limit=0;
 	if( ignore_zero_intensity && (the_zero_bucket>=0) && (the_zero_bucket<this->num_buckets) ){
@@ -802,7 +829,7 @@ ELEMTYPE histogram_1D<ELEMTYPE>::get_bucket_at_histogram_higher_percentile(float
 	//if histogram comes from masked region... following line wont work....
 	//float num_elem_limit = float(this->images[0]->get_num_elements())*percentile;
 
-	unsigned short the_zero_bucket = this->intensity_to_bucketpos(0);
+	int the_zero_bucket = this->intensity_to_bucketpos(0);
 
 	float num_elem_limit=0;
 	if( ignore_zero_intensity && (the_zero_bucket>=0) && (the_zero_bucket<this->num_buckets) ){//the "zero_bucket" might be missing (the histogram might for example be created from a masked region...)
@@ -1109,6 +1136,13 @@ ELEMTYPE histogram_1D<ELEMTYPE>::get_max_value_in_bucket_range(int from, int to,
 }
 
 template <class ELEMTYPE>
+double histogram_1D<ELEMTYPE>::get_max_value_in_bucket_range_using_averaging(int from, int to, int mean_nbh, int &max_val_bucket_pos)
+{
+	return this->bucket_vector->get_maximum_value_in_range_using_averaging(from,to,mean_nbh,max_val_bucket_pos);
+}
+
+
+template <class ELEMTYPE>
 float histogram_1D<ELEMTYPE>::get_mean_intensity_in_bucket_range(int from, int to, bool exclude_zero_int_bucket)
 {
 //	return this->bucket_vector->get_mean_in_range(from, to);
@@ -1178,7 +1212,7 @@ template <class ELEMTYPE>
 int histogram_1D<ELEMTYPE>::get_bucket_pos_with_largest_value_in_bucket_range(int from, int to)
 {
 	int pos=0;
-	(this->bucket_vector)->get_max_value_in_range(from, to, pos);
+	(this->bucket_vector)->get_maximum_value_in_range(from, to, pos);
 	return pos;
 }
 

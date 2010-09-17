@@ -832,7 +832,7 @@ void FLTKgeom_image::rotation_update_cb ( Fl_Widget * w, void * )
 	
 	for ( int c = 0; c < nc; c++ )
 	{
-		if ( matrix3d = dynamic_cast<FLTKMatrix3D *>( g->child(c) ) )
+		if( (matrix3d=dynamic_cast<FLTKMatrix3D*>(g->child(c))) )
 			{ break; }
 	}
 	

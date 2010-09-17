@@ -1153,7 +1153,7 @@ image_scalar<ELEMTYPE, IMAGEDIM>* image_scalar<ELEMTYPE, IMAGEDIM>::contract_bor
 template <class ELEMTYPE, int IMAGEDIM>
 image_scalar<ELEMTYPE, IMAGEDIM>* image_scalar<ELEMTYPE, IMAGEDIM>::crop_and_return_3D(image_binary<3> *mask)
 {
-	image_scalar<ELEMTYPE, IMAGEDIM>* res;
+	image_scalar<ELEMTYPE, IMAGEDIM>* res = NULL;
 	if(this->same_size(mask)){
 		//jk-????... implement here... //if a return value is given in a similar function... also implement in all image_classes...
 		res = this->get_subvolume_from_region_3D(mask);
@@ -2295,9 +2295,9 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::smooth_3D(Vector3D r)
 		float num_neighbours = (1+2*r[0])*(1+2*r[1])*(1+2*r[2]);
 		float sum = 0;
 		float mean1 = 0;
-		float tmp = 0;
-		float limit = 100;
-		float num_counted = 0;
+//		float tmp = 0;
+//		float limit = 100;
+//		float num_counted = 0;
 
 //		cout<<"k=";
 		for(int k=r[2]; k < this->datasize[2]-r[2]; k++){

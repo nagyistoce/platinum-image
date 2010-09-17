@@ -84,11 +84,13 @@ public:
 	~pts_vector(void){};
 
 	//Moved from pt vector
+	ELEMTYPE get_maximum_in_range(int from, int to);
 	ELEMTYPE get_maximum_in_range(int from, int to, int &max_val_index_pos);
 	ELEMTYPE get_minimum_in_range(int from, int to, int &min_val_index_pos);
+	double get_maximum_value_in_range_using_averaging(int from, int to,int mean_nbh, int &max_val_bucket_pos);
 
-	ELEMTYPE get_max_value_in_range(int from, int to);
-	ELEMTYPE get_min_value_in_range(int from, int to);
+//	ELEMTYPE get_max_value_in_range(int from, int to);
+//	ELEMTYPE get_min_value_in_range(int from, int to);
 	float get_variance_in_range(int from, int to);
 	float get_variance_in_range_in_units(int from, int to);
 	void mean_value_smoothing(int filter_size);
@@ -145,11 +147,18 @@ template<class ELEMTYPE>
 pts_vector<ELEMTYPE>::pts_vector(int start_size) : pt_vector<ELEMTYPE>(start_size){
 	
 }
+
+template<class ELEMTYPE>
+ELEMTYPE pts_vector<ELEMTYPE>::get_maximum_in_range(int from, int to){
+	int dummy;
+	return this->get_maximum_in_range(from, to, dummy);
+}
+
 /* Looks in a specified range and returns the maximum value found */
 template<class ELEMTYPE>
 ELEMTYPE pts_vector<ELEMTYPE>::get_maximum_in_range(int from, int to, int &max_val_index_pos){
 	ELEMTYPE maximum = numeric_limits<ELEMTYPE>::min();
-	if(this->size() < from)
+	if( (from<0) || (from>this->size()) )
 		return NULL;
 	maximum = this->at(from);
 	max_val_index_pos = from;
@@ -182,6 +191,34 @@ ELEMTYPE pts_vector<ELEMTYPE>::get_minimum_in_range(int from, int to, int &min_v
 	return minimum;
 }
 
+template<class ELEMTYPE>
+double pts_vector<ELEMTYPE>::get_maximum_value_in_range_using_averaging(int from, int to, int mean_nbh, int &max_val_bucket_pos)
+{
+	if( (from<0) || (from>this->size()) || (to<0) )
+		return NULL;
+
+	double maximum = numeric_limits<ELEMTYPE>::min();
+	int a = mean_nbh/2;
+	from = from + a;
+	to = to - a;
+	
+	maximum = this->get_mean_in_range(from-a,from+a);
+	max_val_bucket_pos = from;
+	double this_mean=0;
+	
+	for(int i = from; i<=to && ((i+a)<this->size()); i++){
+		this_mean = this->get_mean_in_range(i-a,i+a);
+		if(this_mean > maximum){
+			maximum = this_mean;
+			max_val_bucket_pos = i;
+		}
+	}
+	return maximum;
+}
+
+
+
+/*
 template <class ELEMTYPE>
 ELEMTYPE pts_vector<ELEMTYPE>::get_max_value_in_range(int from, int to)
 {
@@ -209,6 +246,7 @@ ELEMTYPE pts_vector<ELEMTYPE>::get_min_value_in_range(int from, int to)
 
 	return min_value;
 }
+*/
 
 /* Returns the slope of the curve at a specified location */
 template<class ELEMTYPE>
@@ -467,7 +505,6 @@ void pts_vector<ELEMTYPE>::fit_gaussian_to_intensity_range(float &amp, float &ce
 //	cout<<"this->size()="<<this->size()<<endl;
 //	cout<<"from_int="<<from_int<<endl;
 //	cout<<"to_int="<<to_int<<endl;
-//	cout<<"this->get_max_value_in_range(0,3)="<<this->get_max_value_in_range(0,3)<<endl;
 //	this->print_pts_vector_info();
 
 	int from_bucket = std::max(0, this->from_val_to_x(from_int));
@@ -476,9 +513,9 @@ void pts_vector<ELEMTYPE>::fit_gaussian_to_intensity_range(float &amp, float &ce
 //	cout<<"to_bucket="<<to_bucket<<endl;
 
 	gaussian g(amp,center,sigma);
-	g.amplitude = float(this->get_max_value_in_range(from_bucket,to_bucket));
+	g.amplitude = float(this->get_maximum_in_range(from_bucket,to_bucket));
 	g.center = this->from_x_to_val(float(to_bucket+from_bucket)/2.0); 
-//	g.center = this->get_max_value_in_range(from_bucket,to_bucket);
+//	g.center = this->get_maximum_value_in_range(from_bucket,to_bucket);
 	g.sigma = sqrt(this->get_variance_in_range(from_bucket,to_bucket)); //intensity variance...
 	int dyn_from_bucket = std::max(from_bucket, this->from_val_to_x(g.center-1.5*g.sigma));
 	int dyn_to_bucket = std::min(to_bucket, this->from_val_to_x(g.center+1.5*g.sigma));
@@ -750,7 +787,7 @@ vnl_vector<double> pts_vector<ELEMTYPE>::get_vnl_vector_with_start_guess_of_num_
 		//height
 		//center (intensity)
 		//SD (int)
-		x[i*3+0] = this->get_max_value_in_range(from_bucket,to_bucket);
+		x[i*3+0] = this->get_maximum_in_range(from_bucket,to_bucket);
 		x[i*3+1] = from_x_to_val(this->get_x_at_lower_percentile( float(i+0.5)/float(num_gaussians), true ));
 //		x[i*3+1] = this->get_x_at_lower_percentile( float(i+0.5)/float(num_gaussians), true );
 		x[i*3+2] = sqrt(this->get_variance_in_range_in_units(from_bucket,to_bucket));
@@ -862,7 +899,7 @@ void pts_vector<ELEMTYPE>::fit_rayleigh_distr_to_intensity_range(float &amp, flo
 	ELEMTYPE hist_max = m_temp[1];
 	hist_max_val_bucket_pos = m_temp[0];
 	free(m_temp);
-	//ELEMTYPE hist_max = this->get_max_value_in_range(this->from_val_to_x(from_int),this->from_val_to_x(to_int), hist_max_val_bucket_pos);
+	//ELEMTYPE hist_max = this->get_maximum_value_in_range(this->from_val_to_x(from_int),this->from_val_to_x(to_int), hist_max_val_bucket_pos);
 	ELEMTYPE intensity_at_hist_max = this->from_x_to_val(hist_max_val_bucket_pos);
 
 //	x[1] = sqrt(2.0)*intensity_at_hist_max; //M = sqrt(2)*intensity_at_hist_max
