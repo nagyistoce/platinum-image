@@ -647,14 +647,6 @@ int main(int argc, char *argv[])
 	//	userIOmanagement.add_par_voxelseed(rg_ID,"Seed");
 	//	userIOmanagement.finish_userIO(rg_ID);
 
-	/*
-	int test_ID=userIOmanagement.add_userIO("Test..",test_function,"Test..");
-	userIOmanagement.finish_userIO(test_ID);
-
-	int hist_ID=userIOmanagement.add_userIO("Histogram saving..",hist_function,"Save..");
-	userIOmanagement.add_par_image(hist_ID,"Image");
-	userIOmanagement.finish_userIO(hist_ID);
-	*/
 
 	/*
 
@@ -697,7 +689,7 @@ int main(int argc, char *argv[])
 	userIOmanagement.finish_userIO(reslice_ID);
 
 	//-------------
-
+*/
 	int t1_mapping_ID=userIOmanagement.add_userIO("T1-Mapping calculator",t1_mapping_function,"Map T1");
 	userIOmanagement.add_par_image(t1_mapping_ID,"Large flip volume");
 	userIOmanagement.add_par_float_box(t1_mapping_ID,"TR (Overrides dcm info, if not 0)",5000,0);
@@ -709,7 +701,7 @@ int main(int argc, char *argv[])
 	userIOmanagement.add_par_longint_box(t1_mapping_ID,"Flip angle (0-180)",180,0);
 	userIOmanagement.add_par_string(t1_mapping_ID,"Small - Dcm file (leave empty if not needed)","C:/Joel/flip30.dcm");
 	userIOmanagement.finish_userIO(t1_mapping_ID);
-
+/*
 
 
 	//-------------

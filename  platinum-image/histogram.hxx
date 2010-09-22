@@ -595,7 +595,10 @@ void histogram_1D<ELEMTYPE>::save_histogram_to_tif_file(std::string filepath_bas
 
 template <class ELEMTYPE>
 ELEMTYPE histogram_1D<ELEMTYPE>::bucketpos_to_intensity(int bucketpos){
-	return this->min() + float(bucketpos)*this->get_scalefactor();
+//	return this->min() + float(bucketpos)*this->get_scalefactor();
+	float mi = this->min();
+	float sf = this->get_scalefactor();
+	return mi + float(bucketpos)*sf;
 }
 
 template <class ELEMTYPE>
@@ -1158,8 +1161,14 @@ float histogram_1D<ELEMTYPE>::get_mean_intensity_in_bucket_range(int from, int t
 		sum = sum/float( this->num_elements_in_hist - this->bucket_vector->at(zero_bucket_pos) );
 
 	}else{
+		float at;
+		float inten;
+
 		for(int i=from; i<=to; i++){
-			sum += this->bucket_vector->at(i) * this->bucketpos_to_intensity(i);
+//			sum += this->bucket_vector->at(i) * this->bucketpos_to_intensity(i);
+			at = this->bucket_vector->at(i);
+			inten = this->bucketpos_to_intensity(i);
+			sum += at*inten;
 		}
 
 		sum = sum/float(this->num_elements_in_hist);

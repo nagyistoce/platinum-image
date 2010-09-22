@@ -1358,9 +1358,9 @@ vector<string> subdirs(string dir_path, bool fullpath)
 }
 
 
-vector<string> subdirs_where_name_contains(string dir_path, string name_substring)
+vector<string> subdirs_where_name_contains(string dir_path, string name_substring, bool fullpath)
 {
-	vector<string> sub = subdirs(dir_path);
+	vector<string> sub = subdirs(dir_path, fullpath);
 	vector<string> sub2;
 
 	for(int i=0;i<sub.size();i++){

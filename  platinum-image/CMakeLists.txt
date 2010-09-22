@@ -65,7 +65,7 @@ INCLUDE_DIRECTORIES( Apps/T1Mapping)						#Modify this line to include applicati
 IF(WIN32)
   #dirent.h has to be hidden from UNIX compilers
   INCLUDE_DIRECTORIES( Utilities/dirent-win32 )
-  SET(WIN32_DIRENT_SRC Utilities/dirent-win32/dirent.c)
+  SET(WIN32_DIRENT_SRC Utilities/dirent-win32/dirent.cc)
   SET(WIN32_DIRENT_HEAD Utilities/dirent-win32/dirent.h)
 ENDIF(WIN32)
 

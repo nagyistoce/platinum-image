@@ -59,7 +59,7 @@ vector<string> get_dir_entries_ending_with(string path, string ending);    //ret
 string path_parent(string);                         //!get parent (full path except file/indicated dir)
 string path_end(string);                            //!get file/dir name pointed to without path
 vector<string> subdirs(string dir_path, bool fullpath=true);			//!get immediate subdirectories (full paths)
-vector<string> subdirs_where_name_contains(string dir_path, string name_substring);			//!get immediate subdirectories (full paths)
+vector<string> subdirs_where_name_contains(string dir_path, string name_substring, bool fullpath=true);			//!get immediate subdirectories 
 vector<string> get_files_in_dir_where_name_contains(string dir_path, string name_substring, bool fullpath=true);
 
 bool file_exists(string file_path);   //! return whether file exists. //! NOTE: returns false for existing directory

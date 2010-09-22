@@ -1039,7 +1039,7 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::appl_1D_SIM_bias_correction(image_binary<
 				}
 			}
 		}
-//		tmp_field->save_to_file( "tmp_SIM_fields_" + int2str(iter) + ".vtk" );
+		tmp_field->save_to_file( "tmp_SIM_fields_" + int2str(iter) + ".vtk" );
 
 
 		// Smooth in each direction
