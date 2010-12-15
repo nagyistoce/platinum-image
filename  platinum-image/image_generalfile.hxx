@@ -653,6 +653,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::save_to_DCM_file2(const std::string file
 		// The brutal rotation of the orientation matrix was used before and after saving instead...
 		//itk::EncapsulateMetaData<std::string>( dictionary, DCM_IMAGE_POSITION_PATIENT, "1\\2\\3" );
 		//itk::EncapsulateMetaData<std::string>( dictionary, DCM_IMAGE_ORIENTATION_PATIENT, this->get_orientation_as_dcm_string() );
+		itk::EncapsulateMetaData<std::string>( dictionary, DCM_TE, float2str(this->meta.get_te()) );
 	}
 
     try{
@@ -899,7 +900,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::save_to_raw_file(const std::string file_
 template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::save_to_NIFTI_file(const std::string file_path)
 {
-	cout<<"save_to_NIFTI_file..."<<endl;    //port image to ITK image and save it as NIFTI (.nii) file
+	//cout<<"save_to_NIFTI_file..."<<endl;    //port image to ITK image and save it as NIFTI (.nii) file
 
 	typename theWriterType::Pointer writer = theWriterType::New();
 	typename itk::OrientedImage<ELEMTYPE, IMAGEDIM >::Pointer image = get_image_as_itk_output();
@@ -1019,7 +1020,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::write_additional_data(image_binary<IMAGE
 			if(point[0]>=0 && point[0] < x && point[1]>=0 && 
 				point[1] < y && point[2]>=0 && point[2] < z ){
 				//add voxel to image
-				bin_image->set_voxel(point,1);
+				bin_image->set_voxel(point,255);
 				count++;
 			}
 		}
