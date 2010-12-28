@@ -120,7 +120,6 @@ Mesh.h
 meta_tool.h 
 metadata.h 
 off_parser.h
-optimization.h
 platinumprogram.h 
 point_collection.h 
 points_seq_func1D.h 
@@ -207,7 +206,6 @@ Mesh.cc
 meta_tool.cc
 metadata.cc 
 off_parser.cc
-optimization.cc
 point.cc 
 point_collection.cc 
 points_seq_func1D.hxx 
@@ -370,7 +368,6 @@ image_storage.h
 Mesh.h
 metadata.h 
 off_parser.h
-optimization.h
 point.h 
 point_collection.h 
 points_seq_func1D.h 
@@ -395,7 +392,6 @@ image_storage.hxx
 Mesh.cc
 metadata.cc 
 off_parser.cc
-optimization.cc
 point_collection.cc 
 point.cc 
 points_seq_func1D.hxx 

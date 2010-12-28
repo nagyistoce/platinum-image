@@ -124,7 +124,7 @@ public:
 	image_integer<unsigned long,3>* label_connected_objects_with_volume_3D(IMGBINARYTYPE object_value=TRUE); ///Get image_integer from connected objects in binary with labels corresponding to object volume.
 	void largest_object_3D(IMGBINARYTYPE object_value=TRUE); ///Keep the largest object (defined by object_value).
 	void largest_objects_3D(int num_objects=2, IMGBINARYTYPE object_value=TRUE); ///Keep the x largest objects (defined by object_value).
-	void erode_3D(int thickness=3, IMGBINARYTYPE object_value=TRUE);///Morphological erode up to distance value=thickness.
+	void erode_3D(int thickness=3, IMGBINARYTYPE object_value=TRUE, bool edge_is_object=false);///Morphological erode up to distance value=thickness.
 	void erode_euclidean_3D(float thickness, IMGBINARYTYPE object_value=TRUE); // Morphological erode up to physical euclidean distance value=thickness in mm.
 	//JK - there is a bug in dilate3D... An in-slice line (with 2 segments...) is sometimes seen....
 	void dilate_3D(int thickness=3, IMGBINARYTYPE object_value=TRUE); ///Morphological dilate up to distance value=thickness.

@@ -485,6 +485,20 @@ void image_storage<ELEMTYPE >::map_values_using_gaussian(gaussian* g)
 		}
 	}
 
+template <class ELEMTYPE >
+void image_storage<ELEMTYPE >::limit_data_range(ELEMTYPE min_val, ELEMTYPE max_val)
+{
+	typename image_storage<ELEMTYPE>::iterator i = this->begin();
+	while(i != this->end()){
+		if(*i>max_val){
+			*i = max_val;
+		}else if(*i<min_val){
+			*i = min_val;
+		}
+		++i;
+	}
+}
+
 
 template <class ELEMTYPE >
 int image_storage<ELEMTYPE >::get_number_of_voxels_with_value(ELEMTYPE val)

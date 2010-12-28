@@ -1314,7 +1314,7 @@ bool string_contains(string s, string sample)
 
 void get_vector_of_substrings_separated_by(string s, string separator, vector<string> &v){
 //	cout<<"s="<<s<<endl;
-	int ind = s.find("\t");
+	int ind = s.find(separator);
 	if(ind>=0&&ind<s.size()){
 		string substring = s.substr(0,ind);
 //		cout<<"substring="<<substring<<endl;

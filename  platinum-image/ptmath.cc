@@ -1434,3 +1434,36 @@ bool fit_points(const std::vector<Vector3D> & fixed, std::vector<Vector3D> & mov
 	
 	return true;
 }
+
+
+int fit_line(vector<float> &x, vector<float> &y, float &slope, float &intercept){
+	//For the line of best fit y=k*x+m:
+	//k = (n *Sxy - Sx * Sy) / (n * Sxx - Sx * Sx)
+	//m = (Sy - k * Sx) / n
+
+	if( x.size() != y.size() ){
+		return 0;
+	}
+
+	float n=x.size();		//number of points
+	float Sx=0;				//the SUM of all the X coordinates
+	float Sy=0;				//the SUM of all the Y coordinates
+	float Sxy=0;			//the SUM of all (x * y)
+	float Sxx=0;			//the SUM of all (x * x)
+
+	for(int i=0;i<n;i++){
+		Sx += x[i];
+		Sy += y[i];
+		Sxy += x[i]*y[i];
+		Sxx += x[i]*x[i];
+	}
+	float denom = (n*Sxx - Sx*Sx);
+
+	if( denom ==0 ){
+		return 0;
+	}
+
+	slope = (n*Sxy - Sx*Sy)/denom;
+	intercept = (Sy - slope*Sx)/n;
+	return 1;
+}

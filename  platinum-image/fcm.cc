@@ -229,9 +229,9 @@ void fcm::Update_imagefcm(float scale_percentile)
 		if(image_mask!=NULL){
 			perc = images[b]->get_histogram_from_masked_region_3D(image_mask)->get_intensity_at_histogram_lower_percentile(scale_percentile, false);
 		}else{
-			perc = images[b]->get_histogram()->get_intensity_at_histogram_lower_percentile(scale_percentile, false);
+			perc = images[b]->get_histogram()->get_intensity_at_histogram_lower_percentile(scale_percentile, true);
 		}
-		cout<<"band="<<b<<" max="<<images[b]->get_max()<<" perc="<<perc<<endl;
+		cout<<"band="<<b<<" max="<<images[b]->get_max()<<" intensity_at_percentile("<<scale_percentile<<")="<<perc<<endl;
 		images[b]->map_values(perc,10000000,perc);
 		images[b]->scale(0,1);
 		images[b]->data_has_changed();
@@ -348,6 +348,33 @@ void fcm::save_int_dist_images(string file_path_base)
 		int_dist_images[c]->save_to_file(file_path_base+"_"+int2str(c)+".vtk");
 	}
 }
+
+image_label<3>* fcm::get_class_labels()							//returns a crisp version of result (most probable membership)
+{
+	image_label<3> *res = new image_label<3>(int_dist_images[0]);	
+	float max_val=0;
+	float val=0;
+	int member=0;
+	for(int k=0;k<nz();k++){
+		for(int j=0;j<ny();j++){
+			for(int i=0;i<nx();i++){
+				max_val = u_images[0]->get_voxel(i,j,k);
+				member = 0;
+				for(int c=1;c<n_clust();c++){
+					val = u_images[c]->get_voxel(i,j,k);
+					if(val > max_val){
+						max_val = val;
+						member = c;
+					}
+				}
+				res->set_voxel(i,j,k,member);
+			}
+		}
+	}
+
+	return res;
+}
+
 
 
 fcm_image_vector_type fcm::get_membership_images()
@@ -788,9 +815,9 @@ void sfcm::Update_imagesfcm(float scale_percentile)
 		if(image_mask!=NULL){
 			intensity_at_percentile = images[b]->get_histogram_from_masked_region_3D(image_mask)->get_intensity_at_histogram_lower_percentile(scale_percentile, false);
 		}else{
-			intensity_at_percentile = images[b]->get_histogram()->get_intensity_at_histogram_lower_percentile(scale_percentile, false);
+			intensity_at_percentile = images[b]->get_histogram()->get_intensity_at_histogram_lower_percentile(scale_percentile, true);
 		}
-		cout<<"band="<<b<<" max="<<images[b]->get_max()<<" intensity_at_percentile="<<intensity_at_percentile<<endl;
+		cout<<"band="<<b<<" max="<<images[b]->get_max()<<" intensity_at_percentile("<<scale_percentile<<")="<<intensity_at_percentile<<endl;
 		images[b]->map_values(intensity_at_percentile,10000000,intensity_at_percentile);
 		images[b]->scale(0,1);
 		images[b]->data_has_changed();

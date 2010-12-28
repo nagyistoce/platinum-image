@@ -440,7 +440,7 @@ vector<edge*> Mesh::get_all_edges_with_vertex_id(int id){
 
 Vector3D Mesh::get_normal_to_vertex(vertex *v){
 	Vector3D n = create_Vector3D(0,0,0);
-	edge *e;
+	//edge *e;
 	vector<face*> fs;
 	vector<edge*> es = get_all_edges_with_vertex_id(v->id);
 	fs = get_all_faces_with_edges(es);

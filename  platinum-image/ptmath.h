@@ -507,4 +507,7 @@ double regularizedGamma(const unsigned int N, const double x);				// Regularized
 // fixedToMoving usage: fixedToMoving[index_of_fixed] = index_of_moving
 bool fit_points(const std::vector<Vector3D> & fixed, std::vector<Vector3D> & moving, const std::map<int,int> & fixedToMoving);
 
+
+int fit_line(vector<float> &x, vector<float> &y, float &slope, float &intercept);		// Least square fit line to 2D data.
+
 #endif	//__ptmath.h__

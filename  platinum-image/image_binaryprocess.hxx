@@ -160,22 +160,19 @@ void image_binary<IMAGEDIM>::fill_holes_2D(int direction, IMGBINARYTYPE object_v
 	max_v=this->get_size_by_dim_and_dir(1,direction);
 	max_w=this->get_size_by_dim_and_dir(2,direction);
 		
+	//Initiate labels
+
 	IMGBINARYTYPE p;//pixel value
 	int label,up,left;//neighbour labels 
-	//image_general<int, IMAGEDIM> label_image(max_u, max_v, max_w);
     image_integer<int, IMAGEDIM> * label_image = new image_integer<int, IMAGEDIM> (max_u, max_v, max_w);
 	int new_label;
-	//init labels
-	for(w=0; w<max_w; w++)
-		{
-		int number_of_objects=1;
-		for(v=0; v<max_v; v++)
-			{
-			for(u=0; u<max_u; u++)
-				{
+	int number_of_objects=1;
+	for(w=0; w<max_w; w++){
+		number_of_objects=1;
+		for(v=0; v<max_v; v++){
+			for(u=0; u<max_u; u++){
 				p=this->get_voxel_by_dir(u,v,w,direction);
-				if(p!=object_value)//Note: we want to label bkg-objects in order to remove holes
-					{
+				if(p!=object_value){					//Note: we want to label bkg-objects in order to remove holes
 					up=(v>0)? label_image->get_voxel(u,v-1,w) : 0;
 					left=(u>0)? label_image->get_voxel(u-1,v,w) : 0;
 					new_label=number_of_objects;
@@ -186,20 +183,44 @@ void image_binary<IMAGEDIM>::fill_holes_2D(int direction, IMGBINARYTYPE object_v
 					if(new_label==number_of_objects)
 						number_of_objects++;
 					label_image->set_voxel(u,v,w,new_label);
-					}
-				else
+				}else{
 					label_image->set_voxel(u,v,w,0);
 				}
 			}
+		}
+
+//		label_image->save_to_file("D:/Joel/Data/fill_01_label_image.vtk");
+
+		//Set all backrounds with connections to border to label "1" 
+		//(otherwise only backround connceted to top left corner is labelled 1 i.e. BG...) 
+
+		for(v=0; v<max_v; v=v+max_v-1){
+			for(u=0; u<max_u; u++){
+				p=this->get_voxel_by_dir(u,v,w,direction);
+				if(p!=object_value){
+					label_image->set_voxel(u,v,w, 1);
+				}
+			}
+		}
+		for(v=0; v<max_v; v++){
+			for(u=0; u<max_u; u=u+max_u-1){
+				p=this->get_voxel_by_dir(u,v,w,direction);
+				if(p!=object_value){
+					label_image->set_voxel(u,v,w, 1);
+				}
+			}
+		}
+	
+//		label_image->save_to_file("D:/Joel/Data/fill_02_label_image.vtk");
+
+		//Merge labels
+
 		int* changes=new int[number_of_objects];
 		int i;
 		for(i=0; i<number_of_objects; i++)
 			changes[i]=i;
-		//merge labels
-		for(v=0; v<max_v; v++)
-			{
-			for(u=0; u<max_u; u++)
-				{
+		for(v=0; v<max_v; v++){
+			for(u=0; u<max_u; u++){
 				label=label_image->get_voxel(u,v,w);
 				if(label>0)
 					{
@@ -224,6 +245,11 @@ void image_binary<IMAGEDIM>::fill_holes_2D(int direction, IMGBINARYTYPE object_v
 					}
 				}
 			}
+			//for(i=0; i<number_of_objects; i++){
+			//	cout<<"changes["<<i<<"]="<<changes[i]<<endl;
+			//}
+
+
 		int* lut=new int[number_of_objects];
 		memset(lut, 0, sizeof(int)*number_of_objects);
 		new_label=1;
@@ -240,15 +266,19 @@ void image_binary<IMAGEDIM>::fill_holes_2D(int direction, IMGBINARYTYPE object_v
 			else
 				lut[i]=lut[label];
 			}
+
+		//for(i=0; i<number_of_objects; i++){
+		//	cout<<"lut["<<i<<"]="<<lut[i]<<endl;
+		//}
+
+
 		//set all labels !=1 -> obj
-		for(v=0; v<max_v; v++)
-			{
-			for(u=0; u<max_u; u++)
-				{
+		for(v=0; v<max_v; v++){
+			for(u=0; u<max_u; u++){
 				label=label_image->get_voxel(u,v,w);
-				if(lut[label]==1)//First label is background
+				if(lut[label]==1)											//First label is background
 					this->set_voxel_by_dir(u,v,w,!object_value,direction);
-				else //all other labels are object
+				else														//all other labels are object
 					this->set_voxel_by_dir(u,v,w,object_value,direction);
 				}
 			}
@@ -256,8 +286,6 @@ void image_binary<IMAGEDIM>::fill_holes_2D(int direction, IMGBINARYTYPE object_v
 		delete[] lut;
 		}	
 
-	//this->image_has_changed();
-	//label_image->save_to_file("D:/Joel/TMP/SIM_0b_binary_body_label_image.vtk");
 	delete label_image;
 	}
 	
@@ -2072,12 +2100,10 @@ image_integer<short,IMAGEDIM>* image_binary<IMAGEDIM>::dijkstra_image_version(im
 		if(dist_u == std::numeric_limits<short>::max()){//No reachable voxels left
 			return parent_map;
 		}
-		//int* w = dijkstra_n26_weight(weight, u, x_change, y_change, z_change);
-		for(int i = 0; i <6; i++){
-			int alt = std::max(1,weight->get_voxel(u[0]+x_change[i],u[1]+y_change[i],u[2]+z_change[i])-weight->get_voxel(u));
-			//int alt = weight->get_voxel(u[0]+x_change[i],u[1]+y_change[i],u[2]+z_change[i]);
-			//int alt = 1 + abs(weight->get_voxel(u)-weight->get_voxel(u[0]+x_change[i],u[1]+y_change[i],u[2]+z_change[i]));
-			//int alt = w[i]+1;//alt_c[i];//alt_c[i] + w[i];
+		int* w = dijkstra_n26_weight(weight, u, x_change, y_change, z_change);
+		for(int i = 0; i <26; i++){
+			//int alt = alt_c[i] + (weight->get_voxel(u)-weight->get_voxel(u[0]+x_change[i],u[1]+y_change[i],u[2]+z_change[i]))+1;
+			int alt = alt_c[i];//alt_c[i] + w[i];
 			if(dijkstra_update(dist, u[0]+x_change[i],u[1]+y_change[i],u[2]+z_change[i],dist_u+alt))
 				parent_map->set_voxel(u[0]+x_change[i],u[1]+y_change[i],u[2]+z_change[i],par[i]);
 		}
@@ -2488,9 +2514,8 @@ void image_binary<IMAGEDIM>::outline_2D(int thickness, int direction, IMGBINARYT
 	}
 	
 template <int IMAGEDIM>
-void image_binary<IMAGEDIM>::erode_3D(int thickness, IMGBINARYTYPE object_value)
+void image_binary<IMAGEDIM>::erode_3D(int thickness, IMGBINARYTYPE object_value, bool edge_is_object)
 	{		
-	bool edge_is_object=false;
     image_integer<short, IMAGEDIM> * distance_image = distance_345_3D(edge_is_object, object_value);
 	image_binary <IMAGEDIM> * threshold_image = distance_image->threshold(thickness+1, std::numeric_limits<short>::max(), object_value);
 	delete distance_image;

@@ -1884,7 +1884,7 @@ template <class ELEMTYPE, int IMAGEDIM>
 ELEMTYPE image_general<ELEMTYPE, IMAGEDIM>::get_mean_in_region(int x,int y,int z, unsigned int radius)
 {
 	ELEMTYPE val = 0;
-	int count;
+	int count=0;
 
 	for(int w=std::max(0,int(z-radius)); w<=std::min(int(this->nz()-1),int(z+radius)); w++){
 		for(int v=std::max(0,int(y-radius)); v<=std::min(int(this->ny()-1),int(y+radius)); v++){
