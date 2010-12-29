@@ -107,8 +107,8 @@ class data_base
 		metadata meta;
 
         virtual void name(const std::string n);         //set name
-        virtual const std::string name() const;         //get name
-        virtual const char* name_ptr();					//get name
+        virtual const std::string name() const;         //get name copy
+        virtual const char* name_ptr();					//get name ptr
         bool from_file() const;
         void from_file(bool f); //set "from file" status
         virtual void save_to_DCM_file(const std::string, const bool useCompression = false, const bool anonymize = true) = 0;

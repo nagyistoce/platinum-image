@@ -118,6 +118,7 @@ public:
     
     void name(std::string n);
     const std::string name() const;
+    const char* name_ptr();
     
     void from_file(bool);
     bool from_file() const;

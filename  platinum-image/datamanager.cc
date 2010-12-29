@@ -720,49 +720,42 @@ void datamanager::data_vector_has_changed()
 }
 
 template <class OCLASS>
-Fl_Menu_Item * datamanager::object_menu ()
+Fl_Menu_Item* datamanager::object_menu()
 {    
     std::vector<OCLASS *> objects;
-    
     std::vector<data_base *>::iterator itr = dataItems.begin();
-    int m=0;
     
-    while (itr != dataItems.end())
-        {
-        OCLASS * ptr = dynamic_cast<OCLASS *>(*itr);
-		//Plan: lagg till vilkor som hamtar om den stodjs av aktuell rendrerare
-		//dynamic_cast<data_base*>(ptr).is_supported(aktuell rendrerare);
-        if (ptr != NULL)
-            { objects.push_back(ptr); }
-        
+	//Plan: lagg till vilkor som hamtar om den stodjs av aktuell rendrerare
+	//dynamic_cast<data_base*>(ptr).is_supported(aktuell rendrerare);
+
+	while(itr != dataItems.end()){
+        OCLASS * ptr = dynamic_cast<OCLASS *>(*itr); 		
+        if(ptr != NULL)
+            {objects.push_back(ptr);}
         itr++;
-        }
+    }
     
-    Fl_Menu_Item * newMenu = new Fl_Menu_Item[objects.size()+1];
-    
-    typename std::vector<OCLASS *>::iterator oitr = objects.begin();
-    
-    while (oitr != objects.end())
-        {
+
+    Fl_Menu_Item *newMenu = new Fl_Menu_Item[objects.size()+1];
+
+	typename std::vector<OCLASS *>::iterator oitr = objects.begin();
+    int m=0;
+    while(oitr != objects.end()){
         init_fl_menu_item(newMenu[m]);
-        
-//        string labelstring=datamanagement.get_data_name((*oitr)->get_id());
-//        char * menulabel=strdup(labelstring.c_str());
-			const char * menulabel = datamanagement.get_data_name_ptr((*oitr)->get_id());
-        
         newMenu[m].callback((Fl_Callback *)NULL,0);
         newMenu[m].argument((long)(*oitr)->get_id());
-        
+
+		//string labelstring=datamanagement.get_data_name((*oitr)->get_id());
+		//char * menulabel=strdup(labelstring.c_str());
+		const char * menulabel = datamanagement.get_data_name_ptr((*oitr)->get_id());
         newMenu[m].label(menulabel);
-        
         m++;
         oitr++;
-        }
+	}
     
     //terminate menu
     init_fl_menu_item(newMenu[m]);
     newMenu[m].label(NULL);
-    
     return newMenu;
 }
 

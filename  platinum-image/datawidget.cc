@@ -262,6 +262,11 @@ const string datawidget_base::name() const
     return std::string(_name);
     }
 
+const char* datawidget_base::name_ptr()
+    {
+		return _name.c_str();
+    }
+
 void datawidget_base::name(std::string n)
     {
     _name.assign(n);

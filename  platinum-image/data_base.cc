@@ -62,7 +62,7 @@ const string data_base::name() const
 {
     if (widget != NULL)
 	{
-        return widget->name();
+        return widget->name();	//returns a copy
 	}
 	
     return ( "(untitled)" );
@@ -72,10 +72,9 @@ const char* data_base::name_ptr()
 {
     if (widget != NULL)
 	{
-        return widget->name().c_str();
+        return widget->name_ptr();
 	}
-	
-    return string("(untitled)").c_str();
+    return string("(widget==NULL)").c_str();
 }
 
 data_base::data_base(data_base *const source, vector<RENDERER_TYPE> supported)
