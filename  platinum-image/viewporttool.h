@@ -55,17 +55,23 @@ private:
     //static std::map<std::string, taste_fcn_pointer> tools;
     static std::map<std::string, vpt_create_pointer> tools;
     
-    static std::string selected;  //key for the currently selected tool
+    static std::string selected;	//key for the currently selected tool
+	static std::vector<std::string> name_vector;
+	static std::vector<std::string> letter_vector;
+	//string name;					//buffered to avoid memory leaks due to strdup...
+
     static void cb_toolbutton (Fl_Widget *,void *);
     
     template <class TOOL>
         static void Register ();
     template <class TOOL>
         static viewporttool *CreateObject(viewport_event &event);
+
 protected:
     image_base *    image; //do dynamic_cast to whatever class that is needed //TITTA HaR!!!
     viewport *      myPort;
     renderer_base * myRenderer; 
+
 public:
     //static void Register (std::string,vpt_ctor_pointer);
     
@@ -76,7 +82,7 @@ public:
     viewporttool(viewport_event &);
     virtual ~viewporttool();
     
-    static void init (int x, int y,statusarea *);
+    static void init(int x, int y,statusarea *);
     
     static void select (const std::string);
 	static void select_only( const std::string key );
@@ -152,8 +158,6 @@ public:
 
 
 class freeform_ROI_tool : public viewporttool
-{
-
-};
+{};
 
 #endif

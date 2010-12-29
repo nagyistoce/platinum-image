@@ -45,6 +45,8 @@ extern userIOmanager userIOmanagement;
 Fl_Pack * viewporttool::toolbox = NULL;
 statusarea * viewporttool::statusArea = NULL;
 std::string viewporttool::selected = "";
+std::vector<std::string> viewporttool::name_vector = std::vector<std::string>();
+std::vector<std::string> viewporttool::letter_vector = std::vector<std::string>();
 std::map<std::string, viewporttool::vpt_create_pointer> viewporttool::tools = std::map<std::string, viewporttool::vpt_create_pointer>  ();
 
 template <class TOOL>
@@ -60,12 +62,11 @@ viewporttool * viewporttool::CreateObject(viewport_event &event)
     return new TOOL (event);
 }
 
-void viewporttool::init (int posX, int posY,statusarea * s)
+void viewporttool::init(int posX, int posY, statusarea *s)
 {
     statusArea = s;
     
-    //register tool classes
-    
+    //-------- register tool classes --------------
     viewporttool::Register<nav_tool>();
     //viewporttool::Register<dummy_tool>();
     viewporttool::Register<cursor_tool>();
@@ -76,16 +77,15 @@ void viewporttool::init (int posX, int posY,statusarea * s)
 	viewporttool::Register<draw_tool>();
 	//TODO_R L‰gg till curve_tool h‰r sen
     
-    selected = "Navigation";
-	//selected = "Curve manipulation tool"; //ƒndra start
+    selected = "Navigation";	//selected = "Curve manipulation tool";
     
     //create toolbox widget
     const bool horizontal = true;
 
     toolbox = new Fl_Pack (posX,posY,1,statusArea->h());
-    
+  
     if (horizontal)
-        { toolbox->type(FL_HORIZONTAL);}
+        {toolbox->type(FL_HORIZONTAL);}
     else
         {toolbox->type(FL_VERTICAL);};
         
@@ -95,45 +95,35 @@ void viewporttool::init (int posX, int posY,statusarea * s)
     
     toolbox->begin();
     
-    for (std::map<std::string, vpt_create_pointer>::iterator i = tools.begin();i != tools.end();i++)
-        {
-        std::string name = i->first;
-        Fl_Button * button = new Fl_Button (x,y,buttonSize,buttonSize);
-		button->label(strdup(name.substr(0,1).c_str()));
-		//button->tooltip(strdup(name.c_str()));
-		//button->label(name.substr(0,1).c_str());
-		button->tooltip(name.c_str());
-			
+    for(std::map<std::string, vpt_create_pointer>::iterator i = tools.begin();i != tools.end();i++){
+
+		Fl_Button * button = new Fl_Button (x,y,buttonSize,buttonSize);
+		button->label( strdup(i->first.substr(0,1).c_str()) );	//a substring is created from the first letter, this is casted to a c_str and duplicated,  --> memory is unfortunately lost
+		button->tooltip( i->first.c_str() );
+
         button->box(FL_UP_BOX);
         button->down_box(FL_DOWN_BOX);
         button->type(FL_RADIO_BUTTON);
         button->callback(cb_toolbutton,(void*)&(i->first));
 
-        if (name == selected)
-            { button->set(); }
-        
-        if (horizontal)
-            { 
+        if(i->first == selected){
+			button->set(); 
+		}
+        if(horizontal){ 
             x += buttonSize; 
-            }
-        else
-            { 
+        }else{ 
             y += buttonSize;
-            }
         }
+    }
     
-    if (horizontal)
-        { 
+    if(horizontal){ 
         y = buttonSize;
-        }
-    else
-        { 
+    }else{ 
         x = buttonSize;
-        }
-    
+    }
     toolbox->resize(posX,posY,x,y);
     toolbox->end();
-    }
+}
 
 viewporttool::viewporttool(viewport_event &)
 {}

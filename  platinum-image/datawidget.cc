@@ -29,7 +29,7 @@ extern datamanager datamanagement;
 extern rendermanager rendermanagement;
 //extern uchar *animage; //defined in datamanager.cc
 
-const int datawidget_base::thumbnail_size = 128;
+const int datawidget_base::thumbnail_size = 24;
 
 const char *slice_orientation_labels[] = {"axial","sagittal","coronal", "undefined"};
 
@@ -143,8 +143,20 @@ const Fl_Menu_Item datawidget_base::the_point_collection_items[] = {
 
 datawidget_base::datawidget_base(data_base * d, std::string n):Fl_Pack(0,0,270,130,NULL) {
     data_id = d->get_id();
-    thumbnail_image = new unsigned char [thumbnail_size*thumbnail_size];
-    
+    thumbnail_image = new unsigned char [thumbnail_size*thumbnail_size*RGB_pixmap_bpp];
+	for(int j=0;j<thumbnail_size;j++){
+		for(int i=0;i<thumbnail_size;i++){
+			thumbnail_image[(j*thumbnail_size+i)*RGB_pixmap_bpp+0] = unsigned char(float(254)/float(thumbnail_size)*i);	//R
+			thumbnail_image[(j*thumbnail_size+i)*RGB_pixmap_bpp+1] = 0;	//G
+			thumbnail_image[(j*thumbnail_size+i)*RGB_pixmap_bpp+2] = unsigned char(float(254)/float(thumbnail_size)*j);	//B
+			//thumbnail_image[(j*thumbnail_size+i)*RGB_pixmap_bpp+0] = 0;	//R
+			//thumbnail_image[(j*thumbnail_size+i)*RGB_pixmap_bpp+1] = 0;	//G
+			//thumbnail_image[(j*thumbnail_size+i)*RGB_pixmap_bpp+2] = 0;	//B
+		}
+	}
+	fl_thumbnail_image = new Fl_RGB_Image(thumbnail_image,thumbnail_size,thumbnail_size,3);
+
+
     deactivate(); //activated when the image is added to datamanager
 
     // *** resume FLUID inits ***
@@ -162,13 +174,25 @@ datawidget_base::datawidget_base(data_base * d, std::string n):Fl_Pack(0,0,270,1
     o->when(FL_WHEN_RELEASE);
         { Fl_Pack* o = hpacker = new Fl_Pack(0, 0, 270, 25);
         o->type(1);
-            { Fl_Input* o = data_name_field = new Fl_Input(0, 0, 240, 25);
+
+	        //{ Fl_Box* o = thumbnail = new Fl_Box(0, 0, 25, 25);
+	        { Fl_Box* o = new Fl_Box(0, 0, 25, 25);
+	        o->box(FL_EMBOSSED_BOX);
+		    //o->hide();
+			o->image( fl_thumbnail_image );
+			//o->image( new Fl_RGB_Image(thumbnail_image, thumbnail_size, thumbnail_size, 3) );
+			//image( new Fl_RGB_Image(thumbnail_image, thumbnail_size, thumbnail_size, 1));
+			//image( NULL);
+			}
+
+            { Fl_Input* o = data_name_field = new Fl_Input(25, 0, 270-30-25, 25);
             o->color(FL_LIGHT1);
             o->callback((Fl_Callback*)name_field_callback, (void*)(this));
             o->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
             Fl_Group::current()->resizable(o);
 //			o->tooltip( datamanagement.get_data(data_id)->get_tooltip().c_str() ); //widget created before data is fully loaded...
             }
+
             { Fl_Menu_Button* o = data_menu_button = new Fl_Menu_Button(240, 0, 30, 25);
             o->box(FL_THIN_UP_BOX);
             o->user_data((void*)(this));
@@ -177,12 +201,7 @@ datawidget_base::datawidget_base(data_base * d, std::string n):Fl_Pack(0,0,270,1
         resizable(data_name_field);
         o->end();
         }
-        { Fl_Box* o = thumbnail = new Fl_Box(0, 25, 270, 65);
-        o->box(FL_EMBOSSED_BOX);
-        o->hide();
-        //image( new Fl_RGB_Image(thumbnail_image, thumbnail_size, thumbnail_size, 1));
-        //image( NULL);
-        }
+//        { Fl_Box* o = thumbnail = new Fl_Box(0, 25, 270, 65);
         { Fl_Pack* o = extras = new Fl_Pack(0, 90, 270, 40);
     o->end();
         }
@@ -203,9 +222,12 @@ datawidget_base::~datawidget_base()
     delete image();
     image(NULL);
 
-    if (thumbnail_image != NULL){
+    if(thumbnail_image != NULL){
 		delete [] thumbnail_image;
 //		cout<<"delete [] thumbnail_image"<<endl;
+	}
+    if(fl_thumbnail_image != NULL){
+		delete fl_thumbnail_image;
 	}
 
 	//JK TODO, delete all objects created...
@@ -227,7 +249,7 @@ void datawidget_base::copy_items(Fl_Menu_Item *to_items, const Fl_Menu_Item from
 
 void datawidget_base::refresh_thumbnail ()
     {
-    rendermanagement.render_thumbnail(thumbnail_image, thumbnail_size, thumbnail_size, data_id);
+//    rendermanagement.render_thumbnail(thumbnail_image, thumbnail_size, thumbnail_size, data_id);
     }
 
 int datawidget_base::get_data_id() const

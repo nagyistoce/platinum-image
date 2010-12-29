@@ -78,7 +78,8 @@ protected:
     // *** thumbnail
     const static int thumbnail_size;
     uchar *thumbnail_image;
-    Fl_Box *thumbnail;
+	Fl_RGB_Image *fl_thumbnail_image;
+ //   Fl_Box *thumbnail;
 
     // *** menus       
 	Fl_Menu_Button *data_menu_button;
