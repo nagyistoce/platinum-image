@@ -106,7 +106,7 @@ FLTK_dcmtable::~FLTK_dcmtable()
 // Handle drawing all cells in table
 void FLTK_dcmtable::draw_cell(TableContext context, int R, int C, int X, int Y, int W, int H)
 {
-	char *s = "";
+	//char *s = '';
 
 	switch ( context )
 	{
@@ -367,14 +367,15 @@ void FLTK_dcmimportwin::button_cb2(string s)
 
 		string last_path = pt_config::read<std::string>("latest_path");
 		//char * path = fl_file_chooser("Choose a directory", "", 0);
-		char * path = fl_dir_chooser("Choose a directory", "", 0);
-		if(path !=""){
+		char * path = fl_dir_chooser("Choose a directory", "", 0);		
+		string path2 = string(path);
+		if(path2 !=""){
 			pt_config::write("latest_path",string(path));
 		}
 
 		pt_error::error("dcm_import path="+string(path),pt_error::notice);
 
-		if(path != ""){
+		if(path2 != ""){
 			cout<<"fl_dir_chooser-->"<<path<<endl;
 			cout<<"name-->"<<fl_filename_name(path)<<endl;
 

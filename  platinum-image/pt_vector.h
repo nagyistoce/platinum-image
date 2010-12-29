@@ -455,7 +455,7 @@ ELEMTYPE pts_vector<ELEMTYPE>::get_x_at_lower_percentile(float percentile, bool 
 		total_value +=  this->at(i);
 	}
 
-	unsigned short the_zero_bucket = from_val_to_x(0);
+	int the_zero_bucket = from_val_to_x(0);
 
 	double num_elem_limit=0;
 	if( ignore_zero_intensity && (the_zero_bucket>=0) && (the_zero_bucket<this->size()) ){

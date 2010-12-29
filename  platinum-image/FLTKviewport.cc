@@ -2483,7 +2483,7 @@ void FLTKviewport::switch_pane(factoryIdType type)
 		((FLTK_Pt_pane*)pane_widget)->event_pane->callback(viewport_callback, this);
 
 		
-		int tmp_rendID;
+		int tmp_rendID = -1;
 		if(viewport_parent->vp_type == PT_MPR){	//PT_MPR, PT_MIP, VTK_EXAMPLE, VTK_MIP, VTK_ISOSURF};
 			tmp_rendID = rendermanagement.create_renderer(RENDERER_MPR);
 		}else if(viewport_parent->vp_type == PT_MIP){

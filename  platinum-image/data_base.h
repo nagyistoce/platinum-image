@@ -46,6 +46,7 @@ class data_base
         
         static int data_next_ID;
 		vector<RENDERER_TYPE> supported_renderers;
+		string my_tooltip;
 
     protected:
         int ID;
@@ -105,8 +106,9 @@ class data_base
 		// *** Metadata ***
 		metadata meta;
 
-        virtual void name(const std::string n);          //set name
-        virtual const std::string name() const;          //get name
+        virtual void name(const std::string n);         //set name
+        virtual const std::string name() const;         //get name
+        virtual const char* name_ptr();					//get name
         bool from_file() const;
         void from_file(bool f); //set "from file" status
         virtual void save_to_DCM_file(const std::string, const bool useCompression = false, const bool anonymize = true) = 0;

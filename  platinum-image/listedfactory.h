@@ -171,9 +171,11 @@ public:
         for (ConstIterator i = m_object_creator.begin();i != m_object_creator.end();i++)
             {
             std::string name = i->first;
-            Fl_Button * button = new Fl_Button (x,y,buttonSize,buttonSize);
-            button->label(strdup(name.substr(0,1).c_str()));
-            button->tooltip(strdup(name.c_str()));
+            Fl_Button * button = new Fl_Button (x,y,buttonSize,buttonSize, name.substr(0,1).c_str());
+			//button->label(strdup(name.substr(0,1).c_str()));
+			//button->tooltip(strdup(name.c_str()));
+			//button->label(name.substr(0,1).c_str());		//only first letter is used		
+			button->tooltip(name.c_str());					//the full name can be seen in the tooltip
             
             button->box(FL_UP_BOX);
             button->down_box(FL_DOWN_BOX);

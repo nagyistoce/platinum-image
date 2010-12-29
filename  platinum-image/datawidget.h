@@ -125,7 +125,7 @@ public:
 	void edit_shift();
 	void additional_data();
 
-	void set_tooltip(string s);
+	void set_tooltip(const char* s);
     };
 
 template <class DATATYPE>
@@ -184,9 +184,10 @@ class FLTKslice_orientation_menu : public Fl_Group {
 protected:
 	Fl_Menu_Button *slice_menu;
 	static void slice_menu_cb(Fl_Widget *w, void*);
+	string my_slice_orientation_name;
 
 public:
-	FLTKslice_orientation_menu(string slice_orientation, int x=0, int y=0, int w=50, int h=10);
+	FLTKslice_orientation_menu(string slice_orientation_name, int x=0, int y=0, int w=50, int h=10);
 	void value(string slice_orientation);
 	string value();
 };

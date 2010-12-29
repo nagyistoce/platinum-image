@@ -458,6 +458,16 @@ string datamanager::get_data_name(int ID)
     return error_string;
 }
 
+const char* datamanager::get_data_name_ptr(int ID)
+{
+    data_base * d = get_data(ID);
+    
+    if (pt_error::error_if_null(d,"Attempt to get name from NULL data object",pt_error::serious) != NULL)
+	{ return d->name_ptr();}
+    
+    return NULL;
+}
+
 void datamanager::set_image_name(int ID,string n)
 {
     int index=find_data_index(ID);
@@ -720,7 +730,7 @@ Fl_Menu_Item * datamanager::object_menu ()
     while (itr != dataItems.end())
         {
         OCLASS * ptr = dynamic_cast<OCLASS *>(*itr);
-		//Plan lagg till vilkor som hamtar om den stodjs av aktuell rendrerare
+		//Plan: lagg till vilkor som hamtar om den stodjs av aktuell rendrerare
 		//dynamic_cast<data_base*>(ptr).is_supported(aktuell rendrerare);
         if (ptr != NULL)
             { objects.push_back(ptr); }
@@ -736,8 +746,9 @@ Fl_Menu_Item * datamanager::object_menu ()
         {
         init_fl_menu_item(newMenu[m]);
         
-        string labelstring=datamanagement.get_data_name((*oitr)->get_id());
-        char * menulabel=strdup(labelstring.c_str());
+//        string labelstring=datamanagement.get_data_name((*oitr)->get_id());
+//        char * menulabel=strdup(labelstring.c_str());
+			const char * menulabel = datamanagement.get_data_name_ptr((*oitr)->get_id());
         
         newMenu[m].callback((Fl_Callback *)NULL,0);
         newMenu[m].argument((long)(*oitr)->get_id());

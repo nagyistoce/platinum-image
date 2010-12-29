@@ -362,8 +362,8 @@ void renderer_curve::render_additional_data(uchar *pixels, curve_base *the_curve
 	}
 }
 void renderer_curve::draw_axes(uchar *pixels, curve_base *curve, rendergeom_curve *rg, int width, int height){
-	double max = curve->get_max();
-	double min = curve->get_min();
+//	double max = curve->get_max();
+//	double min = curve->get_min();
 	
 	int button_offset = 20;
 

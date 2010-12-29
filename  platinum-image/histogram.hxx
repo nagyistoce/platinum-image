@@ -844,7 +844,7 @@ ELEMTYPE histogram_1D<ELEMTYPE>::get_bucket_at_histogram_higher_percentile(float
 	float sum_elements=0;
 
 	if(ignore_zero_intensity){
-		for(unsigned short i = this->num_buckets-1; i>=0; i--){
+		for(short i = this->num_buckets-1; i>=0; i--){
 			if(i!=the_zero_bucket) {
 //				sum_elements += this->buckets[i];
 				sum_elements += this->bucket_vector->at(i);
@@ -854,7 +854,7 @@ ELEMTYPE histogram_1D<ELEMTYPE>::get_bucket_at_histogram_higher_percentile(float
 			}
 		}
 	}else{
-		for(unsigned short i = this->num_buckets-1; i>=0; i--){
+		for(short i = this->num_buckets-1; i>=0; i--){
 			sum_elements += this->bucket_vector->at(i);
 			if(sum_elements>=num_elem_limit){
 				return i;

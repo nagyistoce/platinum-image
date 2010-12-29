@@ -434,6 +434,8 @@ class FLTKuserIOpar_stringlist : public FLTKuserIOparameter_base    //menu of st
 		char current_value[512];
 		void set_string_callback(Fl_Widget* callingwidget);
 		static void set_string_static_callback(Fl_Widget* callingwidget, void* the_object);
+		std::vector<std::string> my_strlist;
+		
 	public:
 		FLTKuserIOpar_stringlist (const std::string name, std::vector<std::string> strlist);
 		

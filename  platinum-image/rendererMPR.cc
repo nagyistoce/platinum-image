@@ -46,6 +46,14 @@ T signed_ceil(T & x){   //ceil that returns rounded absolute upwards
 
 rendererMPR::rendererMPR():renderer_image_base()
 {
+	if(the_rg != NULL){
+		delete the_rg;
+	}
+	
+	if(original_rg != NULL){
+		delete original_rg;
+	}
+	
 	the_rg = new rendergeom_image();
 	original_rg = the_rg;
 }
@@ -213,7 +221,8 @@ void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_imag
     int the_image = 0;
 
     for(rendercombination::iterator pairItr = rc->begin();pairItr != rc->end();pairItr++){ 
-        image_base *the_image_pointer, *the_other_image_pointer;
+        image_base *the_image_pointer=NULL;
+		image_base *the_other_image_pointer=NULL;
         
 		pt_error::error_if_null(pairItr->pointer,"Rendered data object is NULL");//Crash here when closing an image
 

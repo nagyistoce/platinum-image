@@ -180,8 +180,8 @@ datawidget_base::datawidget_base(data_base * d, std::string n):Fl_Pack(0,0,270,1
         { Fl_Box* o = thumbnail = new Fl_Box(0, 25, 270, 65);
         o->box(FL_EMBOSSED_BOX);
         o->hide();
-        image( new Fl_RGB_Image(thumbnail_image, thumbnail_size, thumbnail_size, 1));
-        image( NULL);
+        //image( new Fl_RGB_Image(thumbnail_image, thumbnail_size, thumbnail_size, 1));
+        //image( NULL);
         }
         { Fl_Pack* o = extras = new Fl_Pack(0, 90, 270, 40);
     o->end();
@@ -323,9 +323,9 @@ void datawidget_base::edit_shift()
 	geom_widget->parent()->parent()->parent()->parent()->redraw();
 }
 
-void datawidget_base::set_tooltip(string s)
+void datawidget_base::set_tooltip(const char* s)
 {
-	data_name_field->tooltip(strdup(s.c_str()));
+	data_name_field->tooltip(s); 
 }
 
 
@@ -471,13 +471,14 @@ datawidget<point_collection>::datawidget (point_collection* p, std::string n): d
 //---------------------- 
 
 
-FLTKslice_orientation_menu::FLTKslice_orientation_menu(string slice_orientation, int x, int y, int w, int h):Fl_Group(x,y,w,h)
+FLTKslice_orientation_menu::FLTKslice_orientation_menu(string slice_orientation_name, int x, int y, int w, int h):Fl_Group(x,y,w,h)
 {
+	my_slice_orientation_name = slice_orientation_name;
 	this->color(FL_BACKGROUND_COLOR);
 	slice_menu = new Fl_Menu_Button(x,y,w,h);
     slice_menu->box(FL_THIN_UP_BOX);
     slice_menu->labelsize(FLTK_SMALL_LABEL);
-	slice_menu->label(strdup(slice_orientation.c_str()));
+	slice_menu->label(my_slice_orientation_name.c_str());
 
 	//-----------------------------
     Fl_Menu_Item slice_menu_items[4+1];
@@ -504,7 +505,8 @@ void FLTKslice_orientation_menu::slice_menu_cb(Fl_Widget *w, void*)
 
 void FLTKslice_orientation_menu::value(string s)
 {
-	slice_menu->label(strdup(s.c_str()));
+	my_slice_orientation_name = s;
+	slice_menu->label(my_slice_orientation_name.c_str());
     //slice_menu_items[AXIAL].setonly(); //AXIAL_NEG
 }
 
@@ -828,7 +830,7 @@ void FLTKgeom_image::rotation_update_cb ( Fl_Widget * w, void * )
 
 	int nc = g->children();
 	
-	FLTKMatrix3D * matrix3d;
+	FLTKMatrix3D * matrix3d = NULL;
 	
 	for ( int c = 0; c < nc; c++ )
 	{

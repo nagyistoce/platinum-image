@@ -77,7 +77,6 @@ void viewporttool::init (int posX, int posY,statusarea * s)
 	//TODO_R L‰gg till curve_tool h‰r sen
     
     selected = "Navigation";
-
 	//selected = "Curve manipulation tool"; //ƒndra start
     
     //create toolbox widget
@@ -100,9 +99,11 @@ void viewporttool::init (int posX, int posY,statusarea * s)
         {
         std::string name = i->first;
         Fl_Button * button = new Fl_Button (x,y,buttonSize,buttonSize);
-        button->label(strdup(name.substr(0,1).c_str()));
-        button->tooltip(strdup(name.c_str()));
-        
+		button->label(strdup(name.substr(0,1).c_str()));
+		//button->tooltip(strdup(name.c_str()));
+		//button->label(name.substr(0,1).c_str());
+		button->tooltip(name.c_str());
+			
         button->box(FL_UP_BOX);
         button->down_box(FL_DOWN_BOX);
         button->type(FL_RADIO_BUTTON);

@@ -120,7 +120,7 @@ void points_seq_func1D<KEY_TYPE, VALUE_TYPE>::set_data(KEY_TYPE this_key, KEY_TY
 template <class KEY_TYPE, class VALUE_TYPE>
 bool points_seq_func1D<KEY_TYPE, VALUE_TYPE>::is_occupied(KEY_TYPE k)
 {
-	return (themap[k]!=NULL);
+	return (themap[k] != 0);
 }
 
 

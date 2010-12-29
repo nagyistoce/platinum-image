@@ -80,7 +80,7 @@ void viewport::initialize_viewport(int xpos, int ypos, int width, int height, VI
 	vp_type = vpt;
 	the_widget = NULL;
 	
-	int tmp_rendID;
+	int tmp_rendID=-1;
 	if(vp_type == PT_MPR){	//PT_MPR, PT_MIP, VTK_EXAMPLE, VTK_MIP, VTK_ISOSURF};
 		tmp_rendID = rendermanagement.create_renderer(RENDERER_MPR);
 	}else if(vp_type == PT_MIP){

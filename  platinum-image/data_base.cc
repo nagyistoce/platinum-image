@@ -59,19 +59,30 @@ void data_base::name (const string n)
     }
 
 const string data_base::name() const
-    {
+{
     if (widget != NULL)
-        {
+	{
         return widget->name();
-        }
-
+	}
+	
     return ( "(untitled)" );
-    }
+}
+
+const char* data_base::name_ptr()
+{
+    if (widget != NULL)
+	{
+        return widget->name().c_str();
+	}
+	
+    return string("(untitled)").c_str();
+}
 
 data_base::data_base(data_base *const source, vector<RENDERER_TYPE> supported)
     {
 	ID = data_next_ID++;
 //	cout<<"data_base, new ID="<<ID<<endl;
+	my_tooltip = "";
 
 	widget = NULL;
 	draw_additional_data = false;
@@ -235,7 +246,8 @@ string data_base::resolve_tooltip_data_base()
 
 void data_base::set_tooltip(string s)
 {
-	widget->set_tooltip(s);
+	my_tooltip = s;
+	widget->set_tooltip(my_tooltip.c_str());
 }
 
 vtkAlgorithmOutput* data_base::getvtkStructuredPoints()

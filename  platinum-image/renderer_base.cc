@@ -37,9 +37,13 @@ renderer_base::renderer_base()
 	original_rg=NULL;
     original_rg_id=0;
 }
+
 renderer_base::~renderer_base() {
 	if(the_rc!=NULL){
 		delete the_rc;
+	}
+	if(the_rg != NULL){
+		delete the_rg;
 	}
 	if(original_rg!=NULL){
 		delete original_rg;

@@ -89,7 +89,8 @@ class datamanager
         std::vector<data_base*>::iterator begin() const;
         std::vector<data_base*>::iterator end() const;
         
-        std::string get_data_name(int ID);
+		std::string get_data_name(int ID);
+		const char* get_data_name_ptr(int ID);
         void set_image_name(int ID,std::string n);
         
         const Fl_Menu_Item * FLTK_image_menu() const;

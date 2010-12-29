@@ -630,7 +630,7 @@ void FLTKuserIOpar_landmarks::showCallback(Fl_Widget * callingwidget, void * thi
 
 	for (int c = 0; c < nc; c++)
 	{
-		if ( image = dynamic_cast<FLTKuserIOpar_image *>(userIO_block->child(c)) )
+		if( (image=dynamic_cast<FLTKuserIOpar_image*>(userIO_block->child(c))) )
 			{ break; }
 	}
 	
@@ -1147,17 +1147,20 @@ const std::string FLTKuserIOpar_string::type_name ()
 
 FLTKuserIOpar_stringlist::FLTKuserIOpar_stringlist (const std::string name, std::vector<std::string> strlist ) : FLTKuserIOparameter_base (INITPARWIDGETWIDTH,STDPARWIDGETHEIGHT, name)
 {
+	my_strlist = strlist; //Strings are copied to avoid memory leak caused by strdup()
+	
 	Fl_Menu_Item* menuitems = (Fl_Menu_Item*)malloc((strlist.size()+1)*sizeof(Fl_Menu_Item));
-	for (int i = 0; i<strlist.size(); i++) {
+	for (int i = 0; i<my_strlist.size(); i++) {
 		init_fl_menu_item(menuitems[i]);
-		menuitems[i].label(strdup(strlist[i].c_str()));
+		//		menuitems[i].label(strdup(strlist[i].c_str()));
+		menuitems[i].label(my_strlist[i].c_str());
 		menuitems[i].flags=FL_MENU_RADIO;
 		menuitems[i].callback(set_string_static_callback, this);
 	}
-	menuitems[strlist.size()].label(NULL);
+	menuitems[my_strlist.size()].label(NULL);
     menuitems[0].setonly();
 	control = new Fl_Menu_Button(x(),y()+PARTITLEMARGIN,w(),h()-PARTITLEMARGIN,current_value);
-	strlist.size()>0 ? strcpy(current_value,strlist[0].c_str()) : strcpy(current_value,"");
+	my_strlist.size()>0 ? strcpy(current_value,my_strlist[0].c_str()) : strcpy(current_value,"");
 	
 	control->copy(menuitems);
 	control->box(FL_THIN_UP_BOX);

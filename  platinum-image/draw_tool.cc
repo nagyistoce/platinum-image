@@ -60,7 +60,7 @@ void draw_tool::init()
 
 void draw_tool::handle(viewport_event &event)
 {
-    const int * mouse2d = event.mouse_pos_local();
+    //const int * mouse2d = event.mouse_pos_local();
     FLTK_Event_pane *fp = event.get_FLTK_Event_pane();
 
 	switch (event.type())
@@ -109,7 +109,7 @@ void draw_tool::handle(viewport_event &event)
 					cout << "location: " << start[0] << " " << start[1] << " " << start[2] << endl; 
 					drawed = true;
 					if(draw_type == 'p'){//No need for double start-stop when point
-						data_base * base = myRenderer->the_rc->top_image<data_base>();
+						//data_base * base = myRenderer->the_rc->top_image<data_base>();
 						draw_data(event, fp);
 						draw_type = 'x';
 						drawed = false;
