@@ -493,16 +493,19 @@ void rendermanager::connect_data_renderer(int rendererID, int dataID)
     renderers[renderindex]->connect_data(dataID);
     }
 	
-void rendermanager::data_has_changed(int ID)
-    {
+void rendermanager::data_has_changed(int ID){ //redraws the viewports needed and the thumbnail
     vector<int> combos = rendermanager::combinations_from_data (ID);
 
-    for (vector<int>::iterator c = combos.begin();c != combos.end(); c++)
-        {
+    for (vector<int>::iterator c = combos.begin();c != combos.end(); c++){
 //        rendermanagement.combination_update_callback(*c);
         this->combination_update_callback(*c); //JK2
-        }
     }
+	
+	data_base *d = datamanagement.get_data(ID);
+	if(d!=NULL){
+		d->refresh_thumbnail();
+	}
+}
 
 void rendermanager::combination_update_callback (int c_id)
     {

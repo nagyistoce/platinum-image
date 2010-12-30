@@ -427,10 +427,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::data_has_changed(bool stat_refresh)
  //       {ITKimportimage->Delete();}
 
 	this->set_tooltip(this->resolve_tooltip());
-    this->redraw();
-
-	//TODO: some outlandish malfunction in rendererMPR when called with render_thumbnail-generated parameters
-    widget->refresh_thumbnail();
+    this->redraw(); //this calls "rendermanagement.data_has_changed(ID)" --> both viewport + thumbnails are updated...
 }
 
 template <class ELEMTYPE, int IMAGEDIM>

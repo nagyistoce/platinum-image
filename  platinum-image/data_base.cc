@@ -34,22 +34,26 @@ using namespace std;
 data_base::~data_base()
     {
 	//cout<<"~data_base()"<<endl;
-
     //destructor may be called from a menu choice in widget, it would crash if deleted with delete(...)
     //Fl::delete_widget is designed to avoid this
-
-    if (widget != NULL)
-        {
+    if(widget != NULL){
 		Fl::delete_widget (widget); 
-		}
-
+	}
     datamanagement.remove_data (this);
-	
     }
+
+void data_base::refresh_thumbnail()
+{
+    if(widget != NULL){ //the widget may not have been created yet... (when the image is first loaded...)
+		widget->refresh_thumbnail();
+	}else{
+		pt_error::pt_error("Attempt to set name(const string) on a widget-less data object",pt_error::warning);
+    }
+}
 
 
 void data_base::name (const string n)
-    {
+   {
     if (widget != NULL)
         { widget->name(n); }
     else

@@ -66,7 +66,7 @@ void rendererMPR::connect_data(int dataID)
 
 void rendererMPR::paint_overlay(int h_offset, int vp_w, int vp_h_pane, bool paint_rendergeometry)
 {
-//	cout<<"rendererMPR::paint_overlay..("<<vp_w<<" "<<vp_h_pane<<") rc_id="<<the_rg->get_id()<<endl;
+	cout<<"rendererMPR::paint_overlay..("<<vp_w<<" "<<vp_h_pane<<") rg_id="<<the_rg->get_id()<<" rc_id="<<the_rc->get_id()<<endl;
 	paint_slice_locators_to_overlay(h_offset, vp_w, vp_h_pane, (rendergeom_image*)the_rg, the_rc);
 	if(paint_rendergeometry){
 		paint_rendergeometry_to_overlay(h_offset, vp_w, vp_h_pane, (rendergeom_image*)the_rg, the_rc);
@@ -76,17 +76,17 @@ void rendererMPR::paint_overlay(int h_offset, int vp_w, int vp_h_pane, bool pain
 
 Vector3D rendererMPR::view_to_world(int vx, int vy, int sx, int sy) const
 {
-    Vector3D viewCentered,world;
-    vector<float> v;
+	//    vector<float> v;
 //    float viewmin = std::min(sx,sy); //777
     float viewmin = sx; //JK6
-    
+
+	Vector3D viewCentered;
     viewCentered[0]=vx-sx/2;
     viewCentered[1]=vy-sy/2;
     viewCentered[2]=0;
     
     //transform to world coordinates
-    world = ((rendergeom_image*)the_rg)->view_to_world_matrix(viewmin) * viewCentered;
+    Vector3D world = ((rendergeom_image*)this->the_rg)->view_to_world_matrix(viewmin) * viewCentered;
 	world = world + ((rendergeom_image*)this->the_rg)->look_at;
 //	cout<<"view_to_world="<<vx<<","<<vy<<","<<sx<<","<<sy<<","<<"("<<world<<")("<<((rendergeom_image*)this->the_rg)->zoom<<")"<<endl;
     return world;
@@ -734,7 +734,7 @@ void rendererMPR::draw_slice_locators(uchar *pixels, int sx, int sy, rendergeom_
 
 void rendererMPR::paint_slice_locators_to_overlay(int h_offset, int vp_w, int vp_h_pane, rendergeom_image *rg, rendercombination *rc)
 {
-//	cout<<"paint_slice_locators_to_overlay("<<vp_w<<" "<<vp_h_pane<<"...)"<<endl;
+	cout<<"paint_slice_locators_to_overlay("<<vp_w<<" "<<vp_h_pane<<"...)"<<endl;
 
 	std::vector<rendergeom_image*> geoms = rendermanagement.geometries_by_image_and_direction(rc->get_id());	// get geometries that holds at least one of the images in the input combination
 

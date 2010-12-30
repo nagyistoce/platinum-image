@@ -249,6 +249,7 @@ void datawidget_base::refresh_thumbnail()
 
 	if(datamanagement.get_data(data_id)!=NULL){
 		rendermanagement.render_thumbnail(thumbnail_image, thumbnail_size, thumbnail_size, data_id);
+		this->redraw();
 	}else{
 		for(int j=0;j<thumbnail_size;j++){
 			for(int i=0;i<thumbnail_size;i++){

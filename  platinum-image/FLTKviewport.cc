@@ -1110,7 +1110,7 @@ void FLTK_Pt_MPR_pane::create_geom_menu(int W){
 	text_box->value(l);
 
 	
-	geom_button = new Fl_Menu_Button(0,0,buttonwidth,buttonheight,"Geometry");
+	geom_button = new Fl_Menu_Button(0,0,buttonwidth,buttonheight,"Geom.");
     geom_button->copy(geom_menu_items);
 	geom_button->box(FL_THIN_UP_BOX);
 	geom_button->labelsize(FLTK_SMALL_LABEL);
@@ -2482,14 +2482,18 @@ void FLTKviewport::switch_pane(factoryIdType type)
 	cout<<"x,y,w,h="<<x<<","<<y<<","<<w<<","<<h<<endl;
 	cout<<"old_rendID="<<old_rendID<<endl;
 
-	rendercombination *temp_rc = rendermanagement.get_renderer(old_rendID)->the_rc;
 	vector<int> data_in_combo;
-	for(rendercombination::iterator pairItr = temp_rc->begin();pairItr != temp_rc->end();pairItr++){
-		pt_error::error_if_null(pairItr->pointer,"Rendered data object is NULL");//Crash here when closing an image
-		data_in_combo.push_back((dynamic_cast<data_base *> (pairItr->pointer))->get_id());
+	rendercombination *temp_rc = NULL;
+
+	if(old_rendID>0){	//after VTK viewports... this is 0 !
+		temp_rc = rendermanagement.get_renderer(old_rendID)->the_rc;
+		for(rendercombination::iterator pairItr = temp_rc->begin();pairItr != temp_rc->end();pairItr++){
+			pt_error::error_if_null(pairItr->pointer,"Rendered data object is NULL");//Crash here when closing an image
+			data_in_combo.push_back((dynamic_cast<data_base *> (pairItr->pointer))->get_id());
+		}
+		rendermanagement.remove_renderer(old_rendID);
 	}
 
-	rendermanagement.remove_renderer(old_rendID);
 	//--------------
 
 	viewport_parent->busyTool = NULL; //this will force the tool to re_init_its pointers etc.
@@ -2508,6 +2512,7 @@ void FLTKviewport::switch_pane(factoryIdType type)
 		}else if(viewport_parent->vp_type == PT_SPECTRUM){
 			tmp_rendID = rendermanagement.create_renderer(RENDERER_SPECTRUM);
 		}
+
 		viewmanagement.connect_renderer_to_viewport(viewport_parent->ID,tmp_rendID);     //attach MPR renderer - so that all viewports can be populated for additional views
 
 		cout<<"viewport_parent->ID="<<viewport_parent->ID<<" tmp_rendID="<<tmp_rendID<<endl;
