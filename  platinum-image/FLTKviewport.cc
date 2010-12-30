@@ -2465,7 +2465,7 @@ void FLTKviewport::switch_pane(factoryIdType type)
 	this->pane_widget->parent()->remove(this->pane_widget); //l‰nkar av...
 	delete this->pane_widget;
 
-	Fl_Group::current(this); //TITTA HƒR!!! Dwenna kˆrs dÂ man byter rendrerare
+	Fl_Group::current(this); //TITTA haar!!! Denna kors daa man byter rendrerare
 	
 	this->pane_widget = rendermanager::pane_factory.Create(type); //Denna kˆr fel konstruktor!!! Anv‰nd nÂt annat sÂ ˆvriga vitala saker skapas!
 
@@ -2475,9 +2475,13 @@ void FLTKviewport::switch_pane(factoryIdType type)
 	this->pane_widget->h(h);
 	this->pane_widget->resize_content(w,h);
 
-	//--------------
+
 	int old_rendID = viewmanagement.get_renderer_id(viewport_parent->ID);
 	//RN Does not seem to work when changing from VTK.
+
+	cout<<"x,y,w,h="<<x<<","<<y<<","<<w<<","<<h<<endl;
+	cout<<"old_rendID="<<old_rendID<<endl;
+
 	rendercombination *temp_rc = rendermanagement.get_renderer(old_rendID)->the_rc;
 	vector<int> data_in_combo;
 	for(rendercombination::iterator pairItr = temp_rc->begin();pairItr != temp_rc->end();pairItr++){
@@ -2505,6 +2509,8 @@ void FLTKviewport::switch_pane(factoryIdType type)
 			tmp_rendID = rendermanagement.create_renderer(RENDERER_SPECTRUM);
 		}
 		viewmanagement.connect_renderer_to_viewport(viewport_parent->ID,tmp_rendID);     //attach MPR renderer - so that all viewports can be populated for additional views
+
+		cout<<"viewport_parent->ID="<<viewport_parent->ID<<" tmp_rendID="<<tmp_rendID<<endl;
 
 		temp_rc = rendermanagement.get_renderer(tmp_rendID)->the_rc;
 		for(int j = 0; j<data_in_combo.size(); j++){ //The filtering is done in "update_data_menu"
