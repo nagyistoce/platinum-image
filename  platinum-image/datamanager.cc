@@ -622,15 +622,15 @@ int datamanager::find_data_index(int uniqueID)
 
 data_base * datamanager::get_data (int ID)
 {
-    for (vector<data_base*>::iterator itr=dataItems.begin();itr != dataItems.end();itr++)
-        {
-        if (**itr == ID)
-            {
+    for(vector<data_base*>::iterator itr=dataItems.begin();itr != dataItems.end();itr++){
+        if(**itr == ID){
             return *itr;
-            }
-        }
+		}
+	}
+	cout<<"datamanager::get_data("<<ID<<") --> NULL"<<endl;
 	return NULL;//Pretty important line...
 }
+
 //Denna ar definierad i H filen pga template
 /*template<class T>
 T* datamanager::get_image (int ID)
@@ -668,12 +668,12 @@ bool datamanager::FLTK_running()
     return !closing_program;
     }
 
-void datamanager::add_datawidget(datawidget_base * data_widget)
+void datamanager::add_datawidget(datawidget_base *data_widget)
     {
     //add FLTK widget belonging to datawidget object to the list
 
     data_widget_box->interior->add(data_widget);
-    data_widget->resize (data_widget_box->interior->x(),data_widget_box->interior->y(),data_widget_box->interior->w(),data_widget->h());
+    data_widget->resize(data_widget_box->interior->x(),data_widget_box->interior->y(),data_widget_box->interior->w(),data_widget->h());
 
     refresh_datawidgets();
     }

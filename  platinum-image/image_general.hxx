@@ -20,24 +20,12 @@
 #ifndef __image_general_hxx__
 #define __image_general_hxx__
 
-#include "rawimporter.h"
-#include "image_scalar.h"
-
-#include "image_binary.h"
-#include "image_label.h"
-#include "fileutils.h"
-
-#include <iostream>
-#include <fstream>
 
 #include "itkImageRegionIterator.h"	//most basic, fastest pixel order...
 #include "itkImageRegionIteratorWithIndex.h"
-
 //#include "itkOrientedImage.h" //reads the geomatry information in a different way...
-
 #include "itkGDCMImageIO.h"
 #include "itkGDCMSeriesFileNames.h"
-
 #include "itkImageSeriesReader.h"
 #include "itkImageSeriesWriter.h"
 #include "itkDICOMImageIO2.h"
@@ -47,14 +35,13 @@
 #include "itkRawImageIO.h"
 #include "itkImageSliceIteratorWithIndex.h"
 #include "itkStatisticsImageFilter.h"
-
 #include "itkDICOMImageIO2Factory.h"
 //#include "itkDICOMImageIO2.h"
 //#include "itkImageSeriesReader.h"
 //#include "itkDICOMSeriesFileNames.h"
 
-
-using namespace std;
+#include <iostream>
+#include <fstream>
 
 //GCC does not support templated typedefs
 //we bow our heads in appreciation and define them with macros instead :P
@@ -87,18 +74,25 @@ using namespace std;
 #define theRegionType theImageType::RegionType
 #define theIndexType theImageType::IndexType
 #define theIteratorWithIndexType itk::ImageRegionIteratorWithIndex<theImageType >
-
 //#define HessianFilterType itk::HessianRecursiveGaussianImageFilter<theImageType >
 //#define HessianFilterPointerType HessianFilterType::Pointer
 //#define VesselnessMeasureFilterType itk::Hessian3DToVesselnessMeasureImageFilter<theImageType >
 //#define VesselnessMeasureFilterPointerType VesselnessMeasureFilterType::Pointer
 
 
+#include "rawimporter.h"
+#include "fileutils.h"
+#include "image_binary.h"
+#include "image_label.h"
+#include "image_scalar.h"
 #include "image_general.h"				//according to the "general-linking-system"
-#include "image_storage.hxx"			//according to the "general-linking-system"
-
 #include "image_generalfile.hxx"		//just separate the code in different files
 #include "image_general_iterator.hxx"
+#include "image_storage.hxx"			//according to the "general-linking-system"
+
+using namespace std;
+
+
 
 template <class NEWELEM, class TRYELEM, int DIM, template <class, int> class requestedClass >
 requestedClass<NEWELEM, DIM> * try_general (image_base* input) //! Helper function to guaranteed_cast
@@ -413,24 +407,17 @@ void image_general<ELEMTYPE, IMAGEDIM>::load_file_to_this(std::string f)	//loads
 
 template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::data_has_changed(bool stat_refresh)
-    {
+{
 	//cout<<"image_general<ELEMTYPE, IMAGEDIM>::data_has_changed("<<stat_refresh<<")"<<endl;
 		
-    //TODO: some outlandish malfunction in rendererMPR
-    //when called with render_thumbnail-generated parameters
-    //widget->refresh_thumbnail();
-
     //data changed, no longer available in a file (not that Mr. Platinum knows of, anyway)
     this->from_file(false);
 
     //recalculate min/max
-    if(stat_refresh)
-        {
+    if(stat_refresh){
         this->stats_refresh(true);
-
-        //refresh transfer function
-//        this->tfunction->update(); //????
-        }
+		//this->tfunction->update(); //????
+	}
 
 //    cout<<"data_has_changed...clear_itk_porting()"<<endl;
 //	clear_itk_porting();	//clear ITK connection
@@ -441,15 +428,18 @@ void image_general<ELEMTYPE, IMAGEDIM>::data_has_changed(bool stat_refresh)
 
 	this->set_tooltip(this->resolve_tooltip());
     this->redraw();
-    }
+
+	//TODO: some outlandish malfunction in rendererMPR when called with render_thumbnail-generated parameters
+    widget->refresh_thumbnail();
+}
 
 template <class ELEMTYPE, int IMAGEDIM>
-void image_general<ELEMTYPE, IMAGEDIM>::calc_transforms ()
-    {
+void image_general<ELEMTYPE, IMAGEDIM>::calc_transforms()
+{
     //NOTE:
     //this currently does nothing, but is useful to keep around for caching
     //e.g. the world to voxel transform matrices
-    }
+}
 
 template <class ELEMTYPE, int IMAGEDIM>
 Vector3D image_general<ELEMTYPE, IMAGEDIM>::get_phys_pos_of_corner(int corner_id)

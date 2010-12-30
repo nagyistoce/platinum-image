@@ -153,12 +153,16 @@ bool rendererMPR::supports_mode (int m)
         }
 }
 
-void rendererMPR::render_thumbnail (unsigned char *rgb, int rgb_sx, int rgb_sy, int image_ID)
+void rendererMPR::render_thumbnail(unsigned char *rgb, int rgb_sx, int rgb_sy, int image_ID)
 {
-    rendercombination rc = rendercombination(image_ID);
+    rendercombination rc = rendercombination(image_ID); //creates a "render combination" from this image only, with default blend mode...
     rendergeom_image rg = rendergeom_image();
-    
-    render_( rgb, rgb_sx, rgb_sy,&rg,&rc,NULL);
+
+	rg.look_at = datamanagement.get_image<image_base>(image_ID)->get_physical_center();
+	rg.dir = datamanagement.get_image<image_base>(image_ID)->get_orientation();
+	//rg.zoom;
+
+    render_(rgb, rgb_sx, rgb_sy, &rg, &rc, NULL);
 }
 
 void rendererMPR::render_threshold (unsigned char *rgba, int rgb_sx, int rgb_sy, thresholdparvalue * threshold)
@@ -177,7 +181,14 @@ void rendererMPR::render_position(unsigned char *rgb, int rgb_sx, int rgb_sy)
 //render orthogonal slices using memory-order scanline
 void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_image *rg, rendercombination *rc, thresholdparvalue * threshold)
 {
-	cout<<"rendererMPR used"<<endl;
+	#ifdef TESTMODE
+		cout<<"************"<<endl;
+		cout<<"rendererMPR::render_("<<rgb_sx<<","<<rgb_sy<<",rg_id="<<rg->get_id()<<")"<<endl;
+		cout<<"rg->look_at="<<rg->look_at<<endl;
+		cout<<"rg->dir="<<endl<<rg->dir<<endl;
+		cout<<"rg->zoom="<<rg->zoom<<endl;
+		cout<<"************"<<endl;
+	#endif
 
     if(rc->empty()){       //*** no images: exit ***
         return;
@@ -281,6 +292,15 @@ void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_imag
             Vector3D vox;           //position to read in voxel data grid
 			int pixmap_addr;
             
+			#ifdef TESTMODE
+				cout<<"----------"<<endl;
+				cout<<"   the_image/vol_count="<<the_image<<"/"<<vol_count<<endl;
+				cout<<"   slope_x="<<slope_x<<endl;
+				cout<<"   slope_y="<<slope_y<<endl;
+				cout<<"   scale="<<scale<<endl;
+				cout<<"   voxel_offset[the_image]="<<voxel_offset[the_image]<<endl;
+			#endif
+
             // --- Render loop ---
             
             //1. iterate Y and determine new position of horizontal scanline

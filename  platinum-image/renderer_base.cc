@@ -42,10 +42,10 @@ renderer_base::~renderer_base() {
 	if(the_rc!=NULL){
 		delete the_rc;
 	}
-	if(the_rg != NULL){
-		delete the_rg;
-	}
-	if(original_rg!=NULL){
+//	if(the_rg != NULL){
+//		delete the_rg;		//never delete the pointer to "my current render geometry" this might point to someone else's !!!
+//	}
+	if(original_rg != NULL){
 		delete original_rg;
 	}
 }

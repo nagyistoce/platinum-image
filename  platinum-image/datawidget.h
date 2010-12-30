@@ -61,7 +61,26 @@ class point_collection;*/
 class FLTKgeom_base;
 
 
+class FLTKdraw_pane : public Fl_Widget		//This class draws an "rgbpixmap"
+{
+	private:
+		datawidget_base *the_dwb;
+
+	public:
+		FLTKdraw_pane(int X,int Y,int W,int H, datawidget_base *dwb);  //constructor
+//		int handle(int event);
+//		void resize(int x, int y, int w, int h);
+		void draw();						//FLTK draw call - called when FLTK wants the viewport updated
+//	    void draw(unsigned char *rgbimage); //JK //our "active" draw method - will redraw directly whenever it is called
+                                            //this method draws the argument rgbimage...
+
+//		void needs_rerendering();			//passes this on to the "viewport_parent"...
+};
+
+
 class datawidget_base : public Fl_Pack {
+
+	friend class FLTKdraw_pane;
 
 protected:
     datawidget_base(data_base *d, std::string n);
@@ -79,7 +98,7 @@ protected:
     const static int thumbnail_size;
     uchar *thumbnail_image;
 	Fl_RGB_Image *fl_thumbnail_image;
- //   Fl_Box *thumbnail;
+    Fl_Box *thumb_box;
 
     // *** menus       
 	Fl_Menu_Button *data_menu_button;
@@ -110,8 +129,8 @@ public:
 
     //void make_window();
 
-    virtual ~datawidget_base ();
-    void refresh_thumbnail ();
+    virtual ~datawidget_base();
+    void refresh_thumbnail();
 
     // *** access methods ***
     int get_data_id() const;

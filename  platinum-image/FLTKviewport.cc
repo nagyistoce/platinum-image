@@ -90,6 +90,10 @@ FLTKpane::FLTKpane():Fl_Overlay_Window(0,0,100,100)
 FLTKpane::FLTKpane(int X,int Y,int W,int H) : Fl_Overlay_Window(X,Y,W,H)
 //FLTKpane::FLTKpane(int X,int Y,int W,int H) : Fl_Window(X,Y,W,H)
 {
+	#ifdef TESTMODE
+		cout<<"FLTKpane::FLTKpane("<<X<<","<<Y<<","<<W<<","<<H<<")"<<endl;
+	#endif
+
 //	Fl_Button *b = new Fl_Button(10,10,80,80, "FLTKpane(xywh)_button");
 //	b->color(FL_RED);
 //	this->end();

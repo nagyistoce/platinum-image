@@ -58,9 +58,12 @@ rendercombination::rendercombination(int volID)
     id=new_rc_ID++;
    
     blend_mode_=BLEND_MAX;
+    cout<<"rendercombination("<<volID<<") ---> ";
     if (volID > 0){
+	   cout<<" *** ";
         renderdata.push_front(renderpair(volID,datamanagement.get_data(volID),BLEND_OVERWRITE));
 	}
+	cout<<endl;
 }
 
 rendercombination::iterator rendercombination::begin() const

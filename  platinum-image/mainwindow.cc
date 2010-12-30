@@ -43,6 +43,11 @@
 #include "list_visuals.cxx"
 #endif
 
+#if defined(WIN32)
+#define _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES //eliminates the warning by changing the strcpy call to strcpy_s, which prevents buffer overruns.
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include "ptconfig.h"
 #include "fileutils.h"
 

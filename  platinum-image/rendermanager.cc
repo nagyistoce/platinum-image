@@ -66,7 +66,6 @@ void rendermanager::render(int rendererIndex, unsigned char *rgbimage, int rgbXs
 void rendermanager::render_thumbnail(unsigned char *rgb, int rgb_sx, int rgb_sy, int dataID)
     {
     //decision: MPRs are nice for thumbnails
-
     rendererMPR::render_thumbnail(rgb, rgb_sx, rgb_sy, dataID);
     }
 
