@@ -143,19 +143,22 @@ const Fl_Menu_Item datawidget_base::the_point_collection_items[] = {
 
 datawidget_base::datawidget_base(data_base * d, std::string n):Fl_Pack(0,0,270,130,NULL) {
     data_id = d->get_id();
+	thumbnail_image = NULL;
+	fl_thumbnail_image = NULL;
+/*	
     thumbnail_image = new unsigned char [thumbnail_size*thumbnail_size*RGB_pixmap_bpp];
 	for(int j=0;j<thumbnail_size;j++){
 		for(int i=0;i<thumbnail_size;i++){
-			thumbnail_image[(j*thumbnail_size+i)*RGB_pixmap_bpp+0] = unsigned char(float(254)/float(thumbnail_size)*i);	//R
+			thumbnail_image[(j*thumbnail_size+i)*RGB_pixmap_bpp+0] = (float(254)/float(thumbnail_size)*i);	//R
 			thumbnail_image[(j*thumbnail_size+i)*RGB_pixmap_bpp+1] = 0;	//G
-			thumbnail_image[(j*thumbnail_size+i)*RGB_pixmap_bpp+2] = unsigned char(float(254)/float(thumbnail_size)*j);	//B
+			thumbnail_image[(j*thumbnail_size+i)*RGB_pixmap_bpp+2] = (float(254)/float(thumbnail_size)*j);	//B
 			//thumbnail_image[(j*thumbnail_size+i)*RGB_pixmap_bpp+0] = 0;	//R
 			//thumbnail_image[(j*thumbnail_size+i)*RGB_pixmap_bpp+1] = 0;	//G
 			//thumbnail_image[(j*thumbnail_size+i)*RGB_pixmap_bpp+2] = 0;	//B
 		}
 	}
 	fl_thumbnail_image = new Fl_RGB_Image(thumbnail_image,thumbnail_size,thumbnail_size,3);
-
+*/
 
     deactivate(); //activated when the image is added to datamanager
 
@@ -179,7 +182,7 @@ datawidget_base::datawidget_base(data_base * d, std::string n):Fl_Pack(0,0,270,1
 	        { Fl_Box* o = new Fl_Box(0, 0, 25, 25);
 	        o->box(FL_EMBOSSED_BOX);
 		    //o->hide();
-			o->image( fl_thumbnail_image );
+			//o->image( fl_thumbnail_image );
 			//o->image( new Fl_RGB_Image(thumbnail_image, thumbnail_size, thumbnail_size, 3) );
 			//image( new Fl_RGB_Image(thumbnail_image, thumbnail_size, thumbnail_size, 1));
 			//image( NULL);

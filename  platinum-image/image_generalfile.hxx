@@ -1031,64 +1031,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::write_additional_data(image_binary<IMAGE
 		//binary->set_voxel(vec.at(i)[0], vec.at(i)[1], vec.at(i)[2]);
 }
 
-/*      //JK removed this to test link error
 
-template <class ELEMTYPE, int IMAGEDIM>
-void image_general<ELEMTYPE, IMAGEDIM>::fill_region_2d(vector<Vector3D> border, ELEMTYPE fill_val){
-	
-	image_binary<3> *bin_image = new image_binary<3>(datasize[0],datasize[1],1);
-	bin_image->fill(0);
-	//additional_data_base* base = helper_data->data.at(i);
-	//base->calc_data();
-	//vector<Vector3D> border = base->points_to_draw;
-	for(int i = 0; i <border.size(); i++){
-		bin_image->set_voxel(border.at(i)[0],border.at(i)[1],0,1);
-	}
-	int z = border.front()[2]; //requires the object to be in the xy plane
-	bin_image->fill_holes_2D(2,1);
-
-	for(int x = 0; x <datasize[0]; x++){
-		for(int y = 0; y<datasize[1]; y++){
-			if(bin_image->get_voxel(x,y) == 1){
-				this->set_voxel(x,y,z,fill_val);
-			}
-		}
-	}
-	/*vector<Vector3D> queue;
-	queue.push_back(start_seed);
-	vector<vector<bool> > visit;
-	for(int i = 0; i < datasize[0];i++){
-		vector<bool> v;
-		v.assign(datasize[1],false);
-		visit.push_back(v);
-	}
-	while(!queue.empty()){
-		Vector3D p = queue.front();
-		this->set_voxel(p,value);
-		if(this->get_voxel(p[0]+1,p[1],p[2]) != value && !visit.at(p[0]+1).at(p[1]))
-			queue.push_back(create_Vector3D(p[0]+1,p[1],p[2]));
-
-		if(this->get_voxel(p[0]-1,p[1],p[2]) != value && !visit.at(p[0]-1).at(p[1]))
-			queue.push_back(create_Vector3D(p[0]-1,p[1],p[2]));
-
-		if(this->get_voxel(p[0],p[1]-1,p[2]) != value && !visit.at(p[0]).at(p[1]-1))
-			queue.push_back(create_Vector3D(p[0],p[1]-1,p[2]));
-
-		if(this->get_voxel(p[0],p[1]+1,p[2]) != value && !visit.at(p[0]).at(p[1]+1)){
-			queue.push_back(create_Vector3D(p[0],p[1]+1,p[2]));
-		}
-		visit.at(p[0]+1).at(p[1]) = true;
-		visit.at(p[0]-1).at(p[1]) = true;
-		visit.at(p[0]).at(p[1]+1) = true;
-		visit.at(p[0]).at(p[1]-1) = true;
-
-		queue.erase(queue.begin(),queue.begin()+1);
-		//cout <<"queue size: " << queue.size() << endl;
-	}*/
-/*
-}
-
-*/
 /*
 template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::load_dataset_from_VTK_file(string file_path)

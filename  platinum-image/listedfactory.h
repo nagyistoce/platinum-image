@@ -149,7 +149,8 @@ public:
             {            
             init_fl_menu_item(fmenu[m]);
             
-            fmenu[m].label(i->first.c_str());
+			fmenu[m].label(strdup(i->first.c_str()));
+//			fmenu[m].label(i->first.c_str());
             fmenu[m].callback(cb);
             fmenu[m].user_data(new lf_menu_params(receiver,(i->first)));
             fmenu[m].flags = FL_MENU_RADIO;

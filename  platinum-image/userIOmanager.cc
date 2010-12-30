@@ -310,15 +310,16 @@ std::vector<FLTKuserIOpar_histogram2D *> userIOmanager::get_histogram_for_image 
 // --- private ---
 FLTKuserIOpar_landmarks * userIOmanager::get_landmarks(int userIO_ID)
 {
-	FLTKuserIOpar_landmarks * landmarks=NULL;
-	
 	userIO * userIO_block = block_from_ID(userIO_ID);
-	
 	int nc = userIO_block->children();
+
+	FLTKuserIOpar_landmarks * landmarks = NULL;
 	
 	for (int c = 0; c < nc; c++)
 	{
-		if ( landmarks = dynamic_cast<FLTKuserIOpar_landmarks *>(userIO_block->child(c)) )
+		landmarks = dynamic_cast<FLTKuserIOpar_landmarks *>(userIO_block->child(c));
+
+		if ( landmarks != NULL  )
 		{
 			return landmarks;
 		}

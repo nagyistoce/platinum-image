@@ -177,19 +177,19 @@ void rendererMPR::render_position(unsigned char *rgb, int rgb_sx, int rgb_sy)
 //render orthogonal slices using memory-order scanline
 void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_image *rg, rendercombination *rc, thresholdparvalue * threshold)
 {
-//	cout<<"rendererMPR used"<<endl;
+	cout<<"rendererMPR used"<<endl;
 
     if(rc->empty()){       //*** no images: exit ***
         return;
 	}
         
-    int vol_count; //number of images to render in this call
-    Vector3D voxel_offset[MAXRENDERVOLUMES]; //The voxel index ,for each volume, that should be displayed in the top left corner of the viewport
+
+    Vector3D voxel_offset[MAXRENDERVOLUMES]; //The voxel index, for each volume, that should be displayed in the top left corner of the viewport
     //float rgb_min_norm=min(float(rgb_sx),float(rgb_sy));
-    vol_count = static_cast<int> (std::distance(rc->begin(), rc->end()));
+    int vol_count = static_cast<int> (std::distance(rc->begin(), rc->end()));  //number of images to render in this call
     
-    Vector3D screen_center = create_Vector3D(rgb_sx, rgb_sy, 0);
-    screen_center/=2;
+    Vector3D pixmap_center = create_Vector3D(rgb_sx, rgb_sy, 0);
+    pixmap_center/=2;
     
     //fill background color, standard MIN blending leaves background white, instead background is marked
     //with zero intensity in G+B channels, and tinted in a second pass
@@ -220,13 +220,13 @@ void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_imag
   
     int the_image = 0;
 
-    for(rendercombination::iterator pairItr = rc->begin();pairItr != rc->end();pairItr++){ 
+    for(rendercombination::iterator pairItr = rc->begin(); pairItr != rc->end(); pairItr++){  //loops over the images
         image_base *the_image_pointer=NULL;
 		image_base *the_other_image_pointer=NULL;
         
-		pt_error::error_if_null(pairItr->pointer,"Rendered data object is NULL");//Crash here when closing an image
+		pt_error::error_if_null(pairItr->pointer,"Rendered data object is NULL");  //Crash here when closing an image
 
-        the_image_pointer = dynamic_cast<image_base *> (pairItr->pointer);
+        the_image_pointer = dynamic_cast<image_base *>(pairItr->pointer);
         
         bool OKrender = the_image_pointer != NULL && the_image_pointer->is_supported(renderer_type());
         
@@ -258,53 +258,30 @@ void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_imag
 
 //            const float scale = rgb_min_norm / ZOOM_CONSTANT; //constant = the number of mms that should fit inside a viewport at zoom 1
             const float scale = rgb_sx / ZOOM_CONSTANT; //constant = the number of mms that should fit inside a viewport at zoom 1 //JK zoom_const redef
-			//"(rc->dir * screen_center)/(rc->zoom * scale)"  
+			//"(rc->dir * pixmap_center)/(rc->zoom * scale)"  
 			//This rotates/scales/returns vector from top left viewport corner to viewport center in world coordinates...
-			voxel_offset[the_image] = the_image_pointer->world_to_voxel( rg->look_at - ( (rg->dir * screen_center) / (rg->zoom * scale) ) );
+			voxel_offset[the_image] = the_image_pointer->world_to_voxel( rg->look_at - ( (rg->dir * pixmap_center) / (rg->zoom * scale) ) );
 
             //start position in image
-            Vector3D start,end;
+            Vector3D start, end;
             start = voxel_offset[the_image];
-                        
 
-			//set slope to size of render plane in unit coordinates
-			//------------------
 			//this matrix transforms translations in viewport pixels to translations in volume voxels
 			Matrix3D slope = rg->get_scan_line_slop_matrix(the_image_pointer,scale);
 
-			//------------------
-/*
-			Matrix3D orientation_inv;
-            orientation_inv = the_image_pointer->get_orientation().GetInverse();
-//			Vector3D origin = the_image_pointer->get_origin();
-                        
-            Matrix3D slope;			//this matrix transforms translations in viewport pixels to translations in volume voxels
-            slope = orientation_inv;
-			
-			Matrix3D inv_size;
-			inv_size = the_image_pointer->get_voxel_resize().GetInverse();
-            slope = inv_size * slope;
-            
-            slope/= rg->zoom * scale;
-*/
-			//------------------
 
-			//calculate the "slope" in volume voxels for x-steps in viewpost pixels 
+			//calculate the "slope" in volume voxels for x-steps/y-step in viewpost pixels 
+			//(rc->dir is required to make other views than axial "z-dir" possible...)
             Vector3D slope_x = create_Vector3D(1,0,0);
             slope_x = slope * rg->dir * slope_x;
-			//rc->dir is required to make other views than axial "z-dir" possible...
 
-			//calculate the "slope" in volume voxels for y-steps in viewpost pixels 
             Vector3D slope_y = create_Vector3D(0,1,0);
             slope_y = slope * rg->dir * slope_y;
-			//rc->dir is required to make other views than axial "z-dir" possible...
 
-
-            //position to read in voxel data grid
-            Vector3D vox;
+            Vector3D vox;           //position to read in voxel data grid
 			int pixmap_addr;
             
-            // Render loop
+            // --- Render loop ---
             
             //1. iterate Y and determine new position of horizontal scanline
             //2. check that position is within data bounds
@@ -321,7 +298,6 @@ void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_imag
 
                     //get actual value in data, this has been scaled to fit the range of unsigned char
 					if( the_image_pointer->is_voxelpos_within_image_3D(vox) ){
-//					if( vox[0]>0&&vox[1]>0&&vox[2]>0 && vox[0]<the_image_pointer->get_size_by_dim(0)&&vox[1]<the_image_pointer->get_size_by_dim(1)&&vox[2]<the_image_pointer->get_size_by_dim(2) ){
 
                         if(blend_mode == RENDER_THRESHOLD){
                             float t_value[2];
@@ -340,7 +316,7 @@ void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_imag
 						}
 
                         else{ 
-							the_image_pointer->get_display_voxel(value,vox[0],vox[1],vox[2]); //TODO kolla vad denna gor egentligen
+							the_image_pointer->get_display_voxel(value,vox[0],vox[1],vox[2]); //voxel (for this image type) --> value ("RGBvalue")
 						}
                         
                         
@@ -350,7 +326,7 @@ void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_imag
 
                                 switch (blend_mode){
                                     case BLEND_OVERWRITE:
-                                        value.write(pixels+pixmap_addr);
+                                        value.write(pixels+pixmap_addr);	//writes the content of "value" to the right position...
                                         break;
                                         
                                     case BLEND_MIN:

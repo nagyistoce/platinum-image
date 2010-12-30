@@ -136,6 +136,10 @@ void draw_tool::handle(viewport_event &event)
 			event.grab();
 			break;
 
+		default:
+		{
+			//suppress GCC enum warning
+		}
 	}
 	if(event.state() == pt_event::iterate && drawed){
 		if(remove_data){
@@ -155,6 +159,7 @@ void draw_tool::handle(viewport_event &event)
 	nav_tool::handle(event);
 	//}
 }
+
 void draw_tool::draw_data(viewport_event &event, FLTK_Event_pane *fp){
 	data_base * base = myRenderer->the_rc->top_image<data_base>();
 	Vector3D stop = myRenderer->view_to_world(event.mouse_pos_local()[0], event.mouse_pos_local()[1],fp->w(),fp->h());

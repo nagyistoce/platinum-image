@@ -509,9 +509,9 @@ void datamanager::loadimage_callback(Fl_Widget *callingwidget, void *thisdataman
 void datamanager::loadimages() // argument must tell us which instance, if multiple
     {
 	string last_path = pt_config::read<string>("latest_path");
-	cout<<"last_path="<<last_path<<endl;
+	//cout<<"last_path="<<last_path<<endl;
 	Fl_File_Chooser chooser(last_path.c_str(),"Any file - raw (*)\tDICOM image file (*.dcm)\tVisualization Toolkit image (*.vtk)\tAnalyze .hdr image (*.hdr)\tAnalyze .obj image (*.obj)\tNifTi file (*.nii)",Fl_File_Chooser::MULTI,"Load DICOM/VTK/Analyze/NifTi/Raw image");
-	cout<<"last_path="<<last_path<<endl;
+	//cout<<"last_path="<<last_path<<endl;
 
     chooser.show();
 
@@ -745,9 +745,11 @@ Fl_Menu_Item* datamanager::object_menu()
         newMenu[m].callback((Fl_Callback *)NULL,0);
         newMenu[m].argument((long)(*oitr)->get_id());
 
-		//string labelstring=datamanagement.get_data_name((*oitr)->get_id());
-		//char * menulabel=strdup(labelstring.c_str());
-		const char * menulabel = datamanagement.get_data_name_ptr((*oitr)->get_id());
+		string labelstring=datamanagement.get_data_name((*oitr)->get_id());
+		char * menulabel=strdup(labelstring.c_str());
+		//const char * menulabel = datamanagement.get_data_name_ptr((*oitr)->get_id());
+		//cout<<"menulabel="<<menulabel<<endl;
+
         newMenu[m].label(menulabel);
         m++;
         oitr++;

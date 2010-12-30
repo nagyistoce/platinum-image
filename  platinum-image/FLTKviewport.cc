@@ -550,8 +550,8 @@ public:
 void FLTK_VTK_MIP_pane::initialize_vtkRenderWindow()
 {
 	//JK TODO - rewrite in object oriented style...
-	image_base *top_image;
-	if( top_image = rendermanagement.get_top_image_from_renderer(this->get_renderer_id()) )
+	image_base *top_image = rendermanagement.get_top_image_from_renderer(this->get_renderer_id());
+	if( top_image != NULL )
 	{
 	vtkRenderer *ren = vtkRenderer::New();  
 	vtkRenderWindow *renWin = vtkRenderWindow::New();
@@ -789,6 +789,10 @@ int FLTK_Event_pane::handle(int event){
             
             this->callback_event.grab();
             break;
+		default:
+			{
+				//suppress GCC enum warning
+			}
         }
     
    this->do_callback();
@@ -1259,6 +1263,8 @@ void FLTK_Pt_MPR_pane::set_renderer_direction( preset_direction direction )
             dir[z][1]=-1;
             dir[x][2]=-1;
             break;
+		default:
+		{} //default avoids gcc compile warnings 
 
     }
 
@@ -2444,6 +2450,7 @@ void FLTKviewport::set_direction_callback(Fl_Widget *callingwidget, void * p )
 
 void FLTKviewport::switch_pane(factoryIdType type)
 {
+	cout<<"FLTKviewport::switch_pane: 1 entered"<<endl;
 	viewport_parent->set_vp_type_from_factoryIdType(type);	//we need to change this param also...
 
 	int x = this->pane_widget->x();
@@ -2516,6 +2523,7 @@ void FLTKviewport::switch_pane(factoryIdType type)
 
 
 	//viewmanagement.list_viewports();
+	cout<<"FLTKviewport::switch_pane: 2 finished"<<endl;
 }
 
 /*
@@ -2579,7 +2587,10 @@ void FLTKviewport::viewport_callback(Fl_Widget *callingwidget){
 				viewport_parent->needs_rerendering();
             }
         break;
+		default:
+		{} //avoids gcc compile warning
 	}
+
 }
 
 bool FLTKviewport::render_if_needed()

@@ -320,6 +320,11 @@ Matrix3D image_base::get_dir_rendering_matrix(preset_direction direction)
 				dir = orientation;
 			}
 	        break;
+		default:
+		{
+			//suppress GCC enum warning
+		}
+
 
 
 	}
@@ -1375,14 +1380,14 @@ void image_base::try_loader(std::vector<std::string> *f) //! helper for image_ba
 		do{
 			new_image = loader.read();
 			if(new_image != NULL){ 
-				cout << "About to load ad_data for " << ((imageloader)loader).read_file << endl;
+				//cout << "About to load ad_data for " << ((imageloader)loader).read_file << endl;
 				datamanagement.add(new_image);
 				std::string ad_path;
 				ad_path = ((imageloader)loader).read_file;
 				size_t stop = ad_path.find_last_of(".");
 				if(stop != string::npos && ad_path != ""){
 					ad_path = ad_path.substr(0,stop).append(".pad");
-					std::cout << "Trying to load: " << ad_path << std::endl;
+					//std::cout << "Trying to load: " << ad_path << std::endl;
 					new_image->read_helper_data_from_file(ad_path);
 				}
 				//RN ad_insert

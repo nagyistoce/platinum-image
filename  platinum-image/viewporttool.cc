@@ -458,7 +458,13 @@ void nav_tool::handle(viewport_event &event)
 				}
 
 			break;
+				
+			default:
+			{
+				//suppress GCC enum warning
+			}
 		}
+		
         
         if (event.state() == pt_event::end)
 		{
