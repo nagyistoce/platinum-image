@@ -253,9 +253,9 @@ void datawidget_base::refresh_thumbnail()
 	}else{
 		for(int j=0;j<thumbnail_size;j++){
 			for(int i=0;i<thumbnail_size;i++){
-				thumbnail_image[(j*thumbnail_size+i)*RGB_pixmap_bpp+0] = unsigned char(float(254)/float(thumbnail_size)*i);	//R
+				thumbnail_image[(j*thumbnail_size+i)*RGB_pixmap_bpp+0] = (unsigned char)(float(254)/float(thumbnail_size)*i);	//R
 				thumbnail_image[(j*thumbnail_size+i)*RGB_pixmap_bpp+1] = 0;	//G
-				thumbnail_image[(j*thumbnail_size+i)*RGB_pixmap_bpp+2] = unsigned char(float(254)/float(thumbnail_size)*j);	//B
+				thumbnail_image[(j*thumbnail_size+i)*RGB_pixmap_bpp+2] = (unsigned char)(float(254)/float(thumbnail_size)*j);	//B
 			}
 		}
 	}
