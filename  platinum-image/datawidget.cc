@@ -55,7 +55,7 @@ FLTKdraw_pane::FLTKdraw_pane(int X,int Y,int W,int H, datawidget_base *dwb):Fl_W
 }
 
 void FLTKdraw_pane::draw(){
-	cout<<"Nu ritar vi... FLTKdraw_pane::draw("<<this->x()<<","<<this->y()<<","<<w()<<","<<h()<<")"<<endl;
+//	cout<<"Nu ritar vi... FLTKdraw_pane::draw("<<this->x()<<","<<this->y()<<","<<w()<<","<<h()<<")"<<endl;
 
 	fl_draw_image(the_dwb->thumbnail_image,this->x()+1,this->y()+1,w()-2,h()-2); //JK3
 }
@@ -245,7 +245,7 @@ void datawidget_base::copy_items(Fl_Menu_Item *to_items, const Fl_Menu_Item from
 
 void datawidget_base::refresh_thumbnail()
 {
-	cout<<"datawidget_base::refresh_thumbnail("<<data_id<<")"<<endl;
+//	cout<<"datawidget_base::refresh_thumbnail("<<data_id<<")"<<endl;
 
 	if(datamanagement.get_data(data_id)!=NULL){
 		rendermanagement.render_thumbnail(thumbnail_image, thumbnail_size, thumbnail_size, data_id);

@@ -627,7 +627,7 @@ data_base * datamanager::get_data (int ID)
             return *itr;
 		}
 	}
-	cout<<"datamanager::get_data("<<ID<<") --> NULL"<<endl;
+//	cout<<"datamanager::get_data("<<ID<<") --> NULL"<<endl;
 	return NULL;//Pretty important line...
 }
 

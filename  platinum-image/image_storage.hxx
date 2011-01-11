@@ -212,7 +212,7 @@ ELEMTYPE image_storage<ELEMTYPE >::get_max() const
     }
 */
 template <class ELEMTYPE >
-float image_storage<ELEMTYPE >::get_mean(image_storage<IMGBINARYTYPE>* mask)
+float image_storage<ELEMTYPE >::get_mean(image_storage<IMGBINARYTYPE>* mask, IMGBINARYTYPE mask_value)
 {
 	double sum=0;
 	int num=0;
@@ -220,7 +220,7 @@ float image_storage<ELEMTYPE >::get_mean(image_storage<IMGBINARYTYPE>* mask)
 	if (mask!=NULL) {
 		typename image_storage<IMGBINARYTYPE >::iterator mask_itr = mask->begin();
 		while(itr != this->end()) {
-			if (*mask_itr) {
+			if (*mask_itr == mask_value) {
 				sum+=(double) *itr;
 				++num;
 			}

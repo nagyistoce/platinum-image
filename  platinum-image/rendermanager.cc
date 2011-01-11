@@ -501,7 +501,7 @@ void rendermanager::data_has_changed(int ID){ //redraws the viewports needed and
         this->combination_update_callback(*c); //JK2
     }
 	
-	data_base *d = datamanagement.get_data(ID);
+	data_base *d = datamanagement.get_data(ID); //function might be called befor the image is created (from within the constructor...)
 	if(d!=NULL){
 		d->refresh_thumbnail();
 	}

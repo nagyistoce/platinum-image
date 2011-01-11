@@ -160,7 +160,7 @@ class datamanager
 				if (**itr == ID){
 					T * i = dynamic_cast<T *>(*itr); //TODO_R Andra denna rad och return tpe
             
-					 if (pt_error::error_if_null(i,"Trying to get_image when requested ID is not image type",pt_error::fatal) != NULL){
+					 if (pt_error::error_if_null(i,"Trying to get_image when requested ID is not correctly casted",pt_error::warning) != NULL){
 						 return i; 
 					 }
 				}
