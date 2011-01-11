@@ -161,7 +161,9 @@ void rendererMPR::render_thumbnail(unsigned char *rgb, int rgb_sx, int rgb_sy, i
 	image_base *the_image = datamanagement.get_image<image_base>(image_ID);
 	rg.look_at = the_image->get_physical_center();
 	rg.dir = the_image->get_orientation();
-	rg.zoom = ZOOM_CONSTANT/the_image->get_phys_span_in_dir(the_image->get_voxel_x_dir_in_phys());
+	float spx = the_image->get_phys_span_in_dir(the_image->get_voxel_x_dir_in_phys()); //the default thumbnail is MPR-rendered in voxel-z-direction
+	float spy = the_image->get_phys_span_in_dir(the_image->get_voxel_y_dir_in_phys());
+	rg.zoom = ZOOM_CONSTANT/max(spx,spy);
 
     render_(rgb, rgb_sx, rgb_sy, &rg, &rc, NULL);
 }

@@ -157,7 +157,8 @@ transfer_brightnesscontrast<ELEMTYPE >::transfer_brightnesscontrast (image_stora
 	contrast_ctrl->labelsize(12);
 
 	frame->end();
-    frame->do_callback(); //redraw image that the transfer function is attached to ( 
+//    frame->do_callback(); //redraw image that the transfer function is attached to ( 
+	//commented since it might result in a redraw befor the tf is fully switched!!!
 	//required when another transfer has just been used...
     }
 
