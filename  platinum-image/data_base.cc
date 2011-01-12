@@ -18,18 +18,46 @@
 //    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //#include "data_base.h"
-
 #include "fileutils.h"
-
 #include <sstream>
 #include "datawidget.h"
-
 #include "datamanager.h"
 extern datamanager datamanagement;
 
 int data_base::data_next_ID = 1;
 
 using namespace std;
+
+
+data_base::data_base(data_base *const source, vector<RENDERER_TYPE> supported)
+    {
+	ID = data_next_ID++;
+//	cout<<"data_base, new ID="<<ID<<endl;
+	my_tooltip = "";
+
+	widget = NULL;
+	draw_additional_data = false;
+
+//    pt_error::error_if_null(source,"Attempting to copyconstruct data object from NULL object");
+
+	if(source == NULL){
+		from_file(false);
+		helper_data = new additional_data();
+		meta = metadata();
+	}else{
+		from_file(source->from_file());
+		helper_data = source->helper_data;
+		meta = source->meta;
+	}
+
+	if(supported.size()==0){
+		supported_renderers.push_back(RENDERER_MPR); //Defaults to MPR, but for clarity this should not be used!
+	}else{
+		supported_renderers = supported;
+	}
+
+    }
+
 
 data_base::~data_base()
     {
@@ -49,6 +77,17 @@ void data_base::refresh_thumbnail()
 	}else{
 		pt_error::pt_error("Attempt to set name(const string) on a widget-less data object",pt_error::warning);
     }
+}
+
+unsigned int data_base::get_widget_height()
+{
+	unsigned int h=0;
+    if(widget != NULL){ //the widget may not have been created yet... (when the image is first loaded...)
+		h = widget->h();
+	}else{
+		pt_error::pt_error("Attempt to get_widget_height on a widget-less data object",pt_error::warning);
+    }
+	return h;
 }
 
 
@@ -81,34 +120,6 @@ const char* data_base::name_ptr()
     return string("(widget==NULL)").c_str();
 }
 
-data_base::data_base(data_base *const source, vector<RENDERER_TYPE> supported)
-    {
-	ID = data_next_ID++;
-//	cout<<"data_base, new ID="<<ID<<endl;
-	my_tooltip = "";
-
-	widget = NULL;
-	draw_additional_data = false;
-
-//    pt_error::error_if_null(source,"Attempting to copyconstruct data object from NULL object");
-
-	if(source == NULL){
-		from_file(false);
-		helper_data = new additional_data();
-		meta = metadata();
-	}else{
-		from_file(source->from_file());
-		helper_data = source->helper_data;
-		meta = source->meta;
-	}
-
-	if(supported.size()==0){
-		supported_renderers.push_back(RENDERER_MPR); //Defaults to MPR, but for clarity this should not be used!
-	}else{
-		supported_renderers = supported;
-	}
-
-    }
 /*
 data_base::data_base(vector<RENDERER_TYPE> support)
     {

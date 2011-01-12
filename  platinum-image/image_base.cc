@@ -65,6 +65,7 @@ void image_base::set_parameters ()
     ostringstream namestream;
     //constructor: add "Untitled" name and ID
     namestream << "3D image (" << ID << ")";
+	Fl_Group::current(datamanagement.data_widget_box->interior); //JKJK
 	widget=new datawidget<image_base>(this,namestream.str());
     name(namestream.str());
     

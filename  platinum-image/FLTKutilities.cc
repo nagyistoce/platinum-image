@@ -64,7 +64,7 @@ void fl_menu_userdata_delete (const Fl_Menu_Item * m)
         }
     }
 
-horizresizeablescroll::horizresizeablescroll (int x, int y, int w, int h, const char *label) : Fl_Scroll (x,y,w,h,label)
+horizresizeablescroll::horizresizeablescroll(int x, int y, int w, int h, const char *label) : Fl_Scroll (x,y,w,h,label)
     {
     //children are deleted automatically with parents, so  
     interior=new Fl_Pack(x,y,w-FLTK_SCROLLBAR_SIZE,h);
@@ -78,32 +78,36 @@ horizresizeablescroll::horizresizeablescroll (int x, int y, int w, int h, const 
 	
 	//interior->callback(widget_callback, (void*) this);
 	this->callback(widget_callback, (void*) this);
+
+	//interior->end();	//JKJK just added this *** but it seems ended via "void horizresizeablescroll::end()"
     }
 
-void horizresizeablescroll::begin ()
+void horizresizeablescroll::begin()
     {
     interior->begin();
     }
 
-void horizresizeablescroll::end ()
+void horizresizeablescroll::end()
     {
     interior->end();
     Fl_Scroll::end();
     }
 
-void horizresizeablescroll::resize (int newx, int newy, int neww, int newh)
+void horizresizeablescroll::resize(int newx, int newy, int neww, int newh)
     {
+//	std::cout << "horizresizeablescroll::resize ("<<newx<<" "<<newy<<" "<<neww<<" "<<newh<<")"<<std::endl;
     int scroll_x=interior->x()-x();
     int scroll_y=interior->y()-y();
 
     Fl_Widget::resize(newx, newy, neww, newh);
-    interior->resize(newx+scroll_x,newy+scroll_y,neww-FLTK_SCROLLBAR_SIZE,interior->h());
+    interior->resize(newx+scroll_x, newy+scroll_y, neww-FLTK_SCROLLBAR_SIZE, interior->h());
+	std::cout << "interior->resize("<<newx+scroll_x<<" "<<newy+scroll_y<<" "<<neww-FLTK_SCROLLBAR_SIZE<<" "<<interior->h()<<")"<<std::endl;
     }
 
 
 
 void horizresizeablescroll::widget_callback(Fl_Widget* callingwidget, void* test) {
-	std::cout << "widget_callback" << std::endl;
+	std::cout << "horizresizeablescroll::widget_callback" << std::endl;
 }
 
 //void horizresizeablescroll::setupCallback() {
@@ -112,6 +116,7 @@ void horizresizeablescroll::widget_callback(Fl_Widget* callingwidget, void* test
 
 int horizresizeablescroll::handle(int event)
 {
+//	std::cout << "horizresizeablescroll::handle" << std::endl;
 	int ret = 0;
 
 //	if (Fl::event() == FL_DRAG )

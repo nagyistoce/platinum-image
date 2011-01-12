@@ -185,12 +185,12 @@ void rendererMPR::render_position(unsigned char *rgb, int rgb_sx, int rgb_sy)
 void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_image *rg, rendercombination *rc, thresholdparvalue * threshold)
 {
 	#ifdef TESTMODE
-		cout<<"************"<<endl;
+//		cout<<"************"<<endl;
 		cout<<"rendererMPR::render_("<<rgb_sx<<","<<rgb_sy<<",rg_id="<<rg->get_id()<<")"<<endl;
-		cout<<"rg->look_at="<<rg->look_at<<endl;
-		cout<<"rg->dir="<<endl<<rg->dir<<endl;
-		cout<<"rg->zoom="<<rg->zoom<<endl;
-		cout<<"************"<<endl;
+//		cout<<"rg->look_at="<<rg->look_at<<endl;
+//		cout<<"rg->dir="<<endl<<rg->dir<<endl;
+//		cout<<"rg->zoom="<<rg->zoom<<endl;
+//		cout<<"************"<<endl;
 	#endif
 
     if(rc->empty()){       //*** no images: exit ***
@@ -296,13 +296,13 @@ void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_imag
 			int pixmap_addr;
             
 			#ifdef TESTMODE
-				cout<<"----------"<<endl;
+/*				cout<<"----------"<<endl;
 				cout<<"   the_image/vol_count="<<the_image<<"/"<<vol_count<<endl;
 				cout<<"   slope_x="<<slope_x<<endl;
 				cout<<"   slope_y="<<slope_y<<endl;
 				cout<<"   scale="<<scale<<endl;
 				cout<<"   voxel_offset[the_image]="<<voxel_offset[the_image]<<endl;
-			#endif
+*/			#endif
 
             // --- Render loop ---
             

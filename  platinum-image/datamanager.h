@@ -45,6 +45,8 @@
 
 class datamanager
 {
+	friend class image_base; //JKJK
+
     public:
         static const unsigned int DATA_VECTOR_MAX = 10000;
 

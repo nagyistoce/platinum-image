@@ -66,6 +66,7 @@ class data_base
 	
         virtual ~data_base();
 	    void refresh_thumbnail();
+	    unsigned int get_widget_height();
 		additional_data* helper_data;
 		bool has_additionl_data();
 		//virtual const data_base & operator=(const data_base & source);

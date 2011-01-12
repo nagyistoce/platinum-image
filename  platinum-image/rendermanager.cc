@@ -495,8 +495,15 @@ void rendermanager::connect_data_renderer(int rendererID, int dataID)
 	
 void rendermanager::data_has_changed(int ID){ //redraws the viewports needed and the thumbnail
     vector<int> combos = rendermanager::combinations_from_data (ID);
+	#ifdef TESTMODE
+		cout<<"rendermanager::data_has_changed("<<ID<<")"<<endl;
+	#endif
+
 
     for (vector<int>::iterator c = combos.begin();c != combos.end(); c++){
+		#ifdef TESTMODE
+		cout<<"c="<<*c<<")"<<endl;
+		#endif
 //        rendermanagement.combination_update_callback(*c);
         this->combination_update_callback(*c); //JK2
     }

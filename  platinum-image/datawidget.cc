@@ -379,7 +379,7 @@ datawidget<image_base>::datawidget(image_base *im, std::string n): datawidget_ba
         o->hide();
         o->end();
     }
-    extras->add(tf_group);
+    extras->add(tf_group); //extras is a FL_Pack, which is a FL_Group
 
 
 	geom_widget=NULL;	//Cannot access geometry data yet since data has not been added to datamanagement 

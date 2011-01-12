@@ -201,12 +201,14 @@ void datamanager::save_curve_callback(Fl_Widget *callingwidget, void * thisdatam
 	(dynamic_cast<curve_base*>(((datamanager*)thisdatamanager)->dataItems[image_index]))->save_curve_to_file(chooser.value(1));
 	pt_config::write("latest_path",path_parent(chooser.value(1)));
 }
+
 void datamanager::toggle_additional_data(Fl_Widget *callingwidget, void * thisdatamanager){
 	datawidget_base * the_datawidget=(datawidget_base *)(callingwidget->user_data());
     int image_index=((datamanager*)thisdatamanager)->find_data_index(the_datawidget->get_data_id());
 	((datamanager*)thisdatamanager)->dataItems[image_index]->draw_additional_data = 
 		!((datamanager*)thisdatamanager)->dataItems[image_index]->draw_additional_data;
 }
+
 void datamanager::connect_additional_data_callback(Fl_Widget *callingwidget, void * thisdatamanager){
 	datawidget_base * the_datawidget=(datawidget_base *)(callingwidget->user_data());
     int image_index=((datamanager*)thisdatamanager)->find_data_index(the_datawidget->get_data_id());
@@ -314,23 +316,19 @@ void datamanager::add(image_base *im, string name, bool data_changed, string slc
     if(im != NULL){
         if(dataItems.size() < DATA_VECTOR_MAX){
             if(find_data_index(im->get_id()) == -1){
-                dataItems.push_back(im);
-                im->activate();
 				if(name!=""){
 					im->name(name);
-				}
-				if(data_changed){
-					im->data_has_changed();
 				}
 				if(slc_orient!=""){
 					im->set_slice_orientation(slc_orient);
 				}
 
+				dataItems.push_back(im);
+				im->activate();
                 viewmanagement.show_in_empty_viewport(im->get_id());
-
 				data_vector_has_changed();
-                data_has_changed(im->get_id());
-
+                data_has_changed(im->get_id(),data_changed);
+				refresh_datawidgets(); //JKJK
 			}else{
 				pt_error::error("Trying to re-add image ID ("+im->name()+")",pt_error::warning);
 			}
@@ -507,7 +505,7 @@ void datamanager::loadimage_callback(Fl_Widget *callingwidget, void *thisdataman
 
 
 void datamanager::loadimages() // argument must tell us which instance, if multiple
-    {
+{
 	string last_path = pt_config::read<string>("latest_path");
 	//cout<<"last_path="<<last_path<<endl;
 	Fl_File_Chooser chooser(last_path.c_str(),"Any file - raw (*)\tDICOM image file (*.dcm)\tVisualization Toolkit image (*.vtk)\tAnalyze .hdr image (*.hdr)\tAnalyze .obj image (*.obj)\tNifTi file (*.nii)",Fl_File_Chooser::MULTI,"Load DICOM/VTK/Analyze/NifTi/Raw image");
@@ -539,7 +537,7 @@ void datamanager::loadimages() // argument must tell us which instance, if multi
         image_base::load(files);
 		pt_config::write("latest_path",path_parent(files[0]));
         }
-    }
+}
 
 
 //JK geometry information will be difficult to import, as files can be chosen arbitraryly...
@@ -570,7 +568,7 @@ void datamanager::load_dcm_import_vector(std::vector<std::string> dcm_filenames,
 
 
 int datamanager::create_empty_image(int x, int y, int z, int unit) // argument must tell us which instance, if multiple
-    {
+{
     image_base *animage = NULL;
     
     switch (unit)
@@ -588,7 +586,7 @@ int datamanager::create_empty_image(int x, int y, int z, int unit) // argument m
     add(animage);
 
     return animage->get_id();
-    }
+}
 
 int datamanager::create_empty_image(image_base * blueprint, imageDataType unit)
     {
@@ -669,22 +667,41 @@ bool datamanager::FLTK_running()
     }
 
 void datamanager::add_datawidget(datawidget_base *data_widget)
-    {
+{
     //add FLTK widget belonging to datawidget object to the list
 
-    data_widget_box->interior->add(data_widget);
     data_widget->resize(data_widget_box->interior->x(),data_widget_box->interior->y(),data_widget_box->interior->w(),data_widget->h());
 
+	data_widget_box->interior->add(data_widget);
+	data_widget_box->interior->redraw(); //JKJK
     refresh_datawidgets();
-    }
+}
 
 void datamanager::refresh_datawidgets()
-    {
-    data_widget_box->redraw();
-    }
+{
+//	cout<<"datamanager::refresh_datawidgets()"<<endl;
+
+	int x = data_widget_box->interior->x();
+	int y = data_widget_box->interior->y();
+	int w = data_widget_box->interior->w();
+//	int h = data_widget_box->interior->h();
+	int h = 0;
+	for (unsigned int i=0; i < dataItems.size(); i++){
+		h += dataItems[i]->get_widget_height();
+	}
+	data_widget_box->interior->resize(x,y,w,h);
+	data_widget_box->interior->redraw();
+	
+//	x = data_widget_box->x();
+//	y = data_widget_box->y();
+//	w = data_widget_box->w();
+//	data_widget_box->resize(x,y,w,h);
+
+	data_widget_box->redraw();
+}
 
 void datamanager::remove_datawidget(datawidget_base * the_fl_widget)
-    {
+{
     //remove FLTK widget belonging to datawidget object from list
     //the datawidget itself is deleted by its owner data_base
 
@@ -773,6 +790,7 @@ if (point_menu != NULL)
 
 void datamanager::rebuild_objects_menu()
 {
+//	cout<<"datamanager::rebuild_objects_menu()"<<endl;
     if (objects_menu != NULL)
         { 
         delete objects_menu; 
