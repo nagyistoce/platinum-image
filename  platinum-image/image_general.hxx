@@ -408,7 +408,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::load_file_to_this(std::string f)	//loads
 template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::data_has_changed(bool stat_refresh)
 {
-	cout<<"image_general<ELEMTYPE, IMAGEDIM>::data_has_changed(stat_refr="<<stat_refresh<<") id="<<this->get_id()<<endl;
+	//cout<<"image_general<ELEMTYPE, IMAGEDIM>::data_has_changed(stat_refr="<<stat_refresh<<") id="<<this->get_id()<<endl;
 		
     //data changed, no longer available in a file (not that Mr. Platinum knows of, anyway)
     this->from_file(false);

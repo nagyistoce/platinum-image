@@ -1435,6 +1435,8 @@ bool fit_points(const std::vector<Vector3D> & fixed, std::vector<Vector3D> & mov
 	return true;
 }
 
+
+
 float ttest_indep_2sample_equal_variance(vector<float> &group_a, vector<float> &group_b){
 	float n_a = group_a.size();
 	float n_b = group_b.size();
@@ -1449,7 +1451,8 @@ float ttest_indep_2sample_equal_variance(vector<float> &group_a, vector<float> &
 		mean_a += group_a[i];
 	}
 	mean_a /= n_a;
-	
+
+
 	for(int i=0;i<n_b;i++){
 		mean_b += group_b[i];
 	}
@@ -1460,30 +1463,29 @@ float ttest_indep_2sample_equal_variance(vector<float> &group_a, vector<float> &
 		tmp = group_a[i]-mean_a;
 		s_a += tmp*tmp;
 	}
-	s_a /= (n_a-1);					//the variance is estimated from the sample
+	s_a /= (n_a-1); //the variance is estimated from the sample
 
 	for(int i=0;i<n_b;i++){
 		tmp = group_b[i]-mean_b;
 		s_b += tmp*tmp;
 	}
-	s_b /= (n_b-1);					//the variance is estimated from the sample
+	s_b /= (n_b-1); //the variance is estimated from the sample
 
-	
-//	float S_p = ( (n_a-1)*s_a+(n_b-1)*s_b )/( n_a+n_b-2 ); //pooled variances
+
+	// float S_p = ( (n_a-1)*s_a+(n_b-1)*s_b )/( n_a+n_b-2 ); //pooled variances
 
 	float t = (mean_a-mean_b)/( sqrt(s_a/n_a+s_b/n_b));
-	cout<<n_a<<endl;
-	cout<<n_b<<endl;
-	cout<<mean_a<<endl;
-	cout<<mean_b<<endl;
-	cout<<s_a<<endl;
-	cout<<s_b<<endl;
+	//cout<<n_a<<endl;
+	//cout<<n_b<<endl;
+	//cout<<mean_a<<endl;
+	//cout<<mean_b<<endl;
+	//cout<<s_a<<endl;
+	//cout<<s_b<<endl;
 	//cout<<S_p<<endl;
 	return t;
 }
 
-
-int fit_line(vector<float> &x, vector<float> &y, float &slope, float &intercept){
+int fit_line(vector<float> &x, vector<float> &y, float &slope, float &intercept, float &correlation){
 	//For the line of best fit y=k*x+m:
 	//k = (n *Sxy - Sx * Sy) / (n * Sxx - Sx * Sx)
 	//m = (Sy - k * Sx) / n
@@ -1497,12 +1499,14 @@ int fit_line(vector<float> &x, vector<float> &y, float &slope, float &intercept)
 	float Sy=0;				//the SUM of all the Y coordinates
 	float Sxy=0;			//the SUM of all (x * y)
 	float Sxx=0;			//the SUM of all (x * x)
+	float Syy=0;			//the SUM of all (y * y)
 
 	for(int i=0;i<n;i++){
 		Sx += x[i];
 		Sy += y[i];
 		Sxy += x[i]*y[i];
 		Sxx += x[i]*x[i];
+		Syy += y[i]*y[i];
 	}
 	float denom = (n*Sxx - Sx*Sx);
 
@@ -1512,5 +1516,7 @@ int fit_line(vector<float> &x, vector<float> &y, float &slope, float &intercept)
 
 	slope = (n*Sxy - Sx*Sy)/denom;
 	intercept = (Sy - slope*Sx)/n;
+
+	correlation = (n*Sxy - Sx*Sy)/(sqrt(n*Sxx-Sx*Sx)*sqrt(n*Syy-Sy*Sy));
 	return 1;
 }

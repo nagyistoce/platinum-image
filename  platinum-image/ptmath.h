@@ -509,6 +509,6 @@ bool fit_points(const std::vector<Vector3D> & fixed, std::vector<Vector3D> & mov
 float ttest_indep_2sample_equal_variance(vector<float> &group_a, vector<float> &group_b);
 
 
-int fit_line(vector<float> &x, vector<float> &y, float &slope, float &intercept);		// Least square fit line to 2D data.
+int fit_line(vector<float> &x, vector<float> &y, float &slope, float &intercept, float &correlation);		// Least square fit line to 2D data.
 
 #endif	//__ptmath.h__
