@@ -1435,6 +1435,53 @@ bool fit_points(const std::vector<Vector3D> & fixed, std::vector<Vector3D> & mov
 	return true;
 }
 
+float ttest_indep_2sample_equal_variance(vector<float> &group_a, vector<float> &group_b){
+	float n_a = group_a.size();
+	float n_b = group_b.size();
+	float mean_a = 0;
+	float mean_b = 0;
+	float tmp = 0;
+	float s_a = 0;
+	float s_b = 0;
+
+	//------- Means -----------
+	for(int i=0;i<n_a;i++){
+		mean_a += group_a[i];
+	}
+	mean_a /= n_a;
+	
+	for(int i=0;i<n_b;i++){
+		mean_b += group_b[i];
+	}
+	mean_b /= n_b;
+
+	//------- Variances (s) -----------
+	for(int i=0;i<n_a;i++){
+		tmp = group_a[i]-mean_a;
+		s_a += tmp*tmp;
+	}
+	s_a /= (n_a);					//the variance is estimated from the sample
+
+	for(int i=0;i<n_b;i++){
+		tmp = group_b[i]-mean_b;
+		s_b += tmp*tmp;
+	}
+	s_b /= (n_b);					//the variance is estimated from the sample
+
+	
+	float S_p = ( (n_a-1)*s_a+(n_b-1)*s_b )/( n_a+n_b-2 ); //pooled variances
+
+	float t = (mean_a-mean_b)/( sqrt(S_p*(1/n_a+1/n_b)) );
+	cout<<n_a<<endl;
+	cout<<n_b<<endl;
+	cout<<mean_a<<endl;
+	cout<<mean_b<<endl;
+	cout<<s_a<<endl;
+	cout<<s_b<<endl;
+	cout<<S_p<<endl;
+	return t;
+}
+
 
 int fit_line(vector<float> &x, vector<float> &y, float &slope, float &intercept){
 	//For the line of best fit y=k*x+m:
