@@ -1460,25 +1460,25 @@ float ttest_indep_2sample_equal_variance(vector<float> &group_a, vector<float> &
 		tmp = group_a[i]-mean_a;
 		s_a += tmp*tmp;
 	}
-	s_a /= (n_a);					//the variance is estimated from the sample
+	s_a /= (n_a-1);					//the variance is estimated from the sample
 
 	for(int i=0;i<n_b;i++){
 		tmp = group_b[i]-mean_b;
 		s_b += tmp*tmp;
 	}
-	s_b /= (n_b);					//the variance is estimated from the sample
+	s_b /= (n_b-1);					//the variance is estimated from the sample
 
 	
-	float S_p = ( (n_a-1)*s_a+(n_b-1)*s_b )/( n_a+n_b-2 ); //pooled variances
+//	float S_p = ( (n_a-1)*s_a+(n_b-1)*s_b )/( n_a+n_b-2 ); //pooled variances
 
-	float t = (mean_a-mean_b)/( sqrt(S_p*(1/n_a+1/n_b)) );
+	float t = (mean_a-mean_b)/( sqrt(s_a/n_a+s_b/n_b));
 	cout<<n_a<<endl;
 	cout<<n_b<<endl;
 	cout<<mean_a<<endl;
 	cout<<mean_b<<endl;
 	cout<<s_a<<endl;
 	cout<<s_b<<endl;
-	cout<<S_p<<endl;
+	//cout<<S_p<<endl;
 	return t;
 }
 
