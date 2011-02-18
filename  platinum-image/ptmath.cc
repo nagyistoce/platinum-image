@@ -1482,6 +1482,7 @@ float ttest_indep_2sample_equal_variance(vector<float> &group_a, vector<float> &
 	//cout<<s_a<<endl;
 	//cout<<s_b<<endl;
 	//cout<<S_p<<endl;
+	//cout << "t: " << t << endl;
 	return t;
 }
 
