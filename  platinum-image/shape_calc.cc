@@ -143,12 +143,21 @@ vector<Vector3D> shape_calc::calc_gauss_2d(Vector3D sigma, Vector3D my, double a
 
 vector<Vector3D> shape_calc::calc_line_3d(Vector3D start, Vector3D stop){
 	vector<Vector3D> vec;
+	
+	/*start[0] = floor(start[0]);
+	start[1] = floor(start[1]);
+	start[2] = floor(start[2]);
+
+	stop[0] = ceil(stop[0]);
+	stop[1] = ceil(stop[1]);
+	stop[2] = ceil(stop[2]);*/
 	Vector3D diff = (stop - start);
-	float n = max( max(abs(diff[0]),abs(diff[1])), abs(diff[2]) );
+	float n = diff.GetNorm();//max( max(abs(diff[0]),abs(diff[1])), abs(diff[2]) );
 	Vector3D delta;
-	delta[0] = float(round(diff[0]))/(n+1.0);
-	delta[1] = float(round(diff[1]))/(n+1.0);
-	delta[2] = float(round(diff[2]))/(n+1.0);
+	delta[0] = diff[0]/(n+1.0f);
+	delta[1] = diff[1]/(n+1.0f);
+	delta[2] = diff[2]/(n+1.0f);
+
 	for(float i=0;i<n+1;i++){
 		vec.push_back(create_Vector3D(start[0]+delta[0]*i, start[1]+delta[1]*i, start[2]+delta[2]*i));
 	}

@@ -1414,7 +1414,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::add_slice_3D(image_general<ELEMTYPE, IMA
 	if(slice_dir==2){
 		res->name("res-2..");
 		if( f >=0 && f < src->datasize[2] && same_size(src,0) && same_size(src,1) ){
-			cout<<"...entered"<<endl;
+			//cout<<"...entered"<<endl;
 			res->initialize_dataset(datasize[0],datasize[1],datasize[2]+1);
 			for (int z=0; z < datasize[2]; z++){
 				for (int y=0; y < datasize[1]; y++){
@@ -1437,7 +1437,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::add_slice_3D(image_general<ELEMTYPE, IMA
 	}else if(slice_dir==1){
 		res->name("res-1..");
 		if( f >=0 && f < src->datasize[1] && same_size(src,0) && same_size(src,2) ){
-			cout<<"...entered"<<endl;
+			//cout<<"...entered"<<endl;
 			res->initialize_dataset(datasize[0],datasize[1]+1,datasize[2]);
 			for (int z=0; z < datasize[2]; z++){
 				for (int y=0; y < datasize[1]; y++){
@@ -1461,7 +1461,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::add_slice_3D(image_general<ELEMTYPE, IMA
 	}else if(slice_dir==0){
 		res->name("res-0..");
 		if( f >=0 && f < src->datasize[0] && same_size(src,1) && same_size(src,2) ){
-			cout<<"...entered"<<endl;
+			//cout<<"...entered"<<endl;
 			res->initialize_dataset(datasize[0]+1,datasize[1],datasize[2]);
 			for (int z=0; z < datasize[2]; z++){
 				for (int y=0; y < datasize[1]; y++){

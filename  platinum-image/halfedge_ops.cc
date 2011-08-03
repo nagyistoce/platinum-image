@@ -34,7 +34,7 @@ void halfedge_ops::setNormals(PolygonData *start){
 	start->nx = norm[0]/n;
 	start->ny = norm[1]/n;
 	start->nz = norm[2]/n;
-	
+	 
 }
 
 void halfedge_ops::setVertexNormal(Halfedge* h, Halfedge* newfig){
@@ -56,13 +56,18 @@ void halfedge_ops::setVertexNormal(Halfedge* h, Halfedge* newfig){
 				N[0]+=half->left->nx;
 				N[1]+=half->left->ny;
 				N[2]+=half->left->nz;
-
+				//std::cout << "normals for [" << newfig->vertices[i]->x << " " << newfig->vertices[i]->y << " " << newfig->vertices[i]->z << "]:  [" << half->left->nx << " " << half->left->ny << " " << half->left->nz << "]" << std::endl; 
 				half = half->next->pair;//->next;//->origin->half;
 			}
 			while(half != begin);
-			newfig->vertices[i]->nx = N[0]/n;
-			newfig->vertices[i]->ny = N[1]/n;
-			newfig->vertices[i]->nz = N[2]/n;
+			N[0] = N[0]/n;
+			N[1] = N[1]/n;
+			N[2] = N[2]/n;
+			float nor = sqrt(pow(N[0],2) + pow(N[1],2) +pow(N[2],2));
+
+			newfig->vertices[i]->nx = N[0]/nor;
+			newfig->vertices[i]->ny = N[1]/nor;
+			newfig->vertices[i]->nz = N[2]/nor;
 		}
 	}
 }
