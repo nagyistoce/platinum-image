@@ -2,6 +2,7 @@
 # master thesis project
 
 PROJECT(Histo2D)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
 INCLUDE_REGULAR_EXPRESSION(".*[.](cc|h|cxx|cp)$")
 

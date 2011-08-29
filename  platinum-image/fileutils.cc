@@ -210,6 +210,12 @@ void create_dir(string dir_path)
 	itksys::SystemTools::MakeDirectory( dir_path.c_str() );
 }
 
+void create_dir_if_not_already_existing(string dir_path){
+	if( !dir_exists(dir_path) ){  
+		create_dir(dir_path);
+	}
+}
+
 void create_file(string file_path)
 {
 	ofstream myfile;
@@ -1297,11 +1303,12 @@ string get_csv_item(string s, int item_num, string separator)
 	string word;
 	int ind1=0;
 	int ind2=0;
-	for(int i=0;i<item_num;i++){
+	for(int i=-1;i<item_num;i++){
 		ind2 = s.find_first_of(separator,ind1);
+		word = s.substr(ind1,ind2-ind1);
 		ind1 = ind2+1;
 	}
-	return s.substr(ind1,ind2-ind1);
+	return word;
 }
 
 bool string_contains(string s, string sample)

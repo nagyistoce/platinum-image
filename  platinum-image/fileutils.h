@@ -65,6 +65,7 @@ vector<string> get_files_in_dir_where_name_contains(string dir_path, string name
 bool file_exists(string file_path);   //! return whether file exists. //! NOTE: returns false for existing directory
 bool dir_exists(string file_path);                              
 void create_dir(string dir_path);
+void create_dir_if_not_already_existing(string dir_path);
 void create_file(string file_path);
 void copy_dir(string from_path, string to_path, bool always=true);
 void copy_file(string from_path, string to_path, bool always=true);

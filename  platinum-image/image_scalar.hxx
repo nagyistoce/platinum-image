@@ -1060,13 +1060,30 @@ image_scalar<ELEMTYPE, IMAGEDIM>* image_scalar<ELEMTYPE, IMAGEDIM>::get_subvolum
 	res->set_origin(this->get_physical_pos_for_voxel(x1,y1,z1));
 	return res;
 }
-/*
+
 template <class ELEMTYPE, int IMAGEDIM>
 image_scalar<ELEMTYPE, IMAGEDIM>* image_scalar<ELEMTYPE, IMAGEDIM>::get_subvolume_from_region_3D(int dir, int from_slice, int to_slice)
 {
+	int x1 = 0;
+	int y1 = 0;
+	int z1 = 0;
+	int x2 = this->nx()-1;
+	int y2 = this->ny()-1;
+	int z2 = this->nz()-1;
 
+	if(dir==2){
+		z1 = from_slice;
+		z2 = to_slice;
+	}else if(dir==1){
+		y1 = from_slice;
+		y2 = to_slice;
+	}else if(dir==0){
+		x1 = from_slice;
+		x2 = to_slice;
+	}
+	return this->get_subvolume_from_region_3D(x1,y1,z1,x2,y2,z2);
 }
-*/
+
 template <class ELEMTYPE, int IMAGEDIM>
 image_scalar<ELEMTYPE, IMAGEDIM>* image_scalar<ELEMTYPE, IMAGEDIM>::get_subvolume_from_region_3D(image_binary<3> *mask, IMGBINARYTYPE object_value)
 {
