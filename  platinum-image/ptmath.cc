@@ -1485,6 +1485,10 @@ float ttest_indep_2sample_equal_variance(vector<float> &group_a, vector<float> &
 	//cout << "t: " << t << endl;
 	return t;
 }
+int fit_line(vector<float> &x, vector<float> &y, float &slope, float &intercept){
+	float corr=0;
+	return fit_line(x, y, slope, intercept, corr);
+}
 
 int fit_line(vector<float> &x, vector<float> &y, float &slope, float &intercept, float &correlation){
 	//For the line of best fit y=k*x+m:
@@ -1520,4 +1524,17 @@ int fit_line(vector<float> &x, vector<float> &y, float &slope, float &intercept,
 
 	correlation = (n*Sxy - Sx*Sy)/(sqrt(n*Sxx-Sx*Sx)*sqrt(n*Syy-Sy*Sy));
 	return 1;
+}
+
+float calc_t2_from_two_tes(float s1, float s2, float te1, float te2){
+	//s = S0*e(-te/t2)
+	//t2 = (te2-te1)/(log(s1/s2));
+	//S0 = s1/e(-te1/t2);
+	float t2=0;
+	if(s2==0){
+		t2 = 0;
+	}else{
+		t2 = (te2-te1)/(log(s1/s2));
+	}
+	return t2;
 }

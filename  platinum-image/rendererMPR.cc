@@ -186,7 +186,7 @@ void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_imag
 {
 	#ifdef TESTMODE
 //		cout<<"************"<<endl;
-		cout<<"rendererMPR::render_("<<rgb_sx<<","<<rgb_sy<<",rg_id="<<rg->get_id()<<")"<<endl;
+//		cout<<"rendererMPR::render_("<<rgb_sx<<","<<rgb_sy<<",rg_id="<<rg->get_id()<<")"<<endl;
 //		cout<<"rg->look_at="<<rg->look_at<<endl;
 //		cout<<"rg->dir="<<endl<<rg->dir<<endl;
 //		cout<<"rg->zoom="<<rg->zoom<<endl;

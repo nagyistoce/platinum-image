@@ -203,9 +203,9 @@ void t1_multiflip_function(int userIO_ID,int par_num)
 		body_int_min = int(userIOmanagement.get_parameter<long int>(userIO_ID,1));
 		cout<<"TR="<<TR<<endl;
 
-		vector<image_scalar<unsigned short,3> *> v;
+		vector<image_scalar< short,3> *> v;
 
-		image_scalar<unsigned short,3> *f1 = dynamic_cast<image_scalar<unsigned short,3>* >(datamanagement.get_image<image_base>(userIOmanagement.get_parameter<imageIDtype>(userIO_ID,2)));
+		image_scalar< short,3> *f1 = dynamic_cast<image_scalar< short,3>* >(datamanagement.get_image<image_base>(userIOmanagement.get_parameter<imageIDtype>(userIO_ID,2)));
 		flip = userIOmanagement.get_parameter<long int>(userIO_ID,3);
 		cout<<"flip="<<flip<<endl;
 		f1->meta.set_data_float(DCM_FLIP,flip);
@@ -213,13 +213,13 @@ void t1_multiflip_function(int userIO_ID,int par_num)
 		//		f1->meta.print_all();
 		v.push_back(f1);
 
-		image_scalar<unsigned short,3> *f2 = dynamic_cast<image_scalar<unsigned short,3>* >(datamanagement.get_image<image_base>(userIOmanagement.get_parameter<imageIDtype>(userIO_ID,4)));
+		image_scalar< short,3> *f2 = dynamic_cast<image_scalar< short,3>* >(datamanagement.get_image<image_base>(userIOmanagement.get_parameter<imageIDtype>(userIO_ID,4)));
 		flip = userIOmanagement.get_parameter<long int>(userIO_ID,5);
 		cout<<"flip="<<flip<<endl;
 		f2->meta.set_data_float(DCM_FLIP,flip);
 		v.push_back(f2);
 
-		image_scalar<unsigned short,3> *f3 = dynamic_cast<image_scalar<unsigned short,3>* >(datamanagement.get_image<image_base>(userIOmanagement.get_parameter<imageIDtype>(userIO_ID,6)));
+		image_scalar< short,3> *f3 = dynamic_cast<image_scalar< short,3>* >(datamanagement.get_image<image_base>(userIOmanagement.get_parameter<imageIDtype>(userIO_ID,6)));
 		if(f3!=NULL){
 			flip = userIOmanagement.get_parameter<long int>(userIO_ID,7);
 			cout<<"flip="<<flip<<endl;
@@ -227,16 +227,9 @@ void t1_multiflip_function(int userIO_ID,int par_num)
 			v.push_back(f3);
 		}
 
-		image_scalar<unsigned short,3> *f4 = dynamic_cast<image_scalar<unsigned short,3>* >(datamanagement.get_image<image_base>(userIOmanagement.get_parameter<imageIDtype>(userIO_ID,8)));
-		if(f4!=NULL){
-			flip = userIOmanagement.get_parameter<long int>(userIO_ID,9);
-			cout<<"flip="<<flip<<endl;
-			f4->meta.set_data_float(DCM_FLIP,flip);
-			v.push_back(f4);
-		}
 
 
-		image_scalar<unsigned short,3> *t1map = f1->calculate_T1Map_3D(v,body_int_min);
+		image_scalar< short,3> *t1map = f1->calculate_T1Map_3D(v,body_int_min);
 
 		datamanagement.add(t1map);
 		//do not delete images that are handled by the datamanagement...
@@ -701,7 +694,7 @@ int main(int argc, char *argv[])
 	userIOmanagement.add_par_longint_box(t1_mapping_ID,"Flip angle (0-180)",180,0);
 	userIOmanagement.add_par_string(t1_mapping_ID,"Small - Dcm file (leave empty if not needed)","C:/Joel/flip30.dcm");
 	userIOmanagement.finish_userIO(t1_mapping_ID);
-/*
+
 
 
 	//-------------
@@ -718,14 +711,9 @@ int main(int argc, char *argv[])
 
 	userIOmanagement.add_par_image(t1_multi_ID,"Flip3");
 	userIOmanagement.add_par_longint_box(t1_multi_ID,"Flip angle (0-180)",180,0);
-
-	userIOmanagement.add_par_image(t1_multi_ID,"Flip4");
-	userIOmanagement.add_par_longint_box(t1_multi_ID,"Flip angle (0-180)",180,0);
-
-	userIOmanagement.add_par_image(t1_multi_ID,"Flip5");
-	userIOmanagement.add_par_longint_box(t1_multi_ID,"Flip angle (0-180)",180,0);
 	userIOmanagement.finish_userIO(t1_multi_ID);
-*/
+
+
 	// *** end userIO control definitions ***
 
 

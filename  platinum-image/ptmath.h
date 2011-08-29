@@ -1,8 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 //
-//  header collecting mathematical functions used
-//  throughout the platform
-//
+//  header collecting mathematical functions used throughout the platform
 //
 
 // This file is part of the Platinum library.
@@ -302,7 +300,6 @@ bool dec_from_string(T& outType, const std::string& inString)
     return !(convstream >> std::dec >> outType).fail();
     }
 
-
 /*
  bool has_only_positive_or_zero_components(Vector3D v)
  {
@@ -324,7 +321,6 @@ bool dec_from_string(T& outType, const std::string& inString)
      return true;
  }
  */
-
 
 
 /*
@@ -509,6 +505,10 @@ bool fit_points(const std::vector<Vector3D> & fixed, std::vector<Vector3D> & mov
 float ttest_indep_2sample_equal_variance(vector<float> &group_a, vector<float> &group_b);
 
 
-int fit_line(vector<float> &x, vector<float> &y, float &slope, float &intercept, float &correlation);		// Least square fit line to 2D data.
+int fit_line(vector<float> &x, vector<float> &y, float &slope, float &intercept);						// Least square fit line to 2D data.
+int fit_line(vector<float> &x, vector<float> &y, float &slope, float &intercept, float &correlation);	// Least square fit line to 2D data.
+
+
+float calc_t2_from_two_tes(float s1, float s2, float te1, float te2);
 
 #endif	//__ptmath.h__

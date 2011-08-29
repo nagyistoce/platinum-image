@@ -453,7 +453,7 @@ image_base *vtkloader::read()
 {    
     image_base *result = NULL;
 
-	for(vector<string>::iterator it = files->begin(); it != files->end() && result == NULL; ){ // Repeat until one image has been read
+	for(vector<string>::iterator it = files->begin(); it != files->end() && result == NULL;){ // Repeat until one image has been read
 	string file_path = *it;
 
 	if(vtkIO->CanReadFile(file_path.c_str())){   //Assumption: File contains image data
@@ -564,7 +564,7 @@ image_base * analyze_hdrloader_itk::read()
 {    
     image_base *result = NULL;
 
-	for(vector<string>::iterator it = files->begin(); it != files->end() && result == NULL; it++)
+	for(vector<string>::iterator it = files->begin(); it != files->end() && result == NULL;it++)
 	{ // Repeat until one image has been read
 		string file_path = *it;
 
@@ -610,7 +610,7 @@ image_base * analyze_hdrloader_itk::read()
 
 		    //file was read - remove from list
 			read_file = *it;
-	        files->erase(it);
+	        it = files->erase(it);
         }//can read
 	}//for
 	
@@ -700,7 +700,7 @@ image_base * ximgloader::read()
 
 		    //file was read - remove from list
 			read_file = *itr;
-	        files->erase(itr);
+	        itr = files->erase(itr);
         }
 	}
 		
@@ -1158,7 +1158,7 @@ image_base * analyze_hdrloader::read()
     {
 	
     image_base * newImage = NULL;
-	for(vector<string>::iterator it = files->begin(); it != files->end() && newImage == NULL; it++){ // Repeat until one image has been read
+	for(vector<string>::iterator it = files->begin(); it != files->end() && newImage == NULL;it++){ // Repeat until one image has been read
 		string file_path = *it;
 
 	//	std::string hdr_file = files->front();
@@ -1273,7 +1273,7 @@ image_base * analyze_hdrloader::read()
 				//file was read - remove from list
 	//            files->erase (files->begin());
 				read_file = *it;//save file path
-				files->erase(it);
+				it = files->erase(it);
 				}//exists
 			}//pos
 		}//for
@@ -1289,7 +1289,7 @@ analyze_objloader::analyze_objloader(std::vector<std::string> * files): imageloa
 image_base *analyze_objloader::read()
     {
     image_base *newImage = NULL;
-	for(vector<string>::iterator it = files->begin(); it != files->end() && newImage == NULL; it++){ // Repeat until one image has been read
+	for(vector<string>::iterator it = files->begin(); it != files->end() && newImage == NULL;it++){ // Repeat until one image has been read
 		string file_path = *it;
 
 	//	std::string obj_file = files->front();
@@ -1364,7 +1364,7 @@ image_base *analyze_objloader::read()
 
 	//			files->erase (files->begin());
 				read_file = *it;//save file path
-				files->erase(it);
+				it = files->erase(it);
 				}//obj file exists
 			}//pos
 		}//for
@@ -1410,7 +1410,7 @@ image_base *niftiloader::read()
 {    
 	image_base *result = NULL;
 
-	for(vector<string>::iterator it = files->begin(); it != files->end() && result == NULL; it++){ // Repeat until one image has been read
+	for(vector<string>::iterator it = files->begin(); it != files->end() && result == NULL;){ // Repeat until one image has been read
 		string file_path = *it;
 
 		if(niftiIO->CanReadFile(file_path.c_str())){	//Assumption: File contains image data
@@ -1471,8 +1471,11 @@ image_base *niftiloader::read()
 			//file was read - remove from list
 			//files->erase(files->begin());
 			read_file = *it;//save file path
-			files->erase(it);
+			it = files->erase(it);
 		}//can read
+		else{
+			it++;
+		}
 	}//for
 
 	return result;
