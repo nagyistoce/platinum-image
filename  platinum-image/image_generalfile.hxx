@@ -394,7 +394,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::load_dataset_from_DICOM_fileAF(std::stri
 //	std::cout<<"file_path="<<file_path<<std::endl;
 //	std::cout<<"seriesIdentifier="<<seriesIdentifier<<std::endl;
 	string dir_path = path_parent(file_path);
-	std::cout<<"dir_path="<<dir_path<<std::endl;
+	//std::cout<<"dir_path="<<dir_path<<std::endl;
 	
     typedef itk::GDCMSeriesFileNames NamesGeneratorType;
     NamesGeneratorType::Pointer nameGenerator = NamesGeneratorType::New();
@@ -422,7 +422,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::load_dataset_from_DICOM_fileAF(std::stri
 
 template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::load_dataset_from_these_DICOM_files(vector<string> fileNames){
-	cout<<"load_dataset_from_these_DICOM_files...("<<fileNames.size()<<")"<<endl;
+	//cout<<"load_dataset_from_these_DICOM_files...("<<fileNames.size()<<")"<<endl;
 	itk::GDCMImageIO::Pointer dicomIO = itk::GDCMImageIO::New();
 	typename theImagePointer image = theImageType::New();
 

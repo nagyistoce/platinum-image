@@ -2129,36 +2129,42 @@ Vector3D image_general<ELEMTYPE, IMAGEDIM>::get_phys_dir_from_axis_dir(int dir)
 }
 
 template <class ELEMTYPE, int IMAGEDIM>
-void image_general<ELEMTYPE, IMAGEDIM>::set_voxel(int x, int y, int z, ELEMTYPE voxelvalue)
+void image_general<ELEMTYPE, IMAGEDIM>::set_voxel(int x, int y, int z, ELEMTYPE voxelvalue, bool check_inside)
     {
 	//JK - uncomment these rows to detect writing outside allocated memory...
+	if(check_inside){
 	if(x<0||x>=datasize[0] || y<0||y>=datasize[1] || z<0||z>=datasize[2])
 		{cout<<"set_voxel--> strange index... x="<<x<<" y="<<y<<" z="<<z<<"... datasize=("<<datasize[0]<<","<<datasize[1]<<","<<datasize[2]<<")"<<endl;}
+	}
 
     this->dataptr[x + datasize[0]*y + datasize[0]*datasize[1]*z] = voxelvalue;
     }
 
 template <class ELEMTYPE, int IMAGEDIM>
-void image_general<ELEMTYPE, IMAGEDIM>::set_voxel(Vector3D coord_pos, ELEMTYPE voxelvalue)
+void image_general<ELEMTYPE, IMAGEDIM>::set_voxel(Vector3D coord_pos, ELEMTYPE voxelvalue, bool check_inside)
     {
-		this->set_voxel(coord_pos[0],coord_pos[1],coord_pos[2],voxelvalue);
+		this->set_voxel(coord_pos[0],coord_pos[1],coord_pos[2],voxelvalue, check_inside);
     }
 
 template <class ELEMTYPE, int IMAGEDIM>
-void image_general<ELEMTYPE, IMAGEDIM>::set_voxel(int pos[3], ELEMTYPE voxelvalue)
+void image_general<ELEMTYPE, IMAGEDIM>::set_voxel(int pos[3], ELEMTYPE voxelvalue, bool check_inside)
     {
 	//JK - uncomment these rows to detect writing outside allocated memory...
+	if(check_inside){
 	if(pos[0]<0||pos[0]>=datasize[0] || pos[1]<0||pos[1]>=datasize[1] || pos[2]<0||pos[2]>=datasize[2])
 		{cout<<"set_voxel--> strange index... x="<<pos[0]<<" y="<<pos[1]<<" z="<<pos[2]<<"... datasize=("<<datasize[0]<<","<<datasize[1]<<","<<datasize[2]<<")"<<endl;}
+	}
 
     this->dataptr[pos[0] + datasize[0]*pos[1] + datasize[0]*datasize[1]*pos[2]] = voxelvalue;
     }
 
 template <class ELEMTYPE, int IMAGEDIM>
-void image_general<ELEMTYPE, IMAGEDIM>::set_voxel(int x, int y, int z, int w, ELEMTYPE voxelvalue)
+void image_general<ELEMTYPE, IMAGEDIM>::set_voxel(int x, int y, int z, int w, ELEMTYPE voxelvalue, bool check_inside)
 {
+	if(check_inside){
 	if(x<0||x>=datasize[0] || y<0||y>=datasize[1] || z<0||z>=datasize[2])
 		{cout<<"set_voxel--> strange index... x="<<x<<" y=.... datasize=("<<datasize[0]<<","<<datasize[1]<<","<<datasize[2]<<","<<datasize[3]<<")"<<endl;}
+	}
 
     this->dataptr[x + datasize[0]*y + datasize[0]*datasize[1]*z + datasize[0]*datasize[1]*datasize[2]*w] = voxelvalue;
 }
@@ -2445,7 +2451,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::fill_region_3D_with_subvolume_image(imag
 			for(int x=begin[0]; x<end[0]; x++){
 				//phys_pos = subvolume->get_physical_pos_for_voxel(x,y,z);
 				//this->set_voxel_in_physical_pos(phys_pos, subvolume->get_voxel(x,y,z));
-				this->set_voxel(x-this_begin[0],y-this_begin[1],z-this_begin[2], subvolume->get_voxel(x,y,z));
+				this->set_voxel(x-this_begin[0],y-this_begin[1],z-this_begin[2], subvolume->get_voxel(x,y,z),false);
 			}
 		}
 	}

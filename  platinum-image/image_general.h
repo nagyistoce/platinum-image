@@ -215,10 +215,10 @@ class image_general : public image_storage <ELEMTYPE >
         histogram_1D<ELEMTYPE>* get_histogram_from_masked_region_3D(image_binary<3>* mask, int num_buckets=1000);
         histogram_1D<ELEMTYPE>* get_histogram_with_num_buckets(int num_buckets);
 
-        void set_voxel(int x, int y, int z, ELEMTYPE voxelvalue);
-        void set_voxel(Vector3D coord_pos, ELEMTYPE voxelvalue);
-        void set_voxel(int pos[3], ELEMTYPE voxelvalue);
-        void set_voxel(int x, int y, int z, int w, ELEMTYPE voxelvalue);
+        void set_voxel(int x, int y, int z, ELEMTYPE voxelvalue, bool check_inside=true);
+        void set_voxel(Vector3D coord_pos, ELEMTYPE voxelvalue, bool check_inside=true);
+        void set_voxel(int pos[3], ELEMTYPE voxelvalue, bool check_inside=true);
+        void set_voxel(int x, int y, int z, int w, ELEMTYPE voxelvalue, bool check_inside=true);
         void set_voxels(vector<Vector3D> coords, ELEMTYPE voxelvalue);
         void set_voxel_in_physical_pos(Vector3D phys_pos, ELEMTYPE voxelvalue);
 		void set_voxel_by_dir(int u, int v, int w, ELEMTYPE value, int direction=2);
