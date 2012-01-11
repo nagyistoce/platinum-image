@@ -3827,7 +3827,7 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::save_to_TIF_file_series_3D(const std::str
 
 		sprintf(buf,"%04i",s);
 		slc2 = new image_scalar<unsigned char,3>(slc);
-		slc2->save_uchar2D_to_TIF_file(file_path_base, string(buf));
+		slc2->save_this_uchar2D_to_file(file_path_base, string(buf), ".tif");
 //		datamanagement.add(slc,"slc");
 //		datamanagement.add(slc2,"slc2");
 		delete slc;
@@ -3841,19 +3841,29 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::save_after_uchar_casted_to_TIF_file(const
     image_scalar<ELEMTYPE, IMAGEDIM> *this2 = new image_scalar<ELEMTYPE, IMAGEDIM>(this);
 	this2->scale(0,255);
     image_scalar<unsigned char, IMAGEDIM> *this3 = new image_scalar<unsigned char, IMAGEDIM>(this2);
-	this3->save_uchar2D_to_TIF_file(file_path_base,slice);
+	this3->save_this_uchar2D_to_file(file_path_base,slice, ".tif");
 	delete this2;
 	delete this3;
 }
 
 
 template <class ELEMTYPE, int IMAGEDIM>
-void image_scalar<ELEMTYPE, IMAGEDIM>::save_uchar2D_to_TIF_file(const std::string file_path_base, const std::string slice)
+void image_scalar<ELEMTYPE, IMAGEDIM>::save_this_uchar2D_to_file(const std::string file_path_base, const std::string slice, const std::string ending)
 {
-	typedef itk::ImageFileWriter<itk::OrientedImage<unsigned char,3> >	theTifWriterType;
+	typedef itk::ImageFileWriter<itk::OrientedImage<unsigned char,3> >	thefileWriterType;
 
-	string s = file_path_base+"_"+slice+".tif";
-	theTifWriterType::Pointer writer = theTifWriterType::New();
+	string s = file_path_base;
+	if(slice != ""){
+		s = s +"_"+slice;
+	}
+
+	if(ending == ""){
+		s = s +".tif";
+	}else{
+		s = s + ending;
+	}
+
+	thefileWriterType::Pointer writer = thefileWriterType::New();
 	writer->SetFileName(s.c_str());
 	writer->SetInput(this->get_image_as_itk_output());
 	try{
