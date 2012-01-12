@@ -67,10 +67,10 @@ vector<string> get_dir_entries(string path, bool full_path, bool use_recursion)
 
 	if(full_path){
 		while (ep = readdir (dp))
-			f.push_back (path + ep->d_name);
+			f.push_back(path + ep->d_name);
 	}else{
 		while (ep = readdir (dp))
-			f.push_back (ep->d_name);
+			f.push_back(ep->d_name);
 	}
 
     (void) closedir (dp);
@@ -80,9 +80,10 @@ vector<string> get_dir_entries(string path, bool full_path, bool use_recursion)
 	    vector<string> f2;
 		for(int i=0;i<dirs.size();i++){
 			f2 = get_dir_entries(dirs[i], true, true);
-			for(int j=0;j<f2.size();j++){
-				f.push_back(f2[j]);
-			}
+			//for(int j=0;j<f2.size();j++){
+			//	f.push_back(f2[j]);
+			//}
+			f.insert(f.end(), f2.begin(), f2.end());
 		}
 	}
 
@@ -496,9 +497,10 @@ vector<string> get_first_dicom_files_in_all_subdirs(string dir_path, bool full_p
 	for(int i=0;i<dirs.size();i++)	{
 //		cout<<"*dir_i="<<i<<" "<<dirs[i]<<endl;
 		sub_dcm_files = get_first_dicom_files_in_all_subdirs(dirs[i], full_path);
-		for(int i=0;i<sub_dcm_files.size();i++)	{
-			all_dcm_files.push_back( sub_dcm_files[i] );
-		}
+		//for(int i=0;i<sub_dcm_files.size();i++)	{
+		//	all_dcm_files.push_back( sub_dcm_files[i] );
+		//}
+		all_dcm_files.insert(all_dcm_files.end(), sub_dcm_files.begin(), sub_dcm_files.end());
 		sub_dcm_files.clear();
 	}
 
@@ -1338,7 +1340,7 @@ vector<string> get_vector_of_substrings_separated_by(string s, string separator)
 	return v;
 }
 
-vector<string> subdirs(string dir_path, bool fullpath)
+vector<string> subdirs(string dir_path, bool fullpath, bool use_recursion)
 {
     ensure_trailing_slash(dir_path);
     vector<string> result = get_dir_entries(dir_path,false);
@@ -1354,20 +1356,41 @@ vector<string> subdirs(string dir_path, bool fullpath)
 	    if(*dirs == "." || *dirs == ".." || !dir_exists(dir_path + *dirs) ){
             dirs=result.erase(dirs);
         }else{
-				if(fullpath){
-					(*dirs).insert(0,dir_path);
-				}
+			if(fullpath){
+				(*dirs).insert(0,dir_path);
+			}
             ensure_trailing_slash(*dirs);
             ++dirs; 
 		}
 	}
+
+	if(use_recursion){
+	    vector<string> res2;
+	    vector<string> res2_sum;
+
+		if(fullpath){
+			for(int i=0;i<result.size();i++){
+				res2 = subdirs(result[i], fullpath, use_recursion);
+				res2_sum.insert(res2_sum.end(), res2.begin(), res2.end());
+			}
+		}else{
+			for(int i=0;i<result.size();i++){
+				res2 = subdirs(dir_path + result[i], fullpath, use_recursion);
+				res2_sum.insert(res2_sum.end(), res2.begin(), res2.end());
+			}
+		}
+		result.insert(result.end(), res2_sum.begin(), res2_sum.end());
+		res2.clear();
+		res2_sum.clear();
+	}
+
 	return result;
 }
 
 
-vector<string> subdirs_where_name_contains(string dir_path, string name_substring, bool fullpath)
+vector<string> subdirs_where_name_contains(string dir_path, string name_substring, bool fullpath, bool use_recursion)
 {
-	vector<string> sub = subdirs(dir_path, fullpath);
+	vector<string> sub = subdirs(dir_path, fullpath, use_recursion);
 	vector<string> sub2;
 
 	for(int i=0;i<sub.size();i++){
@@ -1376,6 +1399,7 @@ vector<string> subdirs_where_name_contains(string dir_path, string name_substrin
 			sub2.push_back(sub[i]);
 		}
 	}
+	sub.clear();
 	return sub2;
 }
 
