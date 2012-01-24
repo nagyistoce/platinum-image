@@ -192,9 +192,9 @@ public:
 
 	//--------------------
 	void crop_3D(image_binary<3> *mask);
+	void crop_3D(ELEMTYPE from=1);
 	image_scalar<ELEMTYPE, IMAGEDIM>* crop_and_return_3D(image_binary<3> *mask);
 	image_scalar<ELEMTYPE, IMAGEDIM>* mask_crop_and_return_3D(image_binary<3> *mask);
-	void crop_3D_intensities_higher_than(ELEMTYPE from=1);
 	//... get_sub_region(...)
 
 	ELEMTYPE get_max_in_slice3D(int slice, int dir=2);

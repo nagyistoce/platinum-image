@@ -76,10 +76,14 @@ vector<string> get_dir_entries(string path, bool full_path, bool use_recursion)
     (void) closedir (dp);
 
 	if(use_recursion){
-		vector<string> dirs = subdirs(path, true);
+		vector<string> dirs = subdirs(path, false);
 	    vector<string> f2;
 		for(int i=0;i<dirs.size();i++){
-			f2 = get_dir_entries(dirs[i], true, true);
+			if(full_path){
+				f2 = get_dir_entries(dirs[i], full_path, use_recursion);
+			}else{
+				f2 = get_dir_entries(path + dirs[i], full_path, use_recursion);
+			}
 			//for(int j=0;j<f2.size();j++){
 			//	f.push_back(f2[j]);
 			//}
@@ -92,11 +96,17 @@ vector<string> get_dir_entries(string path, bool full_path, bool use_recursion)
 
 vector<string> get_files_in_dir(string path, bool full_path, bool use_recursion)
 {
-	vector<string> entries = get_dir_entries(path, true, use_recursion);
+	vector<string> entries = get_dir_entries(path, full_path, use_recursion);
 	vector<string> files;
 	for(int i=0;i<entries.size();i++){
-		if(file_exists(entries[i])){
-			files.push_back(entries[i]);
+		if(full_path){
+			if(file_exists(entries[i])){
+				files.push_back(entries[i]);
+			}
+		}else{
+			if(file_exists(path+entries[i])){
+				files.push_back(entries[i]);
+			}
 		}
 	}
 	return files;
@@ -1403,24 +1413,35 @@ vector<string> subdirs_where_name_contains(string dir_path, string name_substrin
 	return sub2;
 }
 
-vector<string> get_files_in_dir_where_name_contains(string dir_path, string name_substring, bool fullpath)
-{
-	vector<string> files = get_dir_entries(dir_path,false);
+vector<string> get_files_in_dir_where_name_contains(string dir_path, string name_substring, bool fullpath, bool use_recursion){
+	cout<<"get_files_in_dir_where_name_contains("<<dir_path<<endl;
+
+	vector<string> files = get_files_in_dir(dir_path, false, false);
 	vector<string> files2;
 
 	for(int i=0;i<files.size();i++){
-//		cout<<"files[i]="<<dir_path+files[i]<<endl;
-		if(file_exists(dir_path+files[i])){
-//			cout<<"files[i].find(name_substring)="<<files[i].find(name_substring)<<endl;
-			if( files[i].find(name_substring) < files[i].size() ){
-//				cout<<"***"<<endl;
-				if(fullpath){
-					files2.push_back(dir_path+"/"+files[i]);
-				}else{
-					files2.push_back(files[i]);
-				}
+		cout<<"files[i]="<<files[i]<<endl;
+		if( files[i].find(name_substring) < files[i].size() ){
+			cout<<"***"<<endl;
+			if(fullpath){
+				files2.push_back(dir_path+"/"+files[i]);
+			}else{
+				files2.push_back(files[i]);
 			}
 		}
+	}
+
+	if(use_recursion){
+		vector<string> sub = subdirs(dir_path, false, false);
+		vector<string> files2b;
+		//cout<<"sub.size()="<<sub.size()<<endl;
+		for(int i=0;i<sub.size();i++){
+		//	cout<<"sub[i]="<<sub[i]<<endl;
+			files2b = get_files_in_dir_where_name_contains(dir_path + sub[i], name_substring, fullpath, use_recursion);
+			files2.insert(files2.end(), files2b.begin(), files2b.end());
+			files2b.clear();
+		}
+
 	}
 	return files2;
 }
