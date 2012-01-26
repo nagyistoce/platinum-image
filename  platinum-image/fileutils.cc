@@ -281,6 +281,13 @@ void remove_file(string file_path)
 	itksys::SystemTools::RemoveFile(file_path.c_str());
 }
 
+void move_file(string from_path, string to_path, bool always)
+{
+	copy_file(from_path, to_path, always);
+	remove_file(from_path);
+}
+
+
 string find_first_file_where_filename_contains(string dir_path, string substring)
 {
 //	cout<<"find_first_file_where_filename_contains..."<<endl;

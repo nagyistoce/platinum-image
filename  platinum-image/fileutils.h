@@ -73,6 +73,8 @@ void copy_files(vector<string> from_paths, vector<string> to_paths, bool always=
 void copy_files(vector<string> from_paths, string to_dir_path, bool always=true);
 void remove_dir(string dir_path);
 void remove_file(string file_path);
+void move_file(string from_path, string to_path, bool always=true);
+
 
 string find_first_file_where_filename_contains(string dir_path, string substring);
 
