@@ -406,6 +406,7 @@ void image_general<ELEMTYPE, IMAGEDIM>::load_dataset_from_DICOM_fileAF(std::stri
 	FileNamesContainer fileNames = nameGenerator->GetFileNames(seriesIdentifier);
 //	std::cout<<"Number of files in series..."<<fileNames.size()<<std::endl;
 
+/*
 	//********** remove multiple echoes *************
 	//JK - This is temporary excluded for speedup --> dual echo iamging sequenses will be loaded in the "same volume"
 	vector<string> echotimes = list_dicom_tag_values_for_this_ref_tag_value(fileNames, DCM_SERIES_ID, seriesIdentifier, DCM_TE);
@@ -413,16 +414,18 @@ void image_general<ELEMTYPE, IMAGEDIM>::load_dataset_from_DICOM_fileAF(std::stri
 	if(echotimes.size()>1){//delelect all other echo times but the one in the file clicked...
 		fileNames = get_dicom_files_with_dcm_tag_value(fileNames, DCM_TE, get_dicom_tag_value(file_path,DCM_TE));
 	}
-
 	fileNames = get_dicom_files_with_dcm_tag_value(fileNames, DCM_TEMP_POS_ID, get_dicom_tag_value(file_path,DCM_TEMP_POS_ID));
 //	std::cout<<"Number of files in series (efter separation for TEMPORAL_POS_ID..."<<fileNames.size()<<std::endl;
-	
+	//********** remove multiple echoes *************
+*/
+
+
 	load_dataset_from_these_DICOM_files(fileNames);
 }
 
 template <class ELEMTYPE, int IMAGEDIM>
 void image_general<ELEMTYPE, IMAGEDIM>::load_dataset_from_these_DICOM_files(vector<string> fileNames){
-	//cout<<"load_dataset_from_these_DICOM_files...("<<fileNames.size()<<")"<<endl;
+	cout<<"load_dataset_from_these_DICOM_files...("<<fileNames.size()<<")"<<endl;
 	itk::GDCMImageIO::Pointer dicomIO = itk::GDCMImageIO::New();
 	typename theImagePointer image = theImageType::New();
 
