@@ -25,6 +25,7 @@
 
 #define pt_PI 3.1415926536
 #define pt_golden_section 0.6180339887
+#define pt_gyro_1H 42.57 // gyromagnetic ratio for 1H [MHz / T]
 
 #include <limits>	//for example...  numeric_limits<float>
 #include <set>
@@ -497,6 +498,8 @@ double logGamma(const double x);											// Logarithm of the Gamma function
 double incompleteBeta(const double a, const double b, const double x);		// Incomplete beta function
 double incompleteBetaCF(const double a, const double b, const double x);	// Continued fraction for incomplete beta function
 double regularizedGamma(const unsigned int N, const double x);				// Regularized Gamma function
+
+unsigned int* get_Fibonacci_sequence(unsigned int num_elements);
 
 // Rigid 3D landmark based alignment
 // Three non-collinear landmarks is sufficient to guarantee a solution

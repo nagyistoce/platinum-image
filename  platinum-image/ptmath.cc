@@ -1359,6 +1359,15 @@ double regularizedGamma(const unsigned int N, const double x) {
 	return Q;
 }
 
+unsigned int* get_Fibonacci_sequence(unsigned int num_elements) {
+	unsigned int* F = new unsigned int[num_elements];
+	if (num_elements>0) F[0]=1;
+	if (num_elements>1) F[1]=1;
+	for (unsigned int f=2; f<num_elements; f++) F[f] = F[f-1]+F[f-2];
+	return F;
+}
+
+
 bool fit_points(const std::vector<Vector3D> & fixed, std::vector<Vector3D> & moving, 
 	const std::map<int,int> & fixedToMoving)
 {
