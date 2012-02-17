@@ -3776,6 +3776,33 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::load_dataset_from_VTK_file(string file_pa
 }
 
 template <class ELEMTYPE, int IMAGEDIM>
+void image_scalar<ELEMTYPE, IMAGEDIM>::load_dataset_from_meta_file(string file_path)
+{
+//	cout<<"Warning... no file loaded...."<<endl;
+//	cout<<"ELEMTYPE=("<<string(typeid(ELEMTYPE).name())<<")"<<endl;
+	
+	if(file_exists(file_path)){
+		typename theReaderType::Pointer r = theReaderType::New();
+//		typename theReaderType22::Pointer r = theReaderType22::New();
+//		typename theScalarReaderType::Pointer r = theScalarReaderType::New();
+
+		itk::MetaImageIO::Pointer metaIO = itk::MetaImageIO::New();
+		r->SetFileName(file_path.c_str());
+		r->SetImageIO( metaIO );
+
+		typename theImagePointer image = theImageType::New();
+		image = r->GetOutput();
+		r->Update();
+		typename theSizeType s = image->GetBufferedRegion().GetSize();
+		replicate_itk_to_image(image);
+		this->name_from_path(file_path);
+
+	}else{
+		pt_error::error("image_scalar::load_dataset_from_meta_file()--> file does not exist...",pt_error::debug);
+	}
+}
+
+template <class ELEMTYPE, int IMAGEDIM>
 void image_scalar<ELEMTYPE, IMAGEDIM>::save_to_TIF_collage(const std::string file_path, int num_cols, int num_rows)
 {
 	image_scalar<ELEMTYPE, IMAGEDIM> *res = new image_scalar<ELEMTYPE, IMAGEDIM>(num_cols*this->nx(),num_rows*this->ny(),1);

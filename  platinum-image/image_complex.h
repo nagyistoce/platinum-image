@@ -100,6 +100,7 @@ public:
 
 // -------------- Scalar Load/Save functions ---------------
 	void load_dataset_from_VTK_file(std::string file_path);
+	void load_dataset_from_meta_file(std::string file_path);
 
 	void load_complex_dataset_from_these_DICOM_files(vector<string> filenames);
 	void save_to_VTK_file(const std::string file_path, const bool useCompression = true);

@@ -338,6 +338,7 @@ public:
 
 // -------------- Scalar Load/Save functions ---------------
 	void load_dataset_from_VTK_file(std::string file_path);
+	void load_dataset_from_meta_file(std::string file_path);
     void save_to_TIF_collage(const std::string file_path, int num_cols=4, int num_rows=4);
     void save_to_TIF_file_series_3D(const std::string file_path_base, int dir=2, int from_slice=-1, int to_slice=-1);
 	void save_after_uchar_casted_to_TIF_file(const std::string file_path_base, const std::string slice="0");

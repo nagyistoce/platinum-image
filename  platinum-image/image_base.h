@@ -43,6 +43,7 @@
 #include "itkNiftiImageIO.h"
 #include "itkAnalyzeImageIO.h"
 #include "itkGE5ImageIO.h"
+#include "itkMetaImageIO.h"
 
 #include "gdcmFileHelper.h"			//used in dicomloader::
 
@@ -272,6 +273,16 @@ private:
 public:
     niftiloader(std::vector<std::string> *f);
     image_base *read();
+};
+
+class metaloader: public imageloader
+{
+private:
+	itk::MetaImageIO::Pointer metaIO;
+
+public:
+	metaloader(std::vector<std::string> *f);
+	image_base* read();
 };
 
 

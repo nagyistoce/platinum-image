@@ -221,14 +221,7 @@ int main(int argc, char *argv[])
     window.end();
     window.show(argc, argv);
 
-	//------------------
-	complex<float> c = complex<float>(3,4);
-	complex<float> d = complex<float>(4,5);
-	image_complex<float,3> *im = new image_complex<float,3>(10,10,10,&c);
-	im->fill(d);
-	datamanagement.add(im,"im");
-	//------------------
-
+	
 //	RGBvalue val = RGBvalue();
 //	val.set_rgb_from_complex(complex<float>(5.0,0.1),float(0.1), 5.0);
 //	cout<<val<<endl;

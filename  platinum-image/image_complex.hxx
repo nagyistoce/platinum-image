@@ -330,6 +330,26 @@ void image_complex<ELEMTYPE, IMAGEDIM>::load_dataset_from_VTK_file(string file_p
 	}
 }
 
+template <class ELEMTYPE, int IMAGEDIM>
+void image_complex<ELEMTYPE, IMAGEDIM>::load_dataset_from_meta_file(string file_path)
+{
+	if(file_exists(file_path)){
+		typename theComplexReaderType::Pointer r = theComplexReaderType::New();
+		r->SetFileName(file_path.c_str());
+		itk::MetaImageIO::Pointer metaIO = itk::MetaImageIO::New();
+		r->SetImageIO( metaIO );
+
+		typename theComplexImagePointer image = theComplexImageType::New();
+		image = r->GetOutput();
+		r->Update();
+//		typename theSizeType s = image->GetBufferedRegion().GetSize();
+		replicate_itk_to_image(image);
+		this->name_from_path(file_path);
+	}else{
+		pt_error::error("image_complex::load_dataset_from_meta_file()--> file does not exist...",pt_error::debug);
+	}
+}
+
 
 template <class ELEMTYPE, int IMAGEDIM>
 void image_complex<ELEMTYPE, IMAGEDIM>::load_complex_dataset_from_these_DICOM_files(vector<string> filenames)
