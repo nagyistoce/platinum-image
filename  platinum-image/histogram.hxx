@@ -512,16 +512,16 @@ image_storage<ELEMTYPE> * histogram_1D<ELEMTYPE>::image ()
     }
 
 template <class ELEMTYPE>
-void histogram_1D<ELEMTYPE>::save_histogram_to_txt_file(std::string filepath, gaussian *g, bool reload_hist_from_image, std::string separator){
+void histogram_1D<ELEMTYPE>::save_histogram_to_txt_file(std::string filepath, gaussian *g, bool reload_hist_from_image, std::string separator, bool only_nonzero_values){
 	vector<gaussian> v;
 	if(g!=NULL){
 		v.push_back(*g);
 	}
-	save_histogram_to_txt_file(filepath, v, reload_hist_from_image, separator);
+	save_histogram_to_txt_file(filepath, v, reload_hist_from_image, separator, only_nonzero_values);
 	}
 
 template <class ELEMTYPE>
-void histogram_1D<ELEMTYPE>::save_histogram_to_txt_file(std::string filepath, vector<gaussian> v, bool reload_hist_from_image, std::string separator){
+void histogram_1D<ELEMTYPE>::save_histogram_to_txt_file(std::string filepath, vector<gaussian> v, bool reload_hist_from_image, std::string separator, bool only_nonzero_values){
 //		cout<<"save_histogram_to_txt_file(std::string file...)"<<endl;
 
 		if(reload_hist_from_image){
@@ -551,14 +551,21 @@ void histogram_1D<ELEMTYPE>::save_histogram_to_txt_file(std::string filepath, ve
 		}
 
 		myfile<<"bucket"<<separator<<"intensity"<<separator<<"bucketvalue\n";
+		bool print_line = true;
 		for(unsigned short i=0; i<this->num_buckets; i++){
-			myfile<<i<<separator<<bucketpos_to_intensity(i)<<separator<<this->bucket_vector->at(i);
-			//myfile<<separator<<get_norm_frequency_in_bucket(i)<<separator<<get_norm_p_log_p_frequency_in_bucket(i);
-			//myfile<<separator<<get_norm_p_log_p_gradient(i);
-			for(int g=0;g<v.size();g++){
-				myfile<<separator<<v[g].evaluate_at(bucketpos_to_intensity(i));
+			print_line = true;
+			if(only_nonzero_values && this->bucket_vector->at(i)==0){
+				print_line = false;
 			}
-			myfile<<"\n";
+			if(print_line){
+				myfile<<i<<separator<<bucketpos_to_intensity(i)<<separator<<this->bucket_vector->at(i);
+				//myfile<<separator<<get_norm_frequency_in_bucket(i)<<separator<<get_norm_p_log_p_frequency_in_bucket(i);
+				//myfile<<separator<<get_norm_p_log_p_gradient(i);
+				for(int g=0;g<v.size();g++){
+					myfile<<separator<<v[g].evaluate_at(bucketpos_to_intensity(i));
+				}
+				myfile<<"\n";
+			}
 		}
 
 		myfile.close();

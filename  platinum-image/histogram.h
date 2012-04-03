@@ -188,8 +188,8 @@ class histogram_1D : public histogram_typed<ELEMTYPE> //horizontal 1D graph hist
 			{return this->readytorender;}   
 		image_storage<ELEMTYPE> * image ();
 
-		void save_histogram_to_txt_file(std::string filepath, gaussian *g=NULL, bool reload_hist_from_image=false, std::string separator="\t");
-		void save_histogram_to_txt_file(std::string filepath, vector<gaussian> v, bool reload_hist_from_image=false, std::string separator="\t");
+		void save_histogram_to_txt_file(std::string filepath, gaussian *g=NULL, bool reload_hist_from_image=false, std::string separator="\t", bool only_nonzero_values=false);
+		void save_histogram_to_txt_file(std::string filepath, vector<gaussian> v, bool reload_hist_from_image=false, std::string separator="\t", bool only_nonzero_values=false);
 
 		void save_histogram_to_tif_file(std::string filepath_base, int ny=500, gaussian *g=NULL);
 		
