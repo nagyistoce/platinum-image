@@ -2296,7 +2296,7 @@ void image_scalar<ELEMTYPE, IMAGEDIM>::smooth_ITK(Vector3D radius)
 template <class ELEMTYPE, int IMAGEDIM>
 void image_scalar<ELEMTYPE, IMAGEDIM>::smooth_3D(Vector3D r)
 {
-	cout<<"smooth_3D..."<<endl;
+	//cout<<"smooth_3D..."<<endl;
 	image_scalar<ELEMTYPE, IMAGEDIM> *res = new image_scalar<ELEMTYPE, IMAGEDIM>(this,0);
 
 	res->fill(0); //not very time efficient... the outer borders would be enough...
