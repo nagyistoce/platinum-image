@@ -287,6 +287,18 @@ void move_file(string from_path, string to_path, bool always)
 	remove_file(from_path);
 }
 
+void move_files(vector<string> from_paths, string to_dir_path, bool always)
+{
+	string s="";
+	ensure_trailing_slash(to_dir_path);
+	for(int i=0; i<from_paths.size();i++){
+		cout<<"from: "<<from_paths[i]<<endl;
+		s = to_dir_path + path_end(from_paths[i]);
+		cout<<"to: "<<s<<endl;
+		move_file(from_paths[i], s, always);
+	}
+}
+
 
 string find_first_file_where_filename_contains(string dir_path, string substring)
 {
@@ -1225,6 +1237,7 @@ void save_all_dicom_series_to_specific_file_format(string dir_path, vector<strin
 		save_file_name = replace_substrings(save_file_name, " ", "_");
 		save_file_name = replace_substrings(save_file_name, ":", "_");
 		save_file_name = replace_substrings(save_file_name, "\\", "_"); // changes "single" "\" to "_"
+		save_file_name = replace_substrings(save_file_name, "/", "-"); // changes "single" "/" to "-"
 		cout<<"save_file_name="<<save_file_name<<endl;
 
 		if(format == ".dcm"){
@@ -1315,6 +1328,14 @@ string replace_substrings(string s, string val, string replacement){
 	}
 	return s;
 }
+
+string make_string_folder_compatible(string s){
+	s = replace_substrings(s, " ", "_");
+	s = replace_substrings(s, ":", "_");
+	s = replace_substrings(s, "\\", "_");
+	return replace_substrings(s, "/", "_");
+}
+
 
 
 string get_csv_item(string s, int item_num, string separator)

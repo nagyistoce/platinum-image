@@ -74,6 +74,7 @@ void copy_files(vector<string> from_paths, string to_dir_path, bool always=true)
 void remove_dir(string dir_path);
 void remove_file(string file_path);
 void move_file(string from_path, string to_path, bool always=true);
+void move_files(vector<string> from_paths, string to_dir_path, bool always=true);
 
 
 string find_first_file_where_filename_contains(string dir_path, string substring);
@@ -158,6 +159,7 @@ bool remove_file_lastname(string &s, int max_no_lastname_chars=3);
 bool remove_string_ending(string &s, string ending=" ");
 string replace_last_substring(string s, string val, string replacement="");
 string replace_substrings(string s, string val, string replacement="");
+string make_string_folder_compatible(string s);
 string get_csv_item(string s, int item_num, string separator="\t"); //item_num=0 is the first...
 bool string_contains(string s, string sample);
 
