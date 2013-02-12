@@ -860,6 +860,17 @@ bool is_dicom_file_imaginary_image(string file_path)
 	return does_dicom_file_tag_contain(file_path, DCM_IMAGE_TYPE, DCM_IMAGINARY_SUBSTRING);
 }
 
+string	get_dicom_file_type_letter(string file_path){
+	if(is_dicom_file_magnitude_image(file_path))
+		return "M";
+	if(is_dicom_file_real_image(file_path))
+		return "R";
+	if(is_dicom_file_imaginary_image(file_path))
+		return "I";
+	return "unknown";
+}
+
+
 string get_elemtype_in_image_file(string file_path)
 {
 	string ret="";

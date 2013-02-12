@@ -129,6 +129,7 @@ bool			does_dicom_file_tag_contain(string file_path, string tag, string content)
 bool			is_dicom_file_magnitude_image(string file_path);
 bool			is_dicom_file_real_image(string file_path);
 bool			is_dicom_file_imaginary_image(string file_path);
+string			get_dicom_file_type_letter(string file_path);
 string			get_elemtype_in_image_file(string file_path);
 string			get_elemtype_in_dicom_file(string file_path);
 
