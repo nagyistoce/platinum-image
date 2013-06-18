@@ -483,7 +483,7 @@ void rendererMPR::render_(uchar *pixels, int rgb_sx, int rgb_sy, rendergeom_imag
             
 		} //the_image_pointer != NULL
         //TODO_R add drawing of the additional data here!
-		if(the_image_pointer->draw_additional_data)
+		if(the_image_pointer != NULL && the_image_pointer->draw_additional_data)
 			draw_additional_data(the_image_pointer, rg, pixels, rgb_sx, rgb_sy);
         the_image++;
 	} //per-image loop
