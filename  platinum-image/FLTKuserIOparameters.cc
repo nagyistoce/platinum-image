@@ -412,7 +412,7 @@ FLTKuserIOpar_landmarks::landmark::landmark( const int l_index, const std::strin
 FLTKuserIOpar_landmarks::FLTKuserIOpar_landmarks( const std::string name ) : FLTKuserIOparameter_base( INITPARWIDGETWIDTH, int(STDPARWIDGETHEIGHT * 14), name )
 {
 	const int checkBtnWidth = 30;
-	const int btnWidth = 50;
+	const int btnWidth = 42;
 	const int btnHeight = 20;	// BUTTONHEIGHT = 25
 	
 	this->
@@ -444,7 +444,7 @@ FLTKuserIOpar_landmarks::FLTKuserIOpar_landmarks( const std::string name ) : FLT
 	{ 
 		emptyBoxTwo = new Fl_Box(x(), y() + STDPARWIDGETHEIGHT + PARTITLEMARGIN, w() - 4 * btnWidth, btnHeight);
 		
-		xInput = new Fl_Float_Input(w() - 4 * btnWidth, y() + STDPARWIDGETHEIGHT + PARTITLEMARGIN, btnWidth, btnHeight); //, "Go to coordinate: ");
+		xInput = new Fl_Float_Input(max(0,w()-4*btnWidth), y() + STDPARWIDGETHEIGHT + PARTITLEMARGIN, btnWidth, btnHeight); //, "Go to coordinate: ");
 		xInput->callback(goCallback, (void *) this);
 		xInput->when(FL_WHEN_ENTER_KEY);
 		xInput->tooltip("x-value");
@@ -470,14 +470,18 @@ FLTKuserIOpar_landmarks::FLTKuserIOpar_landmarks( const std::string name ) : FLT
 	{
 		emptyBox = new Fl_Box(x(), y() + 2 * STDPARWIDGETHEIGHT + PARTITLEMARGIN, w() -  3 * btnWidth, btnHeight);
 		
-		loadSetBtn = new Fl_Button(w() - 3 * btnWidth, y() + 2 * STDPARWIDGETHEIGHT + PARTITLEMARGIN, btnWidth, btnHeight, "Load");
+		loadSetBtn = new Fl_Button(w() - 4 * btnWidth, y() + 2 * STDPARWIDGETHEIGHT + PARTITLEMARGIN, btnWidth, btnHeight, "Load");
 		loadSetBtn->tooltip("Load landmark set");
 		loadSetBtn->callback(loadSetCallback, (void *) this);
 		
-		saveSetBtn = new Fl_Button(w() - 2 * btnWidth, y() + 2 * STDPARWIDGETHEIGHT + PARTITLEMARGIN, btnWidth, btnHeight, "Save");
+		saveSetBtn = new Fl_Button(w() - 3 * btnWidth, y() + 2 * STDPARWIDGETHEIGHT + PARTITLEMARGIN, btnWidth, btnHeight, "Save");
 		saveSetBtn->tooltip("Save landmark set");
 		saveSetBtn->callback(saveSetCallback, (void *) this);
-		
+
+		save2SetBtn = new Fl_Button(w() - 2 * btnWidth, y() + 2 * STDPARWIDGETHEIGHT + PARTITLEMARGIN, btnWidth, btnHeight, "Save2");
+		save2SetBtn->tooltip("Save voxel coords");
+		save2SetBtn->callback(save2SetCallback, (void *) this);
+
 		resetSetBtn = new Fl_Button(w() - btnWidth, y() + 2 * STDPARWIDGETHEIGHT + PARTITLEMARGIN, btnWidth, btnHeight, "Reset");
 		resetSetBtn->tooltip("Reset landmark set");
 		resetSetBtn->callback(resetSetCallback, (void *) this);
@@ -615,6 +619,103 @@ void FLTKuserIOpar_landmarks::saveSetCallback(Fl_Widget * callingwidget, void * 
 			ofs << ";" << point;			
 		}
 		ofs << std::endl;
+	}
+			
+	ofs.close();
+}
+
+void FLTKuserIOpar_landmarks::save2SetCallback(Fl_Widget * callingwidget, void * thisLandmarks)
+{
+	FLTKuserIOpar_landmarks * l = reinterpret_cast<FLTKuserIOpar_landmarks *>(thisLandmarks);
+
+	if ( l->browser->size() == 0 )
+		{ return; }
+
+	point_collection * points = dynamic_cast<point_collection *>( datamanagement.get_data( l->get_landmarksID() ) );
+
+	if ( points == NULL )
+	{
+		pt_error::error("FLTKuserIOpar_landmarks::resetSetCallback(): point_collection does not exist", pt_error::warning);
+		return;
+	}
+
+	std::string last_path;
+	try 
+		{ last_path = pt_config::read<std::string>("latest_path-landmarks_save"); } 
+	catch ( pt_error )
+		{ last_path = "."; }
+
+	Fl_File_Chooser chooser(last_path.c_str(), "Landmark files (*.txt)\tAny file (*)", Fl_File_Chooser::CREATE, "Save landmarks");
+    chooser.ok_label( "Save" );	
+	chooser.show();
+		
+	while( chooser.shown() )
+		{ Fl::wait(); }
+		
+	if ( chooser.value() == NULL )
+	{
+        pt_error::error ( "Save landmarks dialog cancel", pt_error::notice );
+		return;
+	}
+
+	pt_config::write("latest_path-landmarks_save", path_parent(chooser.value(1)));
+	
+	// add the prefix ".txt" if not present
+	string temp( chooser.value() );
+	string prefix = temp.substr( temp.size() - 4, 4 );
+	if ( prefix != ".txt" )
+		{ temp.append( ".txt" ); }
+
+	ofstream ofs ( temp.c_str() );
+	
+	if ( !ofs )
+	{
+		// TODO: use the pt_error class to generate an error message
+		return;
+	}
+/*
+	for ( unsigned int i = 0; i < l->landmarks.size(); i++ )
+	{
+		ofs << l->landmarks[i].index << ";" << l->landmarks[i].description << ";" << l->landmarks[i].option;
+		
+		if ( points->contains(l->landmarks[i].index) )
+		{
+			Vector3D point = points->get_point(l->landmarks[i].index);
+			ofs << ";" << point;			
+		}
+		ofs << std::endl;
+	}
+*/	
+	userIO * userIO_block = reinterpret_cast<userIO *>(callingwidget->parent()->parent()->parent());
+	FLTKuserIOpar_image * image = NULL;
+	int nc = userIO_block->children();
+	for (int c = 0; c < nc; c++){
+		if( (image=dynamic_cast<FLTKuserIOpar_image*>(userIO_block->child(c))) )
+			{ break; }
+	}
+	if ( image == NULL )
+		{ return; }
+	int imageID;
+	image->par_value(imageID);
+	if ( imageID == NOT_FOUND_ID )
+		{ return; }
+	cout<<"imageID="<<imageID<<endl;
+	Vector3D w; //world
+	Vector3D v; //voxel
+
+	ofs << "index"<<endl;
+	ofs << l->landmarks.size()<<endl;
+//	ofs << points->size()<<endl;
+	for ( unsigned int i = 0; i < l->landmarks.size(); i++ ){
+		if ( points->contains(l->landmarks[i].index) ){
+			image_base *im = datamanagement.get_image<image_base>(imageID);
+			w = points->get_point(l->landmarks[i].index);
+			v = im->world_to_voxel( w );
+			cout<<w<<"->"<<v<<endl;			
+			ofs<<v[0]<<" "<<v[1]<<" "<<v[2]<<endl;			
+		}else{
+			ofs<<""<<endl;			
+		}
 	}
 			
 	ofs.close();

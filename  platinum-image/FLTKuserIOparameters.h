@@ -311,6 +311,7 @@ class FLTKuserIOpar_landmarks : public FLTKuserIOparameter_base
 		Fl_Group * buttonGroup;
 		Fl_Button * loadSetBtn;		
 		Fl_Button * saveSetBtn;
+		Fl_Button * save2SetBtn;
 		Fl_Button * resetSetBtn;
 		
 		ColResizeBrowser * browser;
@@ -332,6 +333,7 @@ class FLTKuserIOpar_landmarks : public FLTKuserIOparameter_base
 		static void goCallback(Fl_Widget * callingwidget, void * thisLandmarks);
 		static void resetSetCallback( Fl_Widget * callingwidget, void * thisLandmarks );
 		static void saveSetCallback( Fl_Widget * callingwidget, void * thisLandmarks );
+		static void save2SetCallback( Fl_Widget * callingwidget, void * thisLandmarks );
 		static void loadSetCallback( Fl_Widget * callingwidget, void * thisLandmarks );
 		static void browserCallback( Fl_Widget * callingwidget, void * thisLandmarks );
 

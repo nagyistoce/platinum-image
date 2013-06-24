@@ -138,13 +138,10 @@ void landmark_tool::handle(viewport_event &event)
 
 
 
-
+//				Vector3D mouse3d_voxel = myRenderer->view_to_voxel(mouse2d[0], mouse2d[1], fp->w(), fp->h(), top->get_id());
+//				points->add_pair( index_of_active, mouse3d_voxel );
 				points->add_pair( index_of_active, mouse3d );
-				
-				
 				userIOmanagement.data_vector_has_changed();
-				
-				
 				viewmanagement.show_point_by_data ( mouse3d, point_collection_ID );
 
 			}
