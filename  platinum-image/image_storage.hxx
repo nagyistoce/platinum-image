@@ -239,6 +239,32 @@ float image_storage<ELEMTYPE >::get_mean(image_storage<IMGBINARYTYPE>* mask, IMG
 }
 
 template <class ELEMTYPE >
+ELEMTYPE image_storage<ELEMTYPE >::get_median(image_storage<IMGBINARYTYPE>* mask, IMGBINARYTYPE mask_value)
+{
+	vector<ELEMTYPE> magnitudes;
+	typename image_storage<ELEMTYPE >::iterator itr = this->begin();
+	if (mask!=NULL) {
+		typename image_storage<IMGBINARYTYPE >::iterator mask_itr = mask->begin();
+		while(itr != this->end()) {
+			if (*mask_itr == mask_value) {
+				magnitudes.push_back(*itr);
+			}
+			++itr;
+			++mask_itr;
+		}
+		pt_error::error_if_false(itr == this->end() && mask_itr == mask->end(),"Binary mask size didn't match image size when calculating mean",pt_error::serious);
+	}else {
+		while(itr != this->end()) {
+			magnitudes.push_back(*itr);
+			++itr;
+		}
+	}
+
+	sort(magnitudes.begin(), magnitudes.end());
+	return magnitudes[magnitudes.size()/2];
+}
+
+template <class ELEMTYPE >
 float image_storage<ELEMTYPE >::get_standard_deviation(image_storage<IMGBINARYTYPE>* mask)
 {
 	float mean=get_mean(mask);

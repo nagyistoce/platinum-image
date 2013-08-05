@@ -89,6 +89,7 @@ class image_storage : public image_base
 		virtual ELEMTYPE get_max() const {return 0;};
 		virtual ELEMTYPE get_min() const {return 0;};
 		float get_mean(image_storage<IMGBINARYTYPE>* mask=NULL, IMGBINARYTYPE mask_value=1);
+		ELEMTYPE get_median(image_storage<IMGBINARYTYPE>* mask=NULL, IMGBINARYTYPE mask_value=1);
 		float get_standard_deviation(image_storage<IMGBINARYTYPE>* mask=NULL);
 //        ELEMTYPE get_num_values();
 		unsigned long get_num_elements();
