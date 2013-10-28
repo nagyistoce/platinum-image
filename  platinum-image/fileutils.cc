@@ -292,9 +292,9 @@ void move_files(vector<string> from_paths, string to_dir_path, bool always)
 	string s="";
 	ensure_trailing_slash(to_dir_path);
 	for(int i=0; i<from_paths.size();i++){
-		cout<<"from: "<<from_paths[i]<<endl;
+		//cout<<"from: "<<from_paths[i]<<endl;
 		s = to_dir_path + path_end(from_paths[i]);
-		cout<<"to: "<<s<<endl;
+		//cout<<"to: "<<s<<endl;
 		move_file(from_paths[i], s, always);
 	}
 }

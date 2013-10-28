@@ -94,6 +94,7 @@ enum NEIGHBOUR_DIR {N_NNC,N_CNC,N_PNC,N_NCC,N_CCC,N_PCC,N_NPC,N_CPC,N_PPC,
 #define DCM_CREATION_TIME "0008|0013" //082633.000	//string
 #define DCM_STUDY_DATE "0008|0020"					//string
 #define DCM_SERIES_DATE "0008|0021"					//string
+#define DCM_SERIES_TIME "0008|0031"					//string //135417.46000
 #define DCM_SERIES_ID "0020|000e"					//string
 #define DCM_MODALITY "0008|0060"					//string
 #define DCM_IMAGE_TYPE "0008|0008"					//string
