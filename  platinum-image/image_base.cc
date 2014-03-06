@@ -808,6 +808,7 @@ image_base *dicomloader::read()
 								case itk::ImageIOBase::DOUBLE:
 									result = new image_integer<double>();
 									((image_integer<double>*)result)->load_dataset_from_DICOM_fileAF(*file,seriesIdentifier);
+									read_file = *file;//save file path
 									break;
 								default:
 									pt_error::error("dicomloader::read() --> Unsupported component type: " + dicomIO->GetComponentTypeAsString (theComponentType), pt_error::warning);

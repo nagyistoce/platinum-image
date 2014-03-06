@@ -526,6 +526,30 @@ void image_general<ELEMTYPE, IMAGEDIM>::combine_using_physical_pos(image_general
 		cout<<endl;
 	break;
 
+	case COMB_MAX:
+		cout<<"...MAX";
+		for(vox_pos[2]=0;vox_pos[2]<this->nz();vox_pos[2]++){
+			cout<<" "<<vox_pos[2];
+			for(vox_pos[1]=0;vox_pos[1]<this->ny();vox_pos[1]++){
+				for(vox_pos[0]=0;vox_pos[0]<this->nx();vox_pos[0]++){
+					phys = this->origin + mat1*vox_pos;
+					other_voxel = mat3*(phys - image2->get_origin());
+					if(image2->is_voxelpos_within_image_3D(other_voxel)){
+//					if(image2->is_physical_pos_within_image_3D(phys)){
+						this_voxel = mat2*(phys - this->origin);
+						if(this->get_voxel(this_voxel) > image2->get_voxel(other_voxel) ){
+							this->set_voxel( this_voxel, this->get_voxel(this_voxel) );
+						}else{
+							this->set_voxel( this_voxel, this->get_voxel(other_voxel) );
+						}
+					}
+				}
+			}
+		}
+		cout<<endl;
+	break;
+
+
 	default:
 		pt_error::error("image_general<ELEMTYPE, IMAGEDIM>::combine_using_physical_pos --> COMBINE_MODE not recognized",pt_error::debug);
 		break;
