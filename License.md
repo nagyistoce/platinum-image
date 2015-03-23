@@ -1,0 +1,1 @@
+Platinum is published under the GNU Lesser General Public License (LGPL), with the intention of allowing proprietary applications to utilize the platform while the platform itself remains free software. Certain components have more permissive licenses (the Histo2D and example programs) or are in the public domain (WIN32 dirent substitute).
